@@ -8883,6 +8883,7 @@ const TAB_MENU_META = {
 
 function switchTab(tab) {
   activeTab = tab;
+  try { localStorage.setItem('so_active_tab', tab); } catch(e) {}
   ['input', 'selisih', 'expired', 'detail'].forEach(t => {
     const tabEl = document.getElementById('tab-' + t);
     if (tabEl) tabEl.classList.toggle('active', t === tab);
@@ -12904,6 +12905,7 @@ function filterDashboardToko() {
 
 function switchPage(page) {
   activePage = page;
+  try { localStorage.setItem('so_active_page', page); } catch(e) {}
   ['info','stock','csv','dashboard','report'].forEach(p => {
     const el = document.getElementById('page-' + p);
     const nav = document.getElementById('pnav-' + p);
@@ -13689,7 +13691,7 @@ function soCardOverrideBadge(sesi) {
 // SISTEM SESI AUDIT — Google Apps Script + Google Sheets Backend
 // ================================================================
 // Cloudflare Worker — sesi & sync data
-const APPS_SCRIPT_URL = 'https://so.sensatia.workers.dev/';
+const APPS_SCRIPT_URL = 'https://so-api.sensatia.workers.dev/';
 // Google Apps Script — email & upload Drive (langsung, tidak lewat Worker)
 const GAS_DIRECT_URL  = 'https://script.google.com/macros/s/AKfycbw4VuFmx_Ez2Z4GmE1E_CbUK_SXV0r5oJDmOkxEseovJhBTjMQKSaJeLULm2tT_owTFmA/exec';
 
@@ -17254,10 +17256,17 @@ window.addEventListener('DOMContentLoaded', function() {
     const btnHdr = document.getElementById('btnSesiHeader');
     if (btnHdr) { btnHdr.style.borderColor = '#2ecc71'; btnHdr.style.color = '#2ecc71'; }
     startSesiSync();
-    switchPage('stock'); // Buka halaman input jika ada sesi aktif
+    const savedPage = localStorage.getItem('so_active_page');
+    switchPage(savedPage || 'stock'); // Buka halaman sebelumnya jika ada sesi aktif
   } else {
     // Tidak ada sesi aktif, jadikan Dashboard sebagai tampilan utama (Landing Page)
-    switchPage('dashboard');
+    const savedPage = localStorage.getItem('so_active_page');
+    switchPage(savedPage || 'dashboard');
+  }
+  
+  const savedTab = localStorage.getItem('so_active_tab');
+  if (savedTab) {
+    switchTab(savedTab);
   }
 });
 
