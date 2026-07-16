@@ -6767,24 +6767,52 @@ function scheduleRender() { clearTimeout(renderTimer); renderTimer = setTimeout(
 // Di mobile, Enter menutup keyboard dan pindah ke input berikutnya.
 // Urutan: store baris N → storage baris N → store baris N+1 → dst.
 function qtyInputNav(event, el) {
-  if (event.key !== 'Enter' && event.key !== 'Tab') return;
+  const navKeys = ['Enter', 'Tab', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'];
+  if (!navKeys.includes(event.key)) return;
+  
   event.preventDefault();
 
-  // Kumpulkan semua qty-input yang visible di urutan DOM
-  const allInputs = Array.from(document.querySelectorAll('.qty-input:not([disabled]):not([readonly])'))
-    .filter(inp => inp.offsetParent !== null); // hanya yang terlihat
-
+  const allInputs = Array.from(document.querySelectorAll('input[type="number"]:not([disabled]):not([readonly])'))
+    .filter(inp => inp.offsetParent !== null);
+  
   const currentIdx = allInputs.indexOf(el);
   if (currentIdx === -1) return;
 
-  // Shift+Tab = mundur, lainnya = maju
-  const nextIdx = event.shiftKey ? currentIdx - 1 : currentIdx + 1;
-  if (nextIdx < 0 || nextIdx >= allInputs.length) return;
+  let next = null;
 
-  const next = allInputs[nextIdx];
-  next.focus();
-  // Select all agar mudah langsung ketik angka baru
-  next.select();
+  if (event.key === 'ArrowUp' || event.key === 'ArrowDown') {
+    const td = el.closest('td');
+    const tr = el.closest('tr');
+    const tbody = el.closest('tbody');
+    if (td && tr && tbody) {
+      const cellIndex = Array.from(tr.children).indexOf(td);
+      const rowIndex = Array.from(tbody.children).indexOf(tr);
+      const nextRowIndex = event.key === 'ArrowDown' ? rowIndex + 1 : rowIndex - 1;
+      
+      if (nextRowIndex >= 0 && nextRowIndex < tbody.children.length) {
+        const nextRow = tbody.children[nextRowIndex];
+        const nextCell = nextRow.children[cellIndex];
+        if (nextCell) {
+          next = nextCell.querySelector('input[type="number"]:not([disabled]):not([readonly])');
+        }
+      }
+    }
+  } else {
+    let nextIdx = currentIdx;
+    if (event.key === 'ArrowLeft' || (event.key === 'Tab' && event.shiftKey)) {
+      nextIdx = currentIdx - 1;
+    } else {
+      nextIdx = currentIdx + 1;
+    }
+    if (nextIdx >= 0 && nextIdx < allInputs.length) {
+      next = allInputs[nextIdx];
+    }
+  }
+
+  if (next) {
+    next.focus();
+    next.select();
+  }
 }
 
 // Set berisi "field_sku" dari input yang sudah diketik tapi belum di-commit (blur)
@@ -7182,21 +7210,21 @@ function renderVal1Cells(p, realIdx) {
       <input class="val1-input" type="number" min="0" placeholder="0"
         inputmode="numeric" autocomplete="off" value="${v1Store}"
         id="val1store_${p.sku}" data-idx="${realIdx}" data-field="val1Store"
-        oninput="updateVal1(this)" onchange="updateVal1(this)" ${disabled}
+        oninput="updateVal1(this)" onchange="updateVal1(this)" onkeydown="qtyInputNav(event,this)" ${disabled}
         title="Validasi 1 — Display">
     </td>
     <td data-label="Cek 1 Stock" class="col-val1" style="background:#F0F6FF;padding:4px 6px;">
       <input class="val1-input" type="number" min="0" placeholder="0"
         inputmode="numeric" autocomplete="off" value="${v1Storage}"
         id="val1storage_${p.sku}" data-idx="${realIdx}" data-field="val1Storage"
-        oninput="updateVal1(this)" onchange="updateVal1(this)" ${disabled}
+        oninput="updateVal1(this)" onchange="updateVal1(this)" onkeydown="qtyInputNav(event,this)" ${disabled}
         title="Validasi 1 — Stock">
     </td>
     <td data-label="Cek 1 Gudang" class="col-val1" style="background:#F0F6FF;padding:4px 6px;">
       <input class="val1-input" type="number" min="0" placeholder="0"
         inputmode="numeric" autocomplete="off" value="${v1Gudang}"
         id="val1gudang_${p.sku}" data-idx="${realIdx}" data-field="val1Gudang"
-        oninput="updateVal1(this)" onchange="updateVal1(this)" ${disabled}
+        oninput="updateVal1(this)" onchange="updateVal1(this)" onkeydown="qtyInputNav(event,this)" ${disabled}
         title="Validasi 1 — Gudang">
     </td>
     <td data-label="Cek 1 Total" class="cell-val1total col-val1" style="background:#F0F6FF;padding:4px 6px;text-align:center;">
