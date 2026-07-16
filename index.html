@@ -4240,9 +4240,8 @@ select:disabled {
 <div class="toolbar" id="toolbarMain" style="min-width:1320px;box-sizing:border-box;">
   <div class="toolbar-filters">
     <button class="filter-btn active" id="fAll" onclick="filterAll()">Semua</button>
-    <button class="filter-btn" id="fNotBalance" onclick="filterNotBalance()">Belum Balance</button>
     <button class="filter-btn" id="fPending" onclick="filterPending()">Belum Diinput</button>
-    <button class="filter-btn" id="fDiff" onclick="filterDiff()">Plus / Minus</button>
+    <button class="filter-btn" id="fDiff" onclick="filterDiff()">Selisih (Plus/Minus)</button>
   </div>
   <div class="toolbar-right">
     <button type="button" class="btn btn-outline toolbar-icon-btn" onclick="refreshTable()" title="Refresh Tampilan">
@@ -8286,7 +8285,7 @@ function renderTable() {
       return getSortKey(a) - getSortKey(b); // fallback: urutan kategori
     });
   }
-  if (activeFilter === 'notbalance') filtered = filtered.filter(p => calcRow(p).status !== 'balance');
+
   if (activeFilter === 'pending') filtered = filtered.filter(p => calcRow(p).status === 'pending');
   if (activeFilter === 'diff')    filtered = filtered.filter(p => calcRow(p).status === 'plus' || calcRow(p).status === 'minus');
   if (activeFilter === 'val1diff') filtered = filtered.filter(p => {
@@ -9315,11 +9314,10 @@ function refreshTable() {
 
 // ============ FILTERS ============
 function setFilterActive(id) {
-  ['fAll','fNotBalance','fPending','fDiff','fVal1Diff','fVal2Pending'].forEach(i => { const el = document.getElementById(i); if(el) el.classList.remove('active'); });
+  ['fAll','fPending','fDiff','fVal1Diff','fVal2Pending'].forEach(i => { const el = document.getElementById(i); if(el) el.classList.remove('active'); });
   const el = document.getElementById(id); if(el) el.classList.add('active');
 }
 function filterAll()        { activeFilter = 'all';        setFilterActive('fAll');        renderTable(); }
-function filterNotBalance() { activeFilter = 'notbalance'; setFilterActive('fNotBalance'); renderTable(); }
 function filterPending()    { activeFilter = 'pending';    setFilterActive('fPending');    renderTable(); }
 function filterDiff()       { activeFilter = 'diff';       setFilterActive('fDiff');       renderTable(); }
 function filterVal1Diff()   { activeFilter = 'val1diff';   setFilterActive('fVal1Diff');   renderTable(); }
