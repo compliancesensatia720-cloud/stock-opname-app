@@ -941,8 +941,8 @@ thead th:last-child { width: auto; }
 
 /* ── VALIDASI 1 & 2 ── */
 .val1-input {
-  width: 68px; border: 1.5px solid #B2CDED; border-radius: 6px;
-  padding: 10px 4px; font-size: 15px; font-family: 'Inter', sans-serif;
+  width: 56px; border: 1.5px solid #B2CDED; border-radius: 6px;
+  padding: 8px 2px; font-size: 14.5px; font-family: 'Inter', sans-serif;
   background: #F0F6FF; color: #1B3A5C; outline: none; text-align: center;
   transition: border-color 0.15s, background 0.15s;
   -moz-appearance: textfield;
@@ -4311,23 +4311,23 @@ select:disabled {
           <th class="col-terjual" style="width:64px;min-width:64px;" title="Jumlah unit yang sudah terjual selama periode stock opname — mengurangi ekspektasi Stock Sistem saat menghitung Selisih">Terjual</th>
           <th colspan="4" style="min-width:280px;">Jumlah Riil</th>
           <th colspan="2" style="min-width:130px;" title="Nilai Selisih dihitung dari Harga Jual" class="col-selisih">Total Selisih</th>
+          <th colspan="5" style="min-width:290px;background:#EBF5FB;color:#1B3A5C;border-left:2px solid #B2CDED;" title="Validasi 1: Hitung ulang oleh petugas ke-2" class="col-val1">✅ Validasi 1</th>
+          <th style="min-width:90px;background:#E8F5EE;color:#1A7A4A;border-left:2px solid #B2DFCB;" title="Validasi 2: Konfirmasi / Approve oleh Supervisor" class="col-val2">🔒 Val. 2</th>
           <th style="width:130px;min-width:130px;">Exp. Date</th>
           <th class="col-keterangan" style="width:90px;min-width:90px;">Ket.</th>
           <th style="min-width:110px;">Catatan</th>
-          <th colspan="5" style="min-width:340px;background:#EBF5FB;color:#1B3A5C;border-left:2px solid #B2CDED;" title="Validasi 1: Hitung ulang oleh petugas ke-2" class="col-val1">✅ Validasi 1</th>
-          <th style="min-width:90px;background:#E8F5EE;color:#1A7A4A;border-left:2px solid #B2DFCB;" title="Validasi 2: Konfirmasi / Approve oleh Supervisor" class="col-val2">🔒 Val. 2</th>
         </tr>
         <tr>
           <th></th><th></th><th></th><th></th><th></th><th></th>
           <th class="col-store" style="min-width:78px;">Display</th><th class="col-storage" style="min-width:78px;">Stock</th><th class="col-gudang" style="min-width:78px;">Gudang</th><th style="width:72px;min-width:72px;" title="Total = Display + Stock + Gudang">Total</th>
           <th class="col-selisih" style="width:60px;">QTY</th><th class="col-selisih" style="width:80px;">Value</th>
-          <th></th><th></th><th></th>
-          <th style="min-width:65px;background:#EBF5FB;font-weight:600;color:#1B3A5C;border-left:2px solid #B2CDED;" class="col-val1">Cek 1<br><span style="font-weight:400;font-size:10px;">Display</span></th>
-          <th style="min-width:65px;background:#EBF5FB;font-weight:600;color:#1B3A5C;" class="col-val1">Cek 1<br><span style="font-weight:400;font-size:10px;">Stock</span></th>
-          <th style="min-width:65px;background:#EBF5FB;font-weight:600;color:#1B3A5C;" class="col-val1">Cek 1<br><span style="font-weight:400;font-size:10px;">Gudang</span></th>
-          <th style="min-width:70px;background:#EBF5FB;font-weight:600;color:#1B3A5C;" class="col-val1">Cek 1<br><span style="font-weight:400;font-size:10px;">Total</span></th>
-          <th style="min-width:60px;background:#EBF5FB;font-weight:600;color:#1B3A5C;" class="col-val1">Status</th>
+          <th style="min-width:58px;background:#EBF5FB;font-weight:600;color:#1B3A5C;border-left:2px solid #B2CDED;padding:12px 6px;" class="col-val1">Cek 1<br><span style="font-weight:400;font-size:10px;">Display</span></th>
+          <th style="min-width:58px;background:#EBF5FB;font-weight:600;color:#1B3A5C;padding:12px 6px;" class="col-val1">Cek 1<br><span style="font-weight:400;font-size:10px;">Stock</span></th>
+          <th style="min-width:58px;background:#EBF5FB;font-weight:600;color:#1B3A5C;padding:12px 6px;" class="col-val1">Cek 1<br><span style="font-weight:400;font-size:10px;">Gudang</span></th>
+          <th style="min-width:60px;background:#EBF5FB;font-weight:600;color:#1B3A5C;padding:12px 6px;" class="col-val1">Cek 1<br><span style="font-weight:400;font-size:10px;">Total</span></th>
+          <th style="min-width:60px;background:#EBF5FB;font-weight:600;color:#1B3A5C;padding:12px 6px;" class="col-val1">Status</th>
           <th style="min-width:90px;background:#E8F5EE;font-weight:600;color:#1A7A4A;" class="col-val2">Approve</th>
+          <th></th><th></th><th></th>
         </tr>
       </thead>
       <tbody id="tableBody"></tbody>
@@ -8400,6 +8400,8 @@ function renderTable() {
       <td class="cell-total" data-label="Total">${totalHTML}</td>
       <td class="cell-selisih col-selisih" data-label="Selisih QTY">${selisihHTML}</td>
       <td class="cell-val col-selisih" data-label="Selisih Value">${valHTML}</td>
+      ${renderVal1Cells(p, realIdx)}
+      ${renderVal2Cell(p, realIdx)}
       <td data-label="EXP. DATE" class="cell-exp">
         <button class="btn-exp" onclick="openExpModal(${realIdx})" title="Kelola Expired">
           ${p._expQtyMismatch ? `<span style="font-size:10px;background:#FEF8EC;color:#B7770D;border-radius:3px;padding:0 5px;font-weight:700;margin-right:3px;" title="Total QTY batch (${p._expQtyMismatch.total}) ≠ stok riil (${p._expQtyMismatch.target})">⚠ QTY</span>` : ''}
@@ -8418,8 +8420,6 @@ function renderTable() {
       </td>
       <td class="cell-status" data-label="Keterangan">${statusHTML}</td>
       <td data-label="Catatan"><input class="catatan-input" type="text" maxlength="120" placeholder="Alasan selisih…" value="${(p.catatan || '').replace(/"/g,'&quot;')}" id="catatan_${p.sku}" data-idx="${realIdx}" oninput="updateCatatan(this)" title="Catatan / alasan selisih"></td>
-      ${renderVal1Cells(p, realIdx)}
-      ${renderVal2Cell(p, realIdx)}
     </tr>`);
   });
   // Set innerHTML SEKALI setelah semua baris siap — hindari += yang O(n²)
