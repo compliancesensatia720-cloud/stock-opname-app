@@ -14649,6 +14649,41 @@ async function finalizeSesiCloud(kode) {
   } catch(err) { showToast('❌ ' + err.message); }
 }
 
+async function dashFinalizeSesi(kode) {
+  if (currentRole !== 'admin') {
+    showToast('⛔ Hanya Creator yang dapat melakukan finalisasi.');
+    return;
+  }
+  if (!confirm('Finalisasi sesi ' + kode + '? Status akan berubah jadi "final" dan tidak bisa diedit lagi.')) return;
+  try {
+    showToast('⏳ Mengunduh data sesi & memfinalisasi...');
+    const resRead = await apiSesi('get', { kode });
+    if (!resRead.ok) throw new Error(resRead.error || 'Gagal membaca sesi dari cloud');
+    const cloudSesi = resRead.data;
+    const prods = cloudSesi.products || [];
+    const expiredRows = prods
+      .filter(p => p.expireds && p.expireds.length > 0)
+      .map(p => ({ sku: p.sku, expireds: p.expireds }));
+    const resFin = await apiSesi('finalize', { 
+      kode, finalizedBy: currentNama, currentStock: prods, currentExpired: expiredRows
+    });
+    if (!resFin.ok) throw new Error(resFin.error || 'Gagal finalisasi');
+    
+    _sgabLoaded = false;
+    loadSesiCloud();
+    showToast('✅ Sesi ' + kode + ' berhasil difinalisasi!');
+    if (activeSesiKode === kode) {
+      activeSesiStatus = 'final';
+      clearActiveSesi();
+      stopSesiSync();
+      hideSesiAktif();
+    }
+    if (typeof dashboardRefresh === 'function') dashboardRefresh(true);
+  } catch(e) {
+    showToast('❌ ' + e.message);
+  }
+}
+
 // ---- Finalisasi 2: kunci PERMANEN, tidak bisa diedit siapa pun lagi ----
 // (termasuk supercreator). Cuma bisa dipicu supercreator sendiri — supaya
 // yang menyegel adalah orang yang sama yang mereview/mengoreksi data pasca
@@ -16260,7 +16295,11 @@ function dashboardRenderAktif() {
             <div class="val">${d.terisi} / ${d.totalProduk}</div>
           </div>
         </div>
-        <div class="dash-session-card-live-hint">⚖️ Lihat Selisih (Plus &amp; Minus) Live</div>
+        <div class="dash-session-card-live-hint">
+          ${d.phase === 'done' 
+            ? `<div style="display:flex; gap:10px; width:100%;"><button class="btn" style="flex:1; background:var(--navy); color:#fff; border-radius:6px; padding:6px 0; font-size:12px; border:none; cursor:pointer;" onclick="event.stopPropagation(); dashFinalizeSesi('${d.kode}')">✅ Finalisasi</button></div>` 
+            : `⚖️ Lihat Selisih (Plus &amp; Minus) Live`}
+        </div>
       </div>`;
   }).join('');
 }
