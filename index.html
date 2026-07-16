@@ -6786,14 +6786,25 @@ function qtyInputNav(event, el) {
     const tbody = el.closest('tbody');
     if (td && tr && tbody) {
       const cellIndex = Array.from(tr.children).indexOf(td);
-      const rowIndex = Array.from(tbody.children).indexOf(tr);
-      const nextRowIndex = event.key === 'ArrowDown' ? rowIndex + 1 : rowIndex - 1;
+      let rowIndex = Array.from(tbody.children).indexOf(tr);
+      const step = event.key === 'ArrowDown' ? 1 : -1;
       
-      if (nextRowIndex >= 0 && nextRowIndex < tbody.children.length) {
-        const nextRow = tbody.children[nextRowIndex];
+      while (true) {
+        rowIndex += step;
+        if (rowIndex < 0 || rowIndex >= tbody.children.length) break;
+        const nextRow = tbody.children[rowIndex];
+        
+        // Lewati header kategori atau subrow yang tersembunyi
+        if (nextRow.classList.contains('row-category')) continue;
+        if (nextRow.style.display === 'none') continue;
+
         const nextCell = nextRow.children[cellIndex];
         if (nextCell) {
-          next = nextCell.querySelector('input[type="number"]:not([disabled]):not([readonly])');
+          const possibleNext = nextCell.querySelector('input[type="number"]:not([disabled]):not([readonly])');
+          if (possibleNext && possibleNext.offsetParent !== null) {
+            next = possibleNext;
+            break;
+          }
         }
       }
     }
