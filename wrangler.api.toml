@@ -1,0 +1,3 @@
+name = "so-api"
+main = "so-api-worker-fix.js"
+compatibility_date = "2024-03-20"
