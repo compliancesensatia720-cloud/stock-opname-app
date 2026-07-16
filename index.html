@@ -7617,13 +7617,20 @@ function doWorkflowAction() {
     showWfConfirmModal('done');
     
   } else if (workflowPhase === 'done') {
-    if (typeof dashFinalizeSesi !== 'function') {
-      showToast('❌ Error: Fungsi finalisasi tidak ditemukan!');
+    const kode = activeSesiKode || (getActiveSesi() ? getActiveSesi().kode : null);
+    
+    if (!kode) {
+      // Sesi Lokal / Offline (tanpa gabung cloud)
+      if (confirm('✅ Selesaikan Stock Opname (Lokal)?\\n\\nSeluruh data input akan di-reset dan dibersihkan untuk sesi berikutnya.')) {
+        if (typeof resetData === 'function') resetData();
+        showToast('✨ Sesi lokal berhasil di-reset!');
+      }
       return;
     }
-    const kode = activeSesiKode || (getActiveSesi() ? getActiveSesi().kode : null);
-    if (!kode) {
-      showToast('❌ Error: Kode sesi aktif tidak ditemukan!');
+
+    // Sesi Cloud
+    if (typeof dashFinalizeSesi !== 'function') {
+      showToast('❌ Error: Fungsi finalisasi tidak ditemukan!');
       return;
     }
     dashFinalizeSesi(kode);
