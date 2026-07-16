@@ -690,8 +690,8 @@ td.mono { font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 500; }
 /* INPUT */
 .qty-input {
   width: 66px; background: #F7F8FA; border: 1.5px solid #E4E7EB; border-radius: 7px;
-  color: #1A1A1A; font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 600;
-  padding: 6px 4px; text-align: center; outline: none; transition: border 0.15s, box-shadow 0.15s, background 0.15s;
+  color: #1A1A1A; font-family: 'Inter', sans-serif; font-size: 15px; font-weight: 600;
+  padding: 8px 4px; text-align: center; outline: none; transition: border 0.15s, box-shadow 0.15s, background 0.15s;
   -moz-appearance: textfield; /* Firefox: hilangkan spinner */
 }
 /* Kolom Store & Storage — beri ruang cukup agar input tidak terpotong */
@@ -699,8 +699,8 @@ thead th.col-store, thead th.col-storage, thead th.col-gudang { min-width: 78px;
 td.col-store, td.col-storage, td.col-gudang { min-width: 78px; }
 .qty-input:focus { border-color: var(--navy); background: var(--navy-pale); box-shadow: 0 0 0 3px rgba(27,58,92,0.12); }
 /* Sembunyikan semua spinner number input (desktop & mobile) */
-.qty-input::-webkit-outer-spin-button,
-.qty-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
 
 /* ── Kolom DISPLAY, STOCK, GUDANG diberi tint lembut agar menonjol sebagai
    input QTY riil utama yang perlu diisi, dibedakan dari kolom Terjual ── */
@@ -941,10 +941,11 @@ thead th:last-child { width: auto; }
 
 /* ── VALIDASI 1 & 2 ── */
 .val1-input {
-  width: 62px; border: 1.5px solid #B2CDED; border-radius: 6px;
-  padding: 4px 4px; font-size: 12px; font-family: 'Inter', sans-serif;
+  width: 68px; border: 1.5px solid #B2CDED; border-radius: 6px;
+  padding: 10px 4px; font-size: 15px; font-family: 'Inter', sans-serif;
   background: #F0F6FF; color: #1B3A5C; outline: none; text-align: center;
   transition: border-color 0.15s, background 0.15s;
+  -moz-appearance: textfield;
 }
 .val1-input:focus { border-color: #1B3A5C; background: #fff; }
 .val1-input.val1-match  { border-color: #1A7A4A !important; background: #E8F5EE; color: #1A7A4A; }
