@@ -548,6 +548,27 @@ input[type="time"].info-val::-webkit-datetime-edit-ampm-field { display: none; }
 }
 .cat-filter-btn:hover { border-color: var(--navy); background: #fff; }
 .cat-filter-btn.active { border-color: var(--navy); background: var(--navy-pale); }
+
+.filter-btn {
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: 1.5px solid var(--border);
+  background: #fff;
+  color: var(--text);
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+  font-family: 'Inter', sans-serif;
+}
+.filter-btn:hover {
+  border-color: var(--navy);
+}
+.filter-btn.active {
+  background: var(--navy) !important;
+  color: #ffffff !important;
+  border-color: var(--navy) !important;
+}
 .cat-filter-dropdown {
   display: none; position: absolute; top: calc(100% + 4px); left: 0;
   background: #fff; border: 1.5px solid var(--border); border-radius: 10px;
@@ -680,6 +701,7 @@ td.nama { min-width: 220px; max-width: 320px; white-space: normal; line-height: 
   width: fit-content;
 }
 #mainTable .nama-cat-tag { display: none; }
+#mainTable.is-filtered .nama-cat-tag { display: inline-block; }
 .jm-card-nama-wrap { display: flex; flex-direction: column; gap: 3px; flex: 1; min-width: 0; }
 /* Nama produk dari kategori "LAINNYA" (produk baru/packaging baru yang belum masuk kategori resmi)
    diberi warna biru agar mudah dibedakan dari produk lain yang namanya mirip. */
@@ -8299,6 +8321,13 @@ function renderTable() {
 
   // Tombol Buka/Tutup Semua Kategori hanya relevan saat tampilan dikelompokkan per kategori
   const isGroupedViewNow = !q && activeCategoryFilter.size === 0 && activeFilter === 'all';
+  
+  const tableEl = document.getElementById('mainTable');
+  if (tableEl) {
+    if (isGroupedViewNow) tableEl.classList.remove('is-filtered');
+    else tableEl.classList.add('is-filtered');
+  }
+
   const btnExpandAllCatEl = document.getElementById('btnExpandAllCat');
   const btnCollapseAllCatEl = document.getElementById('btnCollapseAllCat');
   if (btnExpandAllCatEl) btnExpandAllCatEl.style.display = isGroupedViewNow ? '' : 'none';
