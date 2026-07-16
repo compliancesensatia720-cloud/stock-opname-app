@@ -4219,8 +4219,7 @@ select:disabled {
     <button class="filter-btn active" id="fAll" onclick="filterAll()">Semua</button>
     <button class="filter-btn" id="fNotBalance" onclick="filterNotBalance()">Belum Balance</button>
     <button class="filter-btn" id="fPending" onclick="filterPending()">Belum Diinput</button>
-    <button class="filter-btn" id="fPlus" onclick="filterPlus()">Plus</button>
-    <button class="filter-btn" id="fMinus" onclick="filterMinus()">Minus</button>
+    <button class="filter-btn" id="fDiff" onclick="filterDiff()">Plus / Minus</button>
   </div>
   <div class="toolbar-right">
     <button type="button" class="btn btn-outline toolbar-icon-btn" onclick="refreshTable()" title="Refresh Tampilan">
@@ -8225,8 +8224,7 @@ function renderTable() {
   }
   if (activeFilter === 'notbalance') filtered = filtered.filter(p => calcRow(p).status !== 'balance');
   if (activeFilter === 'pending') filtered = filtered.filter(p => calcRow(p).status === 'pending');
-  if (activeFilter === 'plus')    filtered = filtered.filter(p => calcRow(p).status === 'plus');
-  if (activeFilter === 'minus')   filtered = filtered.filter(p => calcRow(p).status === 'minus');
+  if (activeFilter === 'diff')    filtered = filtered.filter(p => calcRow(p).status === 'plus' || calcRow(p).status === 'minus');
   if (activeFilter === 'val1diff') filtered = filtered.filter(p => {
     const isValidN = v => v !== '' && v !== null && v !== undefined && !isNaN(v);
     const hasCek1 = isValidN(p.val1Store) || isValidN(p.val1Storage) || isValidN(p.val1Gudang);
@@ -9246,14 +9244,13 @@ function refreshTable() {
 
 // ============ FILTERS ============
 function setFilterActive(id) {
-  ['fAll','fNotBalance','fPending','fPlus','fMinus','fVal1Diff','fVal2Pending'].forEach(i => { const el = document.getElementById(i); if(el) el.classList.remove('active'); });
+  ['fAll','fNotBalance','fPending','fDiff','fVal1Diff','fVal2Pending'].forEach(i => { const el = document.getElementById(i); if(el) el.classList.remove('active'); });
   const el = document.getElementById(id); if(el) el.classList.add('active');
 }
 function filterAll()        { activeFilter = 'all';        setFilterActive('fAll');        renderTable(); }
 function filterNotBalance() { activeFilter = 'notbalance'; setFilterActive('fNotBalance'); renderTable(); }
 function filterPending()    { activeFilter = 'pending';    setFilterActive('fPending');    renderTable(); }
-function filterPlus()       { activeFilter = 'plus';       setFilterActive('fPlus');       renderTable(); }
-function filterMinus()      { activeFilter = 'minus';      setFilterActive('fMinus');      renderTable(); }
+function filterDiff()       { activeFilter = 'diff';       setFilterActive('fDiff');       renderTable(); }
 function filterVal1Diff()   { activeFilter = 'val1diff';   setFilterActive('fVal1Diff');   renderTable(); }
 function filterVal2Pending(){ activeFilter = 'val2pending';setFilterActive('fVal2Pending');renderTable(); }
 
