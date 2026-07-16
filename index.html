@@ -7617,9 +7617,16 @@ function doWorkflowAction() {
     showWfConfirmModal('done');
     
   } else if (workflowPhase === 'done') {
-    if (typeof dashFinalizeSesi === 'function' && activeSesiKode) {
-      dashFinalizeSesi(activeSesiKode);
+    if (typeof dashFinalizeSesi !== 'function') {
+      showToast('❌ Error: Fungsi finalisasi tidak ditemukan!');
+      return;
     }
+    const kode = activeSesiKode || (getActiveSesi() ? getActiveSesi().kode : null);
+    if (!kode) {
+      showToast('❌ Error: Kode sesi aktif tidak ditemukan!');
+      return;
+    }
+    dashFinalizeSesi(kode);
   }
 }
 
