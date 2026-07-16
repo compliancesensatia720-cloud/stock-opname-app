@@ -81,6 +81,11 @@ body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-ser
   flex-direction: column;
   z-index: 1000;
   box-shadow: 4px 0 20px rgba(0,0,0,0.1);
+  transition: width 0.3s ease, transform 0.3s ease;
+  overflow-x: hidden;
+}
+.app-sidebar.collapsed {
+  width: 0;
 }
 .app-main {
   flex: 1;
@@ -185,10 +190,12 @@ input[type="number"] { font-variant-numeric: tabular-nums; }
     transition: transform 0.3s ease;
   }
   .app-sidebar.open { transform: translateX(0); }
+  .desktop-sidebar-toggle { display: none !important; }
   .header-mobile-toggle { display: flex; }
   header { padding: 10px 16px; }
   .page-container { padding: 12px 10px; }
 }
+.desktop-sidebar-toggle:hover { background: #E8ECF0 !important; }
 @media (max-width: 768px) {
   input, select, textarea, button { font-size: 16px !important; -webkit-text-size-adjust: 100%; }
   input[type="number"] { font-size: 16px !important; }
@@ -3980,20 +3987,28 @@ select:disabled {
 
   <!-- STEPPER WIZARD & STORE BADGE -->
   <div id="wizardHeaderWrap" style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px; padding: 0 24px; border-bottom: 1px solid var(--border); background: var(--white);">
-    <div id="wizardStepper" class="stepper-container" style="display:none; border-bottom: none; padding-left: 0; padding-right: 0;">
-      <div class="step-item active" id="step-1">
-        <div class="step-number">1</div>
-        <div class="step-label">Data Toko</div>
-      </div>
-      <div class="step-divider" id="step-div-1"></div>
-      <div class="step-item" id="step-2">
-        <div class="step-number">2</div>
-        <div class="step-label">Upload CSV</div>
-      </div>
-      <div class="step-divider" id="step-div-2"></div>
-      <div class="step-item" id="step-3">
-        <div class="step-number">3</div>
-        <div class="step-label">Input Stock</div>
+    
+    <div style="display:flex; align-items:center; gap:16px;">
+      <!-- Toggle Sidebar (Desktop) -->
+      <button id="desktopSidebarBtn" class="desktop-sidebar-toggle" onclick="toggleDesktopSidebar()" title="Toggle Fullscreen" style="background:none; border:none; cursor:pointer; padding:6px; border-radius:6px; color:var(--navy); display:flex; align-items:center; justify-content:center;">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+      </button>
+
+      <div id="wizardStepper" class="stepper-container" style="display:none; border-bottom: none; padding-left: 0; padding-right: 0;">
+        <div class="step-item active" id="step-1">
+          <div class="step-number">1</div>
+          <div class="step-label">Data Toko</div>
+        </div>
+        <div class="step-divider" id="step-div-1"></div>
+        <div class="step-item" id="step-2">
+          <div class="step-number">2</div>
+          <div class="step-label">Upload CSV</div>
+        </div>
+        <div class="step-divider" id="step-div-2"></div>
+        <div class="step-item" id="step-3">
+          <div class="step-number">3</div>
+          <div class="step-label">Input Stock</div>
+        </div>
       </div>
     </div>
     
@@ -17166,6 +17181,10 @@ document.addEventListener('visibilitychange', function() {
 <!-- Sidebar Overlay for mobile -->
 <div id="sidebarOverlay" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:99;" onclick="closeMobileSidebar()"></div>
 <script>
+function toggleDesktopSidebar() {
+  const sb = document.getElementById('appSidebar');
+  sb.classList.toggle('collapsed');
+}
 function toggleMobileSidebar() {
   const sb = document.getElementById('appSidebar');
   const overlay = document.getElementById('sidebarOverlay');
