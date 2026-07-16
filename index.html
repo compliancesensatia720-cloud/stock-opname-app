@@ -3978,21 +3978,28 @@ select:disabled {
 
 
 
-  <!-- STEPPER WIZARD -->
-  <div id="wizardStepper" class="stepper-container" style="display:none;">
-    <div class="step-item active" id="step-1">
-      <div class="step-number">1</div>
-      <div class="step-label">Data Toko</div>
+  <!-- STEPPER WIZARD & STORE BADGE -->
+  <div id="wizardHeaderWrap" style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px; padding: 0 24px; border-bottom: 1px solid var(--border); background: var(--white);">
+    <div id="wizardStepper" class="stepper-container" style="display:none; border-bottom: none; padding-left: 0; padding-right: 0;">
+      <div class="step-item active" id="step-1">
+        <div class="step-number">1</div>
+        <div class="step-label">Data Toko</div>
+      </div>
+      <div class="step-divider" id="step-div-1"></div>
+      <div class="step-item" id="step-2">
+        <div class="step-number">2</div>
+        <div class="step-label">Upload CSV</div>
+      </div>
+      <div class="step-divider" id="step-div-2"></div>
+      <div class="step-item" id="step-3">
+        <div class="step-number">3</div>
+        <div class="step-label">Input Stock</div>
+      </div>
     </div>
-    <div class="step-divider" id="step-div-1"></div>
-    <div class="step-item" id="step-2">
-      <div class="step-number">2</div>
-      <div class="step-label">Upload CSV</div>
-    </div>
-    <div class="step-divider" id="step-div-2"></div>
-    <div class="step-item" id="step-3">
-      <div class="step-number">3</div>
-      <div class="step-label">Input Stock</div>
+    
+    <div id="activeStoreBadge" style="display:none; align-items:center; gap:8px; font-size:13px; font-weight:700; color:var(--navy); background:var(--navy-pale); padding:6px 14px; border-radius:10px; border:1px solid var(--border); max-width: 400px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top:12px; margin-bottom:12px;">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+      <span id="activeStoreNameDisplay">Memuat...</span>
     </div>
   </div>
 
@@ -4137,8 +4144,9 @@ select:disabled {
   </div>
 </div>
 
-<!-- TABS (dropdown menu) -->
-<div class="tabs-bar" style="justify-content: space-between;">
+<!-- TABS & WORKFLOW COMBINED -->
+<div class="tabs-bar" style="display:flex; flex-wrap:wrap; gap:16px; align-items:center; justify-content:space-between; padding:10px 24px; border-bottom:2px solid var(--border); background:#F7F9FC;">
+  <!-- Left Side: Tabs Dropdown -->
   <div class="hdr-dropdown" id="dropTabs">
     <button type="button" class="tab-dropdown-btn" onclick="toggleDropdown('dropTabs')">
       <span class="tab-dropdown-icon" id="tabDropdownIcon">📥</span>
@@ -4156,15 +4164,9 @@ select:disabled {
       </button>
     </div>
   </div>
-  <div id="activeStoreBadge" style="display:none; align-items:center; gap:6px; font-size:12.5px; font-weight:700; color:var(--navy); background:var(--navy-pale); padding:6px 12px; border-radius:8px; border:1px solid var(--border); max-width: 50%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
-    <span id="activeStoreNameDisplay">Memuat...</span>
-  </div>
-</div>
 
-<!-- WORKFLOW PHASE BANNER -->
-<div id="workflowBanner" style="display:none;background:#F7F9FC;border-bottom:2px solid var(--border);padding:10px 20px;">
-  <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;">
+  <!-- Right Side: Workflow Banner (Hidden by default) -->
+  <div id="workflowBanner" style="display:none; align-items:center; justify-content:flex-end; gap:20px; flex-wrap:wrap; flex:1;">
     <!-- Stepper -->
     <div style="display:flex;align-items:center;gap:0;" id="workflowStepper">
       <!-- Step 1 -->
@@ -4185,11 +4187,11 @@ select:disabled {
         <div class="wf-step-label">Validasi 2</div>
       </div>
     </div>
+    
     <!-- Phase info & CTA button -->
-    <div style="display:flex;align-items:center;gap:10px;">
-      <div id="wfPhaseInfo" style="font-size:12.5px;color:var(--muted);max-width:300px;line-height:1.5;"></div>
+    <div style="display:flex;align-items:center;gap:12px;">
+      <div id="wfPhaseInfo" style="font-size:12.5px;color:var(--muted);max-width:300px;line-height:1.4;"></div>
       <button id="wfActionBtn" onclick="doWorkflowAction()" style="display:none;padding:8px 18px;border-radius:8px;border:none;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap;transition:all 0.15s;"></button>
-      
     </div>
   </div>
 </div>
@@ -7408,7 +7410,7 @@ function initWorkflowBanner() {
   const banner = document.getElementById('workflowBanner');
   // Tampilkan banner hanya jika ada produk
   if (products.length > 0) {
-    banner.style.display = 'block';
+    banner.style.display = 'flex';
   }
   renderWorkflowStepper();
   applyWorkflowPhaseUI();
@@ -8384,7 +8386,7 @@ function renderTable() {
     }
     // Tampilkan banner jika produk tersedia
     const banner = document.getElementById('workflowBanner');
-    if (banner && products.length > 0) banner.style.display = 'block';
+    if (banner && products.length > 0) banner.style.display = 'flex';
   }
   // Update joiner mobile bar dan re-render jika aktif
   updateJoinerMobileBar();
