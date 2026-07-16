@@ -151,8 +151,12 @@ export default {
     }
 
     const { action, ...data } = payload;
-    const kv = env.SO_KV;
-    const r2 = env.SO_R2;
+    const kv = env.SO_KV || env.KV;
+    const r2 = env.SO_R2 || env.R2;
+
+    if (!kv) {
+      return jsonResp({ ok: false, error: 'KV Namespace tidak ditemukan. Pastikan sudah di-bind sebagai SO_KV atau KV di Cloudflare Dashboard.' }, 500);
+    }
 
     try {
       // ── Guard: kunci sesi yang sudah final untuk action tertentu ──
