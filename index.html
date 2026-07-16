@@ -4138,7 +4138,7 @@ select:disabled {
 </div>
 
 <!-- TABS (dropdown menu) -->
-<div class="tabs-bar">
+<div class="tabs-bar" style="justify-content: space-between;">
   <div class="hdr-dropdown" id="dropTabs">
     <button type="button" class="tab-dropdown-btn" onclick="toggleDropdown('dropTabs')">
       <span class="tab-dropdown-icon" id="tabDropdownIcon">📥</span>
@@ -4155,6 +4155,10 @@ select:disabled {
         <span class="tab-badge minus" id="tab-exp-badge" style="display:none"></span>
       </button>
     </div>
+  </div>
+  <div id="activeStoreBadge" style="display:none; align-items:center; gap:6px; font-size:12.5px; font-weight:700; color:var(--navy); background:var(--navy-pale); padding:6px 12px; border-radius:8px; border:1px solid var(--border); max-width: 50%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+    <span id="activeStoreNameDisplay">Memuat...</span>
   </div>
 </div>
 
@@ -12850,7 +12854,23 @@ function switchPage(page) {
       jmSave.classList.remove('visible');
     }
   }
-  if (page === 'stock') refreshTable && refreshTable();
+  if (page === 'stock') {
+    refreshTable && refreshTable();
+    const storeBadge = document.getElementById('activeStoreBadge');
+    const storeDisplay = document.getElementById('activeStoreNameDisplay');
+    const storeVal = document.getElementById('infoUnit') ? document.getElementById('infoUnit').value : '';
+    if (storeBadge && storeDisplay) {
+      if (storeVal) {
+        storeDisplay.textContent = storeVal;
+        storeBadge.style.display = 'flex';
+      } else {
+        storeBadge.style.display = 'none';
+      }
+    }
+  } else {
+    const storeBadge = document.getElementById('activeStoreBadge');
+    if (storeBadge) storeBadge.style.display = 'none';
+  }
   if (page === 'csv') { csvRender(); }
   if (page === 'report') { dashboardRefresh(); }
   if (page === 'dashboard') { renderDashboardToko(); }
