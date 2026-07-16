@@ -11344,42 +11344,7 @@ function doMulaiOpnameReset() {
   showToast('🔄 Data lama direset, mulai input stock baru');
 }
 
-// ============ KEYBOARD NAVIGATION ============
-document.addEventListener('keydown', function(e) {
-  const active = document.activeElement;
-  if (!active || !active.classList.contains('qty-input')) return;
 
-  const inputs = Array.from(document.querySelectorAll('.qty-input'));
-  const idx = inputs.indexOf(active);
-  if (idx === -1) return;
-
-  // type=number tidak support selectionStart di banyak browser
-  // Gunakan logika sederhana: ArrowRight selalu pindah kanan, ArrowLeft selalu kiri
-  if (e.key === 'ArrowRight' || (e.key === 'Tab' && !e.shiftKey)) {
-    e.preventDefault();
-    const next = inputs[idx + 1];
-    if (next) { next.focus(); next.select(); }
-
-  } else if (e.key === 'ArrowLeft' || (e.key === 'Tab' && e.shiftKey)) {
-    e.preventDefault();
-    const prev = inputs[idx - 1];
-    if (prev) { prev.focus(); prev.select(); }
-
-  } else if (e.key === 'ArrowDown' || e.key === 'Enter') {
-    e.preventDefault();
-    const next = inputs[idx + 2];
-    if (next) { next.focus(); next.select(); }
-    else {
-      const nextAny = inputs[idx + 1];
-      if (nextAny) { nextAny.focus(); nextAny.select(); }
-    }
-
-  } else if (e.key === 'ArrowUp') {
-    e.preventDefault();
-    const prev = inputs[idx - 2];
-    if (prev) { prev.focus(); prev.select(); }
-  }
-});
 
 // ============ KELOLA PRODUK ============
 function buildKategoriOptions(selectId, selectedVal) {
