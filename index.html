@@ -6660,7 +6660,7 @@ function getRowGroupInfo(p) {
   return { key: rawCat, label: rawCat };
 }
 
-function calcRow(p) {
+function calcRow(p, forcePhase = null) {
   const isValid = v => v !== '' && v !== null && v !== undefined && !isNaN(v);
 
   // ── Gunakan Val1 sebagai koreksi resmi jika sudah diisi ──
@@ -6695,8 +6695,8 @@ function calcRow(p) {
   // asli (store & storage) kosong, TETAPI QTY Stockwiz > 0,
   // berarti stok belum ditemukan di lapangan → total dianggap 0 (minus otomatis).
   // Flag ini hanya aktif saat fase val1/val2/done; di fase input tetap pending.
-  const inValPhase = (typeof workflowPhase !== 'undefined') &&
-    (workflowPhase === 'val1' || workflowPhase === 'val2' || workflowPhase === 'done');
+  const phaseToCheck = forcePhase || (typeof workflowPhase !== 'undefined' ? workflowPhase : 'input');
+  const inValPhase = phaseToCheck === 'val1' || phaseToCheck === 'val2' || phaseToCheck === 'done';
   const inputKosong  = p.store === '' && p.storage === '' && (p.gudang === '' || p.gudang === undefined);
   const val1Kosong   = !useVal1;
   const swPositif    = isValid(sw) && Number(sw) > 0;
@@ -7553,10 +7553,10 @@ function showWfConfirmModal(targetPhase) {
   _pendingWorkflowPhase = targetPhase;
 
   // Hitung statistik
-  const pl = products.filter(p => calcRow(p).status === 'plus');
-  const ml = products.filter(p => calcRow(p).status === 'minus');
-  const bl = products.filter(p => calcRow(p).status === 'balance');
-  const pd = products.filter(p => calcRow(p).status === 'pending');
+  const pl = products.filter(p => calcRow(p, targetPhase).status === 'plus');
+  const ml = products.filter(p => calcRow(p, targetPhase).status === 'minus');
+  const bl = products.filter(p => calcRow(p, targetPhase).status === 'balance');
+  const pd = products.filter(p => calcRow(p, targetPhase).status === 'pending');
 
   // Hitung item val1 yang beda (untuk modal val2)
   const val1Diff = products.filter(p => {
@@ -7701,6 +7701,7 @@ function proceedWorkflowPhase() {
 
   if (phase === 'val1') {
     workflowPhase = 'val1';
+    setTimeout(() => filterDiff(), 50);
 
   } else if (phase === 'val2') {
     workflowPhase = 'val2';
