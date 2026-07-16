@@ -7578,7 +7578,14 @@ function applyWorkflowPhaseUI() {
 
   } else if (workflowPhase === 'done') {
     info.innerHTML = '🎉 <strong>Stock Opname Selesai!</strong> Semua fase sudah tuntas.';
-    btn.style.display = 'none';
+    if (isCreator) {
+      btn.style.display    = 'inline-flex';
+      btn.textContent      = '✅ Finalisasi Sesi Ini';
+      btn.style.background = '#27AE60';
+      btn.style.color      = '#fff';
+    } else {
+      btn.style.display = 'none';
+    }
     setInputsLocked(true);
     setVal1Visible(true);
     setVal2Visible(true);
@@ -7608,6 +7615,11 @@ function doWorkflowAction() {
 
   } else if (workflowPhase === 'val2') {
     showWfConfirmModal('done');
+    
+  } else if (workflowPhase === 'done') {
+    if (typeof dashFinalizeSesi === 'function' && activeSesiKode) {
+      dashFinalizeSesi(activeSesiKode);
+    }
   }
 }
 
