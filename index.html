@@ -11411,6 +11411,7 @@ function resetSemuaDataConfirm() {
     // 5. Kembali ke Dashboard
     switchPage('dashboard');
     showToast('Semua data berhasil di-reset. Aplikasi siap digunakan kembali.');
+    if (typeof updateSidebarActiveSession === 'function') updateSidebarActiveSession();
   }
 }
 
@@ -14258,6 +14259,7 @@ function setActiveSesi(kode, isCreator) {
   try { localStorage.setItem(ACTIVE_SESI_KEY, JSON.stringify({ kode, isCreator, joinedAt: new Date().toISOString() })); } catch(e) {}
 }
 function clearActiveSesi() {
+  activeSesiKode = null;
   try { localStorage.removeItem(ACTIVE_SESI_KEY); } catch(e) {}
 }
 
@@ -14977,6 +14979,7 @@ function keluarSesi() {
   _lastKnownResetAt = null;
   setSesiReadOnly(false);
   showToast('Keluar dari sesi. Semua data lokal direset.');
+  if (typeof updateSidebarActiveSession === 'function') updateSidebarActiveSession();
 }
 
 // ---- Hapus Sesi ----
