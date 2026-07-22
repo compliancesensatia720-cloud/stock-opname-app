@@ -13051,6 +13051,21 @@ function renderDashboardToko(skipFetch = false) {
 }
 
 function pilihTokoDariDashboard(nama) {
+  // Cegah pembuatan/pemilihan sesi baru jika ada sesi lokal yang belum difinalisasi
+  const localUnit = document.getElementById('infoUnit') ? document.getElementById('infoUnit').value : '';
+  const hasLocalSession = (typeof activeSesiKode !== 'undefined' && activeSesiKode) || (typeof products !== 'undefined' && products.length > 0);
+  
+  if (hasLocalSession) {
+    if (localUnit === nama) {
+      showToast('Melanjutkan sesi aktif Anda untuk toko ini...');
+      switchPage('info');
+      return;
+    } else {
+      showToast(`⚠️ Anda memiliki sesi aktif untuk ${localUnit || 'toko lain'}. Harap lanjut input stock dan finalisasi (atau Reset) terlebih dahulu sebelum membuka sesi baru!`, 4000);
+      return;
+    }
+  }
+
   if (typeof _sgabAktifData !== 'undefined') {
     const aktif = _sgabAktifData.find(d => d.unit === nama);
     if (aktif) {
