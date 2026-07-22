@@ -86,6 +86,11 @@ body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-ser
 }
 .app-sidebar.collapsed {
   width: 0;
+  flex-basis: 0;
+  min-width: 0;
+  padding: 0;
+  margin: 0;
+  overflow: hidden;
 }
 .app-main {
   flex: 1;
@@ -223,6 +228,11 @@ input[type="number"] { font-variant-numeric: tabular-nums; }
   font-size: 14px;
   opacity: 0.6;
   position: relative;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+.step-item:hover {
+  opacity: 0.8;
 }
 .step-item.active {
   opacity: 1;
@@ -301,7 +311,7 @@ header {
 .hdr-drop-btn { display: flex; align-items: center; gap: 6px; }
 .hdr-drop-chevron { transition: transform 0.2s; flex-shrink: 0; opacity: 0.7; }
 .hdr-dropdown.open .hdr-drop-chevron { transform: rotate(180deg); }
-.hdr-drop-menu { display: none; position: fixed; top: 0; left: 0; background: #fff; border: 1px solid var(--border); border-radius: 10px; box-shadow: 0 8px 28px rgba(27,58,92,0.16); min-width: 210px; z-index: 999; overflow: hidden; padding: 5px; }
+.hdr-drop-menu { display: none; position: fixed; top: 0; left: 0; background: #fff; border: 1px solid var(--border); border-radius: 10px; box-shadow: 0 8px 28px rgba(27,58,92,0.16); min-width: 210px; z-index: 1100; overflow: hidden; padding: 5px; }
 .hdr-dropdown.open .hdr-drop-menu { display: block; }
 .hdr-drop-item { display: flex; align-items: center; gap: 9px; width: 100%; padding: 9px 10px; border: none; background: none; cursor: pointer; border-radius: 7px; font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 600; color: var(--navy); text-align: left; transition: background 0.12s; }
 .hdr-drop-item:hover { background: var(--bg); }
@@ -461,7 +471,7 @@ input[type="time"].info-val::-webkit-datetime-edit-ampm-field { display: none; }
 .email-modal-actions .btn { padding: 9px 20px; font-size: 13.5px; font-weight: 600; }
 
 /* STATS */
-.stats-bar { display: grid; grid-template-columns: repeat(5, 1fr) 1.1fr 0.9fr; gap: 12px; background: var(--bg); padding: 16px 24px; border-bottom: 1px solid var(--border); }
+.stats-bar { display: grid; grid-template-columns: repeat(5, 1fr) 1.9fr 1fr; gap: 12px; background: var(--bg); padding: 16px 24px; border-bottom: 1px solid var(--border); }
 .stat-card { background: var(--white); padding: 14px 18px; border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow-xs); position: relative; overflow: hidden; transition: box-shadow 0.15s, transform 0.15s; }
 .stat-card:hover { box-shadow: var(--shadow-sm); }
 .stat-card::after { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: transparent; }
@@ -501,7 +511,7 @@ input[type="time"].info-val::-webkit-datetime-edit-ampm-field { display: none; }
 .tab-dropdown-btn:hover { border-color: var(--navy); background: #E3ECF6; }
 .tabs-bar .hdr-dropdown.open .tab-dropdown-btn { border-color: var(--navy); background: #E3ECF6; }
 .tab-dropdown-icon { font-size: 15px; line-height: 1; }
-.tab-drop-menu { min-width: 260px; position: fixed !important; z-index: 999; }
+.tab-drop-menu { min-width: 260px; position: fixed !important; z-index: 1100; }
 .tab-drop-item { justify-content: flex-start; }
 .tab-drop-item.active { background: var(--navy-pale); color: var(--navy); }
 .tab-drop-item.active::after {
@@ -963,13 +973,14 @@ thead th:last-child { width: auto; }
 
 /* ── VALIDASI 1 & 2 ── */
 .val1-input {
-  width: 56px; border: 1.5px solid #B2CDED; border-radius: 6px;
+  width: 56px; border: 2px solid #94b8e5; border-radius: 6px;
   padding: 8px 2px; font-size: 14.5px; font-family: 'Inter', sans-serif;
-  background: #F0F6FF; color: #1B3A5C; outline: none; text-align: center;
+  background: #ffffff; color: #1B3A5C; outline: none; text-align: center;
   transition: border-color 0.15s, background 0.15s;
   -moz-appearance: textfield;
+  box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
 }
-.val1-input:focus { border-color: #1B3A5C; background: #fff; }
+.val1-input:focus { border-color: #1B3A5C; background: #fff; box-shadow: 0 0 0 3px rgba(27,58,92,0.1); }
 .val1-input.val1-match  { border-color: #1A7A4A !important; background: #E8F5EE; color: #1A7A4A; }
 .val1-input.val1-diff   { border-color: #C0392B !important; background: #FDECEA; color: #C0392B; }
 .val1-input:disabled { background: #F5F7FA; color: #aaa; cursor: not-allowed; opacity: 0.7; }
@@ -1346,7 +1357,7 @@ nav.page-nav {
    bukan kotak-kotak terpisah, supaya tidak terkesan "kartu dobel"
    dengan rank card di bawahnya. */
 .sgab-stats {
-  display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px;
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px;
   background: transparent; border: none; border-radius: 0;
   margin-bottom: 20px; overflow: visible;
 }
@@ -1542,7 +1553,7 @@ nav.page-nav {
 .sgab-rank-empty { color: var(--muted); font-size: 12px; font-style: italic; }
 
 /* ── Dashboard page ─────────────────────────────────────────── */
-.dash-page { padding: 4px 24px 36px; max-width: 1280px; margin: 0 auto; }
+.dash-page { padding: 4px 32px 48px; max-width: 100%; margin: 0 auto; width: 100%; box-sizing: border-box; }
 .dash-welcome-banner {
   background: linear-gradient(135deg, #1e3a8a 0%, #0f172a 100%);
   border-radius: 24px;
@@ -3868,7 +3879,7 @@ select:disabled {
 </head>
 <body>
 
-<div class="app-layout" style="display:contents">
+<div class="app-layout" style="display:flex; flex-direction:row; flex: 1; width:100vw; min-width:100vw; max-width:100vw; min-height:100vh; overflow-x:hidden;">
   <aside class="app-sidebar" id="appSidebar">
     <div class="sidebar-header">
       <img src="data:image/webp;base64,UklGRjInAABXRUJQVlA4WAoAAAAQAAAAjwEAnAAAQUxQSJITAAABDLhtIwmSxPzD7u65+7fOjIgJ6KfpPxiGN2+QmRkUFKnwVlFJNSrVVqk8cZ1st+W1aDxbHH2SRRwEb6JHVOhGoVWFfuLeaGs7JknbtrUjqsu6Rttj2LYuG233ZdvXledl20bz8lW4bNu2zbqurGomjsjYf8RxnucRccaF+pURMQHWaNtW9bbZ790n2WEYbmIHDWEoM4UZ9JWZmZk0GqYxyszM3LouqIyBMnPrOuWGSY79HVg/7vv0yfaX/xExASz6f9H/i/5fpKNYXrYbbG9smp3e8cW16z74wffug24XKLo3/Y/GtxPc04fu/dn00O0HBESKhy2aRNSHVcZBxDxrKmMl6nXbbDmxrm6braFpu67rispkE+3q0tyGqAv14iYjETMam8t4iLlQ33Y2AjEX6lvXkYi5Fmguo7rXtiLmSkO3/wymwI6Hn3WPs+5x1lE7A5gUEwNk1zPOOv9Vr7rgrDvvBmBaxPOSEQPY+dizZgYzg8OWSWClDGDnMwYzg8HMyp0FWDExQMsPHswMBqfvsQJQrfF8Tnx4SXf3Ub7Uh6WJedZKiAGs239mZjAzuNcKASY586xOIDE48qlf2hb5G7720jssAytksOwOb/7RTVF78w/fcvkuYFKgucHKu7ziWzdGNq7/7oVngGgJBe7w0q/dEL2b//P9px4JokXEYM1Zr/rpRqe++Q+bH7sHWK7wMXjPQxhnAzn+aZ/akuid//krzwA0M7lb6aSvB4DX1OtfvrvaxWil3V++HiDdzdwd4Lq3Hyy14zTTT519xezs7PO2l5pWe5z9D2qvqX/yVKmM16l5+E8A0muAvPSBUlmEVlpx4b+pvQa4Ye19pFZqlj5rdqqaqh62VEDYrZqqqtlXzv6MAIJfzb5ydraqnrw7kmt11OyTq2qquj3aQoypx/2S2usE+MmzO3VC5S7VVFVNVQejE6Zo+7cB5pn0plvAlQ9S24xVVJ7xLwiLZGSGOWx8/U7qFmY6mv5Halp61H8hzJPeTLeA7x+ibpyi238PwjzpzXQDrriD2lam8rKrwS0yqTPcIN4+rbbTGfTfDcd5VZR+NZ5pmnYD2S0rRBqpcOffQJpn0pthCZffRUVkzc2R/YLYZCk64qeE05tJfxi8S20zRtGay8CCsdPgj/dTN8YJvsnMbrXHN9rlw2DJuOHc8EB1zTo97nosqDOT/nBuebK8hXPApWDJmOnws8M0rQfappTSbDon8/Y0k4ZjRFg9k15Xp/YvNpfSfNq2jkaKvC7wYNwwNj9DxtrpNJ/SXPqTIpOk1ar/MaR2D8iwoA7nAypNoykddQOe1GHmEWae1Gnccqa6hR2PA8ajtPL3eEKYWbiZZw8Y8SBpk6IBOEC6A+GW1J68AG9k7H8lw2QR07jhCDUPwCOiH2dnro4UJVO8tslfWYgYxPTaRqo7b45+sJievApdtzUGEf34msgkkbLTpQwBMoEbrgLwpB7yfpUmRUffglN7ssB0as98rLpFeeGOf2VIerJAyx4i4/aida1uf607QAB51c0AXhGWF2INjNv8CWNkuJm7mQeAc+PBGoxxzRhtbSSin465GJlu5u5mkUBu5imsnx5KcQXOBDW9jiFAwNyD77fnjvc66YI/QlQMeaSsruiYeQIgAv704bMfcb+jX3b2uv9ABEDk/NFqx0tu3oDjwF/fevZz7/eIsy/4zs0QPRg/oK5pl/wcB3CGH3rgETvtff+Hv/UGMgEit+2pWqPsvyWc3vRggeGA87fucWNc3Q3x3qaYj3wEC7WAtP4pa24aZK6dKMp+N3sCyU0DjVz6lP/gVcSG7UVyrVbPEwAOnzl5WiN3Ovmb4ADBVcvatlWdGDd9+JglGrnfOdfhPRj3wXKdHo0BOJcdoZH7vw4CwOINeE5s2Xcj0RvA3z/9qvNOOfnpr1r7L8iA4GfXkI3e2Z9JwzEirJ5JI3KeF/ORzYBrv/WqF5988innve93Dg4Rf/lJDGLomoninIsBGdffV10pTVNKJ624lM1uZpviYXhG2vJTHMD5w0mSSldK6boi6aQ/4ADGJ1QKZJB84hBJXdeVrutaafW38B7Pb6vmiubSgeDSndWVtmlK6aTjb2LoZjZ3/T5oxnhjpOg17EPHbq+RO532eTAI+uueF6VfNxLj+JQGmYDLHrRMI8sh5/4VTwaRnzRmP0wHnMtYQq30WP2VyF8xouh8DCDFp1ZiJtSKKSs/FQnAOVbWLgb9/jPBTKiVHss+i1fE4GRsqNEeN5GQeeOe6jRSe5x6feQvw4eK7orR249vnACYu5m7Arf9KQaRCxKWnnfPe97zsU947PcIwPnBYx//2Mfe856X7YaUE53+DUHdj3+cA6i7mbkB694SCwMiJpGw8loSgr+aSR0Yq966ceOmjRuuPLxpq7Y5yDwBj08sxWnpLP10BBD5+yUi7VI8EFeaO7teFVlZPBsf6nR8BuB8QUULdY6+ZsPGTRs3vHkfkdy6ESleuxQ3oVbMuMXHMEbmmp6KA8ZTNW4R54kYdT++tCdiQq2ow30Gg6R/wiiHbQrA+BBOY6Ft0QcwIPjtcpTWxk5/jwCcE7FW/biGJULbHi/CKo+PYLmn4oDxnKZbEErLojtlUPfjhYjR0tC7sLHEh5d0dyN6nt0t7WoZhepP06uIb63CaSnOhX3PiWTcEe95j7RA3IZde1qt2RxZDW+NU9B5GF7l59stDP6yRpTWIrtcSwIRP1mqubdjgHPqOKjbsEvNm7GqH58VV1pr0RXEOPmie414ljotvIRxQgRAxvSBOO173BOfULfOyvkmbdp2OhcDjHU4JUWW/5eEzBt2RFr047E4BU0fwYCMG9YhmTf1GOdoaoyWop2uIoDBwr/3QClYmpU3RS7SPbeqK7AquBdOyR6fwieRsPPNJBCcypJRNEvWE4BzppbBeS8GGJfhzTJu2Fm0hOvp2Te9tuYR6UCwoahsAdMpOECKZ+MULXoqvs3Jqi0E4PwMkyIqe9yQOYHQ3m8zqvzJfrgWK7pXBhD8dylSSB4y4mqsWcQPESmhujfZszXXaKVlAsna3dS1xVyXpAE5uPkA1TJNqw3ENmacvBAAxkvEKeu6CJtEzvMxgIxtFwAuZTo9HQOcL7Q9K9uzQ5IE53umzSyuFafMfreQC1JbvocDOD+5k2QmZUxfwQGPj2MU7pqXYtuY89BwINMPQQtps/ctmRNIZMf/EgABn72XpFLaRXl3j3GWyi/bVCU37Ii0eDtlBH4ZC82MM2N+EIARr7q9pK404wlTGwjA4r7ipZS9Ugy69hYMcC6XULrVpfgEwvQgHyZABlzxzD0kNV0zjvQzAkj+8vVPfbL0NzcCZM4dgLZ4dDH7dRuMV8T8EAHxiQfvLKkUaaEc5tSRjkNLgf0wFrrVNN/DAeM8ebFOl2CTiE7PxoPagWs+8ZBVkrq2zW97tkqPc/EWlxTTdmK8OeaT2oH1rz9umYRLi9tTJ9evRYo5V0bqlvQbAnAesAWKzsAnkorOAqsgDNj47RfsLZk2aLXfrWRP+AhHnd3qXuODKG+K8Ip0B67++IN7YNLAeRIOBL9aLqOY6lijna7sy1O2QKtV85kTSa0e+F/cK0h34Nq33xlMGhyQI7bCxbjnGCHKk8CT3rAAfviUXcCaPAcDnI9hjOBu0e9UqwMhIdm4QlKs0U7XMaE0pQM+BREVkG7g7zoOtG5NjHAb+eb+WV1ClKN+CpYVkO4R/7x6N7TBs0Z8ejTndG61bxW7XT+xVKTBpRCeFZBGDF62HG23VV7QKXA1L/wnWPQACynir5eg0upTozm7c2tixF5bZNcJprZIT/klYNED9Afxo73Q3GrvSb7wmpe9dKSvffXa9+0l0ilKo91eeiWkZU/EIEVchchYndO51d43f7vbKjBBbvv22QgsemDIX1aqzewfGecEjW2HwGDtvb8eEQtpMARpfFhdMs/ZOk7f5vaPTA7vJB3BztdNNDBg/2d9D/DowfjJkiIgrPpDRM+gW+ojVpXuIQ6cesVfIqI/qGAzz8QyT8SB5G+rkBE8cxsTVv0hAnAeKB/B8hsnHJgBd7vo7+A9DHmOnOEf1TxNzpgat+sQiANr7vqmf0Z4T9r8sRgod6ROrt9xJG/BOgX8qOaJW6DoKJwJB+pI2z/6F2RWkf/YQQCVD4UDxtuaMbpVp0DMgF2e9U+8wuJduVXzJOCD22PFWn0R75bIF8IB4+OyYp2egk0+oO2k8tLMBAiOwcB5WRjgfFsyPud2DBBz2P1TRJWDbesRBP2NACyegxfT1AaiW85rw4Bg/RQjeNtthNR0rR6akYDlufjQhQMHkpuXI2PivDBS1wBx9A4CoL9wOgbWfBUHPL6JlirNPTOyaw8JBzK4p1ipZvqvxG2E1EzrzXjFBzEQ9p4lAeNx4mPz/IkAWvRzvIp7DLkuSQNYGNxWrFCnt2B0SzmknwkYb8ELWXM8wW2G2vbgYSYEv2RY7ds44FyK/odhqnkRBqR4Hg6mU/AqxUa8TNvsPZ+5jSE7/IoAMq9er1pI38cnkFptM06j5Rvp+UPGuLyH9DuqLE5TRkpnyuixOj1qxKurRjv9gwDwzUepLMqUPoSzrTkvxwCMt2lqUTo9EGcClW+053zlrEUBkWX/ywSc76lrFqPR2B1YYDveY3qcJ6lI6nQJVgV/Xtq0izCtM3G2OeVQiwr3MzS9CEW7/y9j8igP+vhH5ubmvjr3sdJIs9IeOcwE4804gHM2BuBcoOlFKCpvn/vK3NxXv/qhHUU6If62ua/Mzc19ee6lmhqnffqI43raZuUtkQDOl6SujfR0x6sitz2M76ZXmVffUVPNOJ2WfJ1g8rh8JmrfI9NG03oVBjjPyons9v9MIC0frq4dp9PSzzPyDKwLwvIhIx+uqWYhMqVv4kAM76RWkorehFU463aSmNSJOhx1NcFEOIYegquPkrpW6prSavnXcSaQccc0a+7um3kPuNY007r9TZGQOTwMHcL0EIYAmfk8qWsbNKXRql8xdHffxAfF6AImF7DJ3d2CR0pdO0J7eko6EGyYblS3zT63eFY4fzwdEHM3dwNWvhACj20P02fxioCX7SihPmyNpEf+CyN88mC8N4zaeP8+gLl3XZHusp4APH/WKvmiTzAEyOCde0nqNuxFah+7AQNw1i8T7Yaw81UZAJmcNS21Pqzw5PlIwHiduh4VPRPrweGLF+9BrR/y+N9GJkF/t7TZ46qMikzWv/gwp3afR3wfnKR/sqjuPh1R4bH1JccI2b0vuokAMB4vq2nLst9i1MY1F6+ifsmZ34cAiBzeW0Y3MD2cYUUmv3/GKuVP2gAJpM/vo7avKVqH9RARceO3r3jxs8975ouv+flCRB+cH/+B7BxFD2fYAw7x8w+++MVPe/aLr/jpLRBJ8O/vZ04cjIuxrOhHxA/e9PRnnHX2umshAJwrplupUavlv8EqHDZ+/Ol3PP30M8643wd+D54AnsPTVOgKnd7KsAKHjT94wdOf/vQXfSUiEsA4X0Ujm3bpnxn2QL8fTdNCYKwvp+HdU6e3srmPMJq6Q2QeqZvIiYPzTDwq0hltCRH9wb/3QWlo7PzDmK9IY6ER1Cnm7ozTHbHexpjLEM5opza+u8SkDuWAPzLsg3QzczOLBFL8ch/OmwhivY2RBj2Q4dbrCXjk+ey4dRLhmgWvgLDakzpF3BKjsbHTdyOcOt2idgvq6McvTsRp8ryay0c2nUNEN0R/oYJ0q506h/xrGUpTY/8f4NG38BzGL/ZEzq45a+ymGyGiz46wvjGNeBCydjLR6XHXYJ7VgiPFv26J0VJZ8VJwT8ZNd+I9u+E0enGaSSndvHC/cr9IcynNp23rcqjo6yI8qgWnJ99aIaW5MfU+8BgnDb6zBztwTppNKc30z2uT5lJKM+mhJf5icynNp23rGiHCRdsIz3HC+feZ6rF2Os2nNJOunTAqWrkWcIvMnkw3iA/sg9Ja4b7fA9wisyczzIHf3BmMZo+P/MlYqX9GdssKySHCnX8EaR7Zl+kOm8+ZVktblR74R0jzyJ4MN7CLl6DG3SJ/K6zRKZF/TLum3UB2ywpphDgHfAxwi8yedAtYt0qdyJqbI3v1pFGRHvqFTdReU//kYjAKiql96BduovaaevjlR02jQmORlQ+pqmrqKRcilBUuraaqaqq6PUqtGL3H/ZI63d0D4NZP31Vq1b4pWvrUy6m9BrjxfUcIBVn6sGqqmnrKQ1VoKKx5fFVV1VS1H9JCrY6afXJVTVW3R2np6JjPXEft7p4A3z1dKkLlLtVUVU1V+yITRm0jHfjIt/9yPqmH///BeXcWqpQtklY88u2/nE9653/9rsccIskoLoy1ofZuz/303+fpnf/Pl5++WiqNFrVIuscLv3XlrdR25edfuI9UhAmrrbT8Me/+9Ty913/3ZfeWmlaTvrSStOLIwcxgMLN6V0kyypdWklYcOZgZzAzusKKR1JSG9uJZo7x51pohRZK2X37/wczM4MQVO0tqWy12UxpJO+xz+mAwM3PwDpJKq7zn24jnpUTpslYAlSKpWXGHwczM4F7LJDVF/eZZmURSWzotsO3ahpE2pdNCS9dqojZtV7TAtmu1RUvXanTpGk3opus0uu2KbjNF1IdVGEcR9WEVYRKLmLu7iTCGoubursJEF1F3dxMW/b/o/0X/L/p/0f//5wdWUDggehMAADBYAJ0BKpABnQA+USaQRiOiIaEj8ipIcAoJaW7hdVEb7Cv+Z/jl39/3D8nfEr9D/gPy49bXN/1m5qft5+g82u9/gEflP80/2Xh47K/OP8z+x3sBeqH0T/e+Fl/feg31C/2PuAfzP+U/7b0k/s/+L8aD6v6gP8a/n3+j/vX7xf436Tf4T/k/578dvaJ+Wf4H/pf4/4BP41/PP9V/dv8h+03/////3s+uL9mvYc/T37+yOmG3O+0+YNud9p8wbc77T5g2532nzBtzvtPmDbnfafMG3KruWa0Ch2532mJdm91zqbkl//mYq1oarRqATaNDaQ+E29J7S4GkYk1EylewZtBD+x+oLHvFNv8vt+7QELqemQYgkf+gRDMipOgNSmMbBM9lDPqLUPXpgpwJ+D8p0fObxzOx1yJiP7asn/AYqwpOxeQ/qCf+oMa6z0rtFfSkVs6XksvXKTUSrcimH3q2Exe9TmTmyTaIygQEok871fcb5zvDeM0XK4IX7+s4gTMrOcpZPxoOqwUk8Kep+CLBZKXrdVuz0oaRrxUZYcUlep7XW9TiyfhROfc6sz8VESLPNprx7R4GBKSmpDTuH0ZyMWE6uqUnrB2ITbLwUSHwAYeXWt3JeOY3HJjCosrfPmzxjgEAawM6PQVDShdZxThR+tcN9liKLvBr5gQn+dW/1mRpnVXj01WeC7218yDBTMUJSvPaHgeKlE0D/cVrVUO/U4EDwc40G24v01pCfElNBtWka1cXNwxQ6ogumEQC6lqQd1C/bIPFXlOt/FOlpaVSh4MRX6HwWscsn6+PHAJhhnbEuR5o5X4h1vglDathAunqhv0B7xOdJVc6oO3c30533qrPny9x+mlkmwmyNguERhs6rgnd0R9etMyInrrdg2Y7DmX498RV7SENFZ8Zp7jUofl4iq8nZLxFV5OyXiKrydkvEVXk7JeIqvJ10AD+/9KfAApHTd8E5Xksa1ilaGfasECi3P/96Qm8e8nIdSFFmaJmT+W18H0NNEOjPmFYNRFgOI29CPx00kgFxzhJVPe8arEdhWwEu1G7jbxaL9UYfhiy2di/O1OxurZkk6hMGgr2GABzxhWgCNLu5Jz5XNz+NX9v0iq1ITO/ybrOYKHRt1VTU8p3noX9wIhzFxy784IbVhpe7rBMhn81879n2/APA/FW7w7MAYGSqJZlohyMUJGg9VIwNYVbs3g/nwQoXSWHxDIA6hiztzLPQiCm2c1lMhwxaQt6HdrW5N8YvH19Wz4Xymruql13BK9nBYxu3A+QofvKBjiAy9l6xkAHInMRYZrNlKQC4Yj1oF3ot146qfKcfCojE3NHWBBgXDrl2ebbDXZDdv41tD3A2Ewl8ploTdPQr9PT3gCzl7rGvnyAWszbsHq+RiI8vOl+3UFecODh3m+cc/mF6n9afp/KrIcoqG45BTWo6n9WUEVflcHoLSQi4nW3kV+4PcpQsFwopvD2nBlqTbSZdc/JgPMtR5zbgp62Acx4kYBiPukeB+SNvIAy0nReZQZOyrIpZcbwbjvsDM4JcpB4hiP3VREgrrr+csleEUpGNCZJi5BuJiYJHhp26Q8irQ4DSj275dW3Ykbf6HxkNZ0px6NUNLbQIopIPiSuHtire1wzMEk5+B/S5WGFzgc2tFCZqS7tNQZ8gvGjadQ9KjBYrkYTSflSDxqxDn2lsVhYKsl56KYD2W8iNr/TLFGQB+kdHmc33K4WX0qp5Sss2bQ2ucxv8ZD5ihrzpvpfG89f1wgavjyylz5cgQQcq0AtJMTAKYO8zQSLwZ8Ke4ZgCZ87tucfs8I+VCPHM5/JUPB94qAz1lj7SE27AOqPzhOPl2XIANSX+D6A+qwtwM9E6oMM0x4tEKe0M9rCw9umCv75nrMDVTiw6cR6l4ehPjObfAy2sMasP19fVB132xk++P6ibHQWd74Hdko/gJ0lVFrhMV4r9KJ+7wk4N13FqoJF2dQBRemgFOSODF5cFt+7S14YuxJKSEt8zrIK/H3m8wtws+vkaQ+Z2VFgUhi+n1G1Jooj45jOYBStd5bj3OXYi2NybGB+EmgcsR+QHcagNlb8yp9zd7OGgBSQ+pmy087QYPiA5mJZXxK3pHv42vmVdWTcYf05YNRwBfWObcUThW9w6j31YXlYq7QIcFsOPEGe7gQc9HeaTn9V+yWNV04N3pyoPAo+krLBTYiw9SzPsbNFarfiI03Uu76Lri7+ACU4EFWzL7iNOpbSnWFpPlXN6zyIQgT5mVCjnsPqbW2m75Fq7PzcNZg2/obM0/VrMrJwat4bOQOap8OHl4x686pZT5ct6JF+PxM7kl19jOEvlzLhojvjS2T4jNT33/TLczkzco9MHpkdiI1FcHYslzhSVWtUX+KCi+X7WhfFjOAylLximIh3JXwwjE5CcVrxLi5Dxp/iKrbS0uebQDebWvnkPMoMrdPwpiRmox99sRdfXVs9Y1fG4E8iuZK0cY6DIFzHs+S1umrTxLXDaAnvyWFjaYhWVbgA3Tnx39GEDnPex985V1o6VRi9s5aujUxTWEmjf6UpLJut4hytSSGEeh6k0HFLQrCORTmVMisAfB2KLUpxbk4z4fHD1L8izHNPngB8hCRqHluHxpGrm2DtKgNHjuGTb1cSEcvDtyaOJ0RhYuJLT5I2DiljQdNw+OGp5vk9GHtBT5RVhYMiYai2FMENDbcaoDOQYbtZI+ywmiFmqXo2yD0QT3hHBEo0EqnReAJNBDv1To56eCRd+H9EeZaMwqBnV7ukgWQgtk+nJ6reloMyD9FvqC1er8qFToQL30SKqRR7XhzuZhYl82stQK1lMdck2o3x3AcDfEuMX/KQ+EJ3Kvv5lXjeHBFXYF/2Bkno9j9psSHGTG+G8XOd3sGEYVI/r0a656i3IIv+UFzcfs4uwvKXSLY9r5zQLsDBcDpD585jTyiP5Vlgtc52PcnpzQBpyFI5F7P3wOmNSdC+UpGAzZLkHRkwvIm27BxzLMOuBuEwr7NxQ50Ij6NLBF7fabhR01ASM7zUf110IufuiuAaL0Q2WdbVJgcHYAqZC15WmnjQK7ie7jkPgRXaa9gcF8JSnzLfO6hfxrcosSEKhHO6l1pi3WQWtKJdISc/vkukIQGDWbhx1nzhS6Lcwp+Vv8u01nqC2PVlqIn/87hVz/Fh/ZZ/WwDPBvE/vJ+YYDfNUk4daOpLgbC/tey9bxz07QatqNBbwwMUOPMIiuAWdw1uzH0W3tH+FMXiwJ0Ybk3tF0LcCI+Ui6j/rqV1Ehx6ncr3p2hz3VLeioN05MjVVmVVivW+SXcW643okI4OspFHfeJxAB2Tw09aC6w6xSAC8JHSdppleMExv7rqCqcSlv46EQ1OpT41Xzrm8riD2uGFRMoadssKzQjx3u0mFiLTNe3Gjl2jgKbyxKIeaN0YWZdfokv9bqMLA3uxR8o1nMB0z0bWwVIqHim9tNzJZyg2FnB/LSjg4OjgdCEiKjI4uDF426aFjGBIdx57xvv9bkUnDi8VHGW+fm7kDlJ7+SIng9zlsEdYUiIjnXLoxzhj4q73DiHi5oI40SXP1gC9nQLOMdqBXCkNsHHQRo09Ql/ymma/bjfozCOWw3ZkFcsJ++Eca1qrdFZEf8CkNlnub9jXguvZVWCs+q7sBH3FhbK3zO8o/FWSOSf/CRKN14etBLkdgoIe8fldHbfUAs1EAXK9EZPeq7MJe7ZcBkcaT4H6EGLlcMZ49USG5yP8DF/Y/JneTBWZdYokW07XJhnUYHjMSKcIjp7XkY3p7ACGbnn2mDM43qvp4qPnkPIbbhemUUvcoD+tDOvGLSwHmtZuBZHfM/PF7K+IgpQRDqJ7+CbbYn876tSFQS+tNE+SKfTD8yJo0+IWtDWTzGz9GZEtSwiPO1LXqabPJsuz4QCmMqNlQJuPLUXuKPOcaXFGa1Dfok/gu/53ahqte2RB+Z+QTYzaGPiubWH5LvGFE52CX7MilRtPZaEk+bY2EktkFXp41n+CDnTQkzCKbgVaDV9zEuJNxsX0+PmFZhcdfKf5JSxwpFqHAc86p/UFE2Vsd44HPAMb0zLIaTBGuByK4pKLRUUXOs2oxjwrkMnNR3BUher7HzgQDpLROoMnrxqFE/xcnzMS/9RECMziyNL27H1hp4+4z8WbxCVlPxYT6K16/Eq/Yxyrc3ElP8uT99u3MG9M9sU756DrD7yCjwIw3ZWN83dl5O4JIj4oHKRYucsS0Dw2oA177LdeZT8N8kmYJX0w6EHO4fawe82lkYQeaViULIjijVT3+rldge0tVv51a5Vh/Uc4HtG4oUb5d3+aEc9nrBlVs/XpXX+bOGYnGovde+bPpHSk34tGnJJaX9AfYQvGnN2Y/BA/ZeivgjBfs+r38I4NcYZnIM6QvjJFaHBnZat5sTS0djXRUIlpIh3/9oxsVZJmj1+hjo5sMe2rqyK9sISXLUF+08mVJ/naVp88zbxHTfsTv6L+jAkJY0btuPEA+BX/rq3YfDrtl0w1ujFMzzJM+lxhr8s0dRUNICD9WJjnr8bZUnc/RIyb6NVZna5lmduyKfanIWnmnQ6HcShzW12pnIAMf+CsI2qkTqMcuO5oLMjpVrClpvwdMcl2ku22NihnHU75Hrbhkapz2HnKrZDOzv392USPNHvKAkhBZO14D2dlS0ytbNRVlKUVUjXiTpbUjigfmUbzGVuSx3LP7cfeHPpfZcrpbwOTVVxr/IPWgrvESsr8x6okDmcQDbtR0QSerINJ9y7RWQj3ioxnCyv9zhQVaI+PwbwrUgvfoaRiv+83WaaptplFyZjz6vha3Xye7+b+CIXR7VH3vE0ZN/9ClSm84srzaOmEbkxtcTIbB0z0LyoQ1/oxQPwzbQe4tMszWvQukchJkn7oGvm8Vv8IgToiruXmpAmUO1+1IgDPE97QgHPKwv4bpJm5/8G+5/IdIwaauYk3nAa9bfRUwOjYfADEfH6yoKVpN/fjgsQU4NJFxkLfyANgkOlNkIhsiPNnHsVt8UCf9/LX5II7fxXe4jjnCkgwizicnQ0XnAEDYUvaR/GHvzts9u2VcrFQTfGYsuNVW1dbAXzYlj2AA19qBf+exstgNkXuLOplcOtG2VpW2zfsyE04Ytq2jZQig9pBdvcnM1tjOtslTAybtvDMgAnOG1pnmiJLvO+uBlfxabFj5oIT9V24Owo+i/2qxcjdd1QWwZebYLGP95HitpVfvfZ7HmOLD2bTsSVJwU3WC51I55BKA06DyEqQmYCAb1BRxFPZX0m667amCnpt4aBYbOgx/8iGIuHryPKIHO3Vt3evwVvAeAxTYxgzUuwzdFHewTbGeMm+ecxXFGB2wkswnHjJViMZoY+6Mg/xbj4kUtqDDrF79iGZlGhGoennxHjIAY8dnV5xk2UPVDK0ZQWaNyqsoBTc118YWKCDCnGbz8QiD7XNUJlq2SBjhmKfbekrFVApwotbqv7QJCn4p08ZCiNcU45aX6MDZoQCw5SVUoYm63idQmRS3Hi/L2PjITGtKlpkpjnrmsiLPw2Qq6UtYpV5+A2QhXqt5dsnDBLEKCVLDL8onDDrZpX1LjpLoq55wbxp9Y3u+j9iwVBK/8MG5DceOEN/Ui1Bz0JhkqG9iQL+7HaDPodPRu/FxYKOJcIj8OWphZ2RF4sCk1tl/IYmtq7Fth3Y1oSt3Fbvvl7vzzWCHkgNGdl+QykK7qvQVONrbrdKfWtLz7Rvkd/MoNP4OKmknvwRguRAb0WRFppEdjVlvs5YgsOxV/b87jiK3E3SsT68DXCzNqPszsHTX3ptJRUAUnvsVpbrdZ3IOasbLSsu5yS3OdBUxoRBys53B8pnw+332hOIFkGyPiAr9AEA3eLpPwErB4DjZFSqWZp46NDMX5/E4t/0yHiRqLvufjXXhzmxpprWOQJynbK/vo+6RWGLMahgQjplcEp1ttvC0T/0XiCTQz4SrL22OrGG43VcWnQS31JXzsHp6cFQ4o/rvvfi0f6FtYzKeqK1Oj1V7tJ8WnyGf3AC4CFDhILv99IEXIjPJedyDYlTZ85WG90+/v6+DX72XICGwYRAU9bKNkyY767D5L+3gnj9l9Z2GStq7G1ZHfrK7YPS1jamqtIUa0UrzV9o/fHsLa6LAtrwuegNRVZyn+rKmBfEJE8XE3ZhsJ7pF+ZIFPanm9wICPU/n3vxbqen7nBkm7Lyz7no+GHQ473cwTBK95p9dvf88Zhx9keRgboO6efoPxoPM/x/XaxXx3um5jBsr8XiPlapKkwvKlUk6YY6fYtZtfFBwloJ29zCiDfzWyh7xI/UHSnn4ifZsIU1X6k5FHuhGqGTAQDV+7od31/nqfUKubBNTYUzkqzj/+sybWuNbNt9n6F0kDl8P7c8ykVv6gMM5FkCZKa/08lMzeRlMLXEA4uwMuAzCqXfYci6/TSOQo/XXMUZENYukCpxhaJ31rMrpW9rpP+3hlmxEDA8ax4VEUTZl7kMb3Q+QVYXEh2PAl52KjZ+ypHkasbh6tViVYv4ThG3fBFwuHGr0E4WyagTo50Xigvs0DSEg5WrphA3/XES4abAT4YFhdK5Dc9phI5zDQiIfSghbMe+GByxrQd+tP0+vv+damS6LhvWlCatXuJ1iB1vJoq0TytsGojEHPXxAClQsAAAAAAAAA==" class="sidebar-logo" alt="Sensatia">
@@ -3903,7 +3914,7 @@ select:disabled {
       <div class="sidebar-section-title">Monitoring Hasil</div>
       <button type="button" class="sidebar-item" id="pnav-report" onclick="switchPage('report');closeMobileSidebar()">
         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
-        Report Hasil
+        Dashboard Final
       </button>
 
       <div class="sidebar-section-title">Export & Distribusi</div>
@@ -3923,10 +3934,16 @@ select:disabled {
         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7a2 2 0 012-2h4l2 2h8a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V7z"/></svg>
         Buka Folder Drive
       </button>
+
+      <div class="sidebar-section-title" style="margin-top:20px; color:#E74C3C;">Reset Sistem</div>
+      <button type="button" class="sidebar-item" onclick="resetSemuaDataConfirm();closeMobileSidebar()" style="color:#E74C3C; font-weight:600; background:rgba(231,76,60,0.05);">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+        Mulai Baru (Reset All)
+      </button>
     </div>
   
     <div class="sidebar-footer" style="padding: 20px 24px; border-top: 1px solid rgba(255,255,255,0.1); margin-top: auto; display: flex; flex-direction: column; gap: 12px;">
-      <button class="header-modern-pill" id="btnSesiHeader" onclick="openSesiAudit();closeMobileSidebar()" title="Kelola sesi stock opname multi-user" style="position:relative; justify-content:center; width:100%; border:none; box-shadow:none;">
+      <button class="header-modern-pill" id="btnSesiHeader" onclick="switchPage('report'); dashSwitchTab('aktif'); closeMobileSidebar()" title="Lihat daftar Sesi Aktif" style="position:relative; justify-content:center; width:100%; border:none; box-shadow:none;">
         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg>
         <span class="btn-label-sesi">Sesi Aktif</span>
         <span id="sesiHeaderBadge" style="display:none;position:absolute;top:0;right:2px;width:10px;height:10px;background:#2ecc71;border-radius:50%;border:2px solid #fff;"></span>
@@ -4018,19 +4035,29 @@ select:disabled {
       </button>
 
       <div id="wizardStepper" class="stepper-container" style="display:none; border-bottom: none; padding-left: 0; padding-right: 0;">
-        <div class="step-item active" id="step-1">
+        <div class="step-item active" id="step-1" onclick="switchPage('info')">
           <div class="step-number">1</div>
           <div class="step-label">Data Toko</div>
         </div>
         <div class="step-divider" id="step-div-1"></div>
-        <div class="step-item" id="step-2">
+        <div class="step-item" id="step-2" onclick="switchPage('csv')">
           <div class="step-number">2</div>
           <div class="step-label">Upload CSV</div>
         </div>
         <div class="step-divider" id="step-div-2"></div>
-        <div class="step-item" id="step-3">
+        <div class="step-item" id="step-3" onclick="switchPage('excel')">
           <div class="step-number">3</div>
+          <div class="step-label">Excel Offline</div>
+        </div>
+        <div class="step-divider" id="step-div-3"></div>
+        <div class="step-item" id="step-4" onclick="switchPage('stock')">
+          <div class="step-number">4</div>
           <div class="step-label">Input Stock</div>
+        </div>
+        <div class="step-divider" id="step-div-4"></div>
+        <div class="step-item" id="step-5" onclick="switchPage('report')">
+          <div class="step-number">5</div>
+          <div class="step-label">Finalisasi</div>
         </div>
       </div>
     </div>
@@ -4107,32 +4134,21 @@ select:disabled {
     </div>
   </div><!-- end info-card sesi -->
 
-  <div class="info-card" style="margin-top:16px;">
-    <div class="info-card-header">
-      <div class="info-card-header-icon">
-        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/></svg>
+  <!-- Sesi Kolaborasi -->
+  <div class="info-card" id="sesiKolaborasiCard" style="margin-top:16px; border:2px solid var(--navy);">
+    <div class="info-card-header" style="background:var(--navy); color:#fff; border-bottom:none;">
+      <div class="info-card-header-icon" style="background:rgba(255,255,255,0.2);"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="16" height="16"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg></div>
+      <span class="info-card-header-title">Sesi Kolaborasi (Cloud)</span>
+      <div id="saveBadge" style="display:none;margin-left:auto;align-items:center;gap:5px;font-size:11.5px;color:#fff;background:rgba(255,255,255,0.2);border-radius:5px;padding:3px 8px;font-weight:600;">
+        <svg width="10" height="10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg> Auto-saved
       </div>
-      <span class="info-card-header-title">Aksi</span>
     </div>
-    <div class="info-card-body">
-      <div class="info-actions">
-        <button id="btnMulaiOpname" class="btn btn-green" onclick="mulaiStockOpname()" style="padding:10px 20px;font-size:14.5px;font-weight:700;gap:8px;">
-          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="16" height="16"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-6.518-3.76A1 1 0 007 8.24v7.52a1 1 0 001.234.972l6.518-3.76a1 1 0 000-1.804z"/><circle cx="12" cy="12" r="9" stroke-width="2"/></svg>
-          Mulai Stock Opname
-        </button>
-        <button id="btnSimpanKirim" class="btn btn-navy" onclick="simpanKirimKeCloud()" style="padding:9px 18px;font-size:14px;gap:7px;display:none;">
-          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="15" height="15"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/></svg>
-          Simpan & Kirim ke Cloud
-        </button>
-        <div id="saveBadge" style="display:flex;align-items:center;gap:5px;font-size:11.5px;color:#1A7A4A;background:#E8F5EE;border:1px solid #B2DFCB;border-radius:5px;padding:5px 12px;font-weight:600;">
-          <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
-          Auto-saved
-        </div>
-      </div>
+    <div class="info-card-body" id="sesiKolaborasiBody" style="background:#f8fafc; padding-bottom: 24px;">
+      <!-- Akan di-render via JavaScript (renderSesiPanel) -->
     </div>
   </div>
   <div class="wizard-footer">
-    <button type="button" class="btn btn-primary" onclick="switchPage('csv')" style="padding:10px 20px;font-weight:600;">Selanjutnya: Upload CSV &rarr;</button>
+    <button type="button" class="btn btn-primary" onclick="mulaiStockOpname()" style="padding:10px 20px;font-weight:600; width:100%;">Selanjutnya &rarr;</button>
   </div>
 </div>
 </div>
@@ -4165,10 +4181,7 @@ select:disabled {
         <div style="font-size:9px;color:#AAA;font-weight:700;letter-spacing:0.5px;">PENDING</div>
         <div style="font-size:20px;font-weight:800;color:#AAA;line-height:1;" id="val1StatPend">0</div>
       </div>
-      <div title="Produk dengan SW > 0 tapi input belum diisi — dianggap stok belum ditemukan (minus otomatis)">
-        <div style="font-size:9px;color:#B7770D;font-weight:700;letter-spacing:0.5px;">BLM DICEK</div>
-        <div style="font-size:20px;font-weight:800;color:#B7770D;line-height:1;" id="val1StatAssumed">0</div>
-      </div>
+
     </div>
   </div>
   <!-- VALIDASI 2 STAT -->
@@ -4327,26 +4340,25 @@ select:disabled {
           <th style="width:32px;">No.</th>
           <th class="left" style="width:90px;min-width:90px;">Kode SKU</th>
           <th class="left" style="min-width:220px;">Nama Produk</th>
-          <th style="width:72px;min-width:72px;">Harga<br><span style="font-weight:400;font-size:10px;opacity:0.8;">(Rp)</span></th>
+          <th style="width:72px;min-width:72px;display:none;">Harga<br><span style="font-weight:400;font-size:10px;opacity:0.8;">(Rp)</span></th>
           <th style="width:66px;min-width:66px;">QTY<br><span style="font-weight:400;font-size:10px;opacity:0.8;">Stockwiz</span></th>
           <th class="col-terjual" style="width:64px;min-width:64px;" title="Jumlah unit yang sudah terjual selama periode stock opname — mengurangi ekspektasi Stock Sistem saat menghitung Selisih">Terjual</th>
           <th colspan="4" style="min-width:280px;">Jumlah Riil</th>
-          <th colspan="2" style="min-width:130px;" title="Nilai Selisih dihitung dari Harga Jual" class="col-selisih">Total Selisih</th>
-          <th colspan="5" style="min-width:290px;background:#EBF5FB;color:#1B3A5C;border-left:2px solid #B2CDED;" title="Validasi 1: Hitung ulang oleh petugas ke-2" class="col-val1">✅ Validasi 1</th>
+          <th style="min-width:60px;" title="QTY Selisih" class="col-selisih">QTY<br><span style="font-weight:400;font-size:10px;opacity:0.8;">Selisih</span></th>
+          <th style="min-width:80px;" title="Nilai Selisih dihitung dari Harga Jual" class="col-selisih">VALUE<br><span style="font-weight:400;font-size:10px;opacity:0.8;">Selisih</span></th>
+          <th colspan="5" style="min-width:370px;background:#EBF5FB;color:#1B3A5C;border-left:2px solid #B2CDED;" title="Validasi 1: Hitung ulang oleh petugas ke-2" class="col-val1">✅ Validasi 1</th>
           <th style="min-width:90px;background:#E8F5EE;color:#1A7A4A;border-left:2px solid #B2DFCB;" title="Validasi 2: Konfirmasi / Approve oleh Supervisor" class="col-val2">🔒 Val. 2</th>
-          <th style="width:130px;min-width:130px;">Exp. Date</th>
+          <th style="width:130px;min-width:130px;display:none;">Exp. Date</th>
           <th class="col-keterangan" style="width:90px;min-width:90px;">Ket.</th>
           <th style="min-width:110px;">Catatan</th>
         </tr>
         <tr>
           <th></th><th></th><th></th><th></th><th></th><th></th>
           <th class="col-store" style="min-width:78px;">Display</th><th class="col-storage" style="min-width:78px;">Stock</th><th class="col-gudang" style="min-width:78px;">Gudang</th><th style="width:72px;min-width:72px;" title="Total = Display + Stock + Gudang">Total</th>
-          <th class="col-selisih" style="width:60px;">QTY</th><th class="col-selisih" style="width:80px;">Value</th>
-          <th style="min-width:58px;background:#EBF5FB;font-weight:600;color:#1B3A5C;border-left:2px solid #B2CDED;padding:12px 6px;" class="col-val1">Cek 1<br><span style="font-weight:400;font-size:10px;">Display</span></th>
-          <th style="min-width:58px;background:#EBF5FB;font-weight:600;color:#1B3A5C;padding:12px 6px;" class="col-val1">Cek 1<br><span style="font-weight:400;font-size:10px;">Stock</span></th>
-          <th style="min-width:58px;background:#EBF5FB;font-weight:600;color:#1B3A5C;padding:12px 6px;" class="col-val1">Cek 1<br><span style="font-weight:400;font-size:10px;">Gudang</span></th>
-          <th style="min-width:60px;background:#EBF5FB;font-weight:600;color:#1B3A5C;padding:12px 6px;" class="col-val1">Cek 1<br><span style="font-weight:400;font-size:10px;">Total</span></th>
-          <th style="min-width:60px;background:#EBF5FB;font-weight:600;color:#1B3A5C;padding:12px 6px;" class="col-val1">Status</th>
+          <th class="col-selisih" style="width:60px;"></th><th class="col-selisih" style="width:80px;"></th>
+          <th style="min-width:78px;background:#EBF5FB;font-weight:600;color:#1B3A5C;border-left:2px solid #B2CDED;padding:12px 6px;" class="col-val1">Display</th><th style="min-width:78px;background:#EBF5FB;font-weight:600;color:#1B3A5C;padding:12px 6px;" class="col-val1">Stock</th><th style="min-width:78px;background:#EBF5FB;font-weight:600;color:#1B3A5C;padding:12px 6px;" class="col-val1">Gudang</th>
+          <th style="min-width:90px;background:#EBF5FB;font-weight:600;color:#1B3A5C;padding:12px 6px;" class="col-val1" title="Total = Display + Stock + Gudang (Validasi 1)">Total</th>
+          <th style="min-width:80px;background:#EBF5FB;font-weight:600;color:#1B3A5C;padding:12px 6px;" class="col-val1">Status</th>
           <th style="min-width:90px;background:#E8F5EE;font-weight:600;color:#1A7A4A;" class="col-val2">Approve</th>
           <th></th><th></th><th></th>
         </tr>
@@ -4451,7 +4463,7 @@ select:disabled {
           <th style="width:36px;">No.</th>
           <th class="left" style="min-width:100px;">Kode SKU</th>
           <th class="left" style="min-width:220px;">Nama Produk</th>
-          <th style="min-width:72px;">Harga<br><span style="font-weight:400;font-size:10px;opacity:0.8;">(Rp)</span></th>
+          <th style="min-width:72px;display:none;">Harga<br><span style="font-weight:400;font-size:10px;opacity:0.8;">(Rp)</span></th>
           <th style="min-width:70px;">QTY<br><span style="font-weight:400;font-size:10px;opacity:0.8;">Stockwiz</span></th>
           <th style="min-width:70px;">Jumlah Riil</th>
           <th colspan="2" style="min-width:130px;" title="Nilai Selisih dihitung dari Harga Jual">Total Selisih</th>
@@ -4528,7 +4540,7 @@ select:disabled {
           <th style="width:36px;">No.</th>
           <th class="left" style="min-width:100px;">Kode SKU</th>
           <th class="left" style="min-width:220px;">Nama Produk</th>
-          <th style="min-width:90px;">Harga (Rp)</th>
+          <th style="min-width:90px;display:none;">Harga (Rp)</th>
           <th style="min-width:80px;">QTY di Stockwiz</th>
           <th style="min-width:80px;">Jumlah Riil</th>
           <th colspan="2" style="min-width:130px;">Total Selisih</th>
@@ -4706,12 +4718,13 @@ select:disabled {
     </button>
   </div>
 
+  <div class="wizard-footer" style="margin-top: 0; margin-bottom: 20px;">
+    <button type="button" class="btn" style="background:#f1f3f5;color:var(--text-main);padding:10px 20px;font-weight:600;border:1px solid #d1d5db;" onclick="switchPage('info')">&larr; Kembali</button>
+    <button type="button" class="btn btn-primary" onclick="switchPage('excel')" style="padding:10px 20px;font-weight:600;">Selanjutnya: Excel Offline &rarr;</button>
+  </div>
+
   <!-- Content (shown after upload) -->
   <div id="csvPageContent" style="display:none;">
-<div class="wizard-footer" style="margin-top: 0; margin-bottom: 20px;">
-    <button type="button" class="btn" style="background:#f1f3f5;color:var(--text-main);padding:10px 20px;font-weight:600;border:1px solid #d1d5db;" onclick="switchPage('info')">&larr; Kembali</button>
-    <button type="button" class="btn btn-primary" onclick="switchPage('stock')" style="padding:10px 20px;font-weight:600;">Mulai Input Stock &rarr;</button>
-  </div>
 
     <!-- Meta bar -->
     <div class="csv-meta-bar">
@@ -4770,12 +4783,59 @@ select:disabled {
 </div>
 </div>
 
+
+<!-- PAGE: EXCEL OFFLINE -->
+<div class="page-container" id="page-excel">
+  <div class="csv-page">
+    <div style="background:#fff; border-radius:12px; padding:24px; box-shadow:0 4px 20px rgba(0,0,0,0.04); border:1px solid var(--border);">
+      <h2 style="margin-top:0; color:var(--navy); font-size:18px;">Opsional: Excel Offline</h2>
+      <p style="color:var(--text); font-size:14px; margin-bottom:20px; opacity:0.8;">Jika tim Anda mengandalkan kertas atau file Excel untuk mencatat stok gudang, gunakan fitur di bawah ini.</p>
+      
+      <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:16px;">
+        
+        <!-- Card 1: Download Template -->
+        <div style="border:1px solid #E2E8F0; border-radius:10px; padding:20px; display:flex; flex-direction:column;">
+          <div style="display:flex; align-items:center; gap:10px; margin-bottom:12px;">
+            <div style="width:36px; height:36px; background:#E8F5EE; color:#1A7A4A; border-radius:8px; display:flex; align-items:center; justify-content:center;">
+              <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+            </div>
+            <span style="font-weight:700; color:var(--navy); font-size:15px;">Download Template</span>
+          </div>
+          <p style="font-size:13px; color:var(--text); opacity:0.7; flex:1; margin:0 0 16px 0;">Unduh format file Excel standar untuk membagikan tugas hitung ke tim di lapangan (offline).</p>
+          <button class="btn btn-green" onclick="downloadTemplateExcel()" style="width:100%; padding:10px; font-weight:600; font-size:13.5px;">
+            Unduh Template Excel
+          </button>
+        </div>
+
+        <!-- Card 2: Upload Hasil Input -->
+        <div style="border:1px solid #E2E8F0; border-radius:10px; padding:20px; display:flex; flex-direction:column;">
+          <div style="display:flex; align-items:center; gap:10px; margin-bottom:12px;">
+            <div style="width:36px; height:36px; background:#E3F0FF; color:#1B3A5C; border-radius:8px; display:flex; align-items:center; justify-content:center;">
+              <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+            </div>
+            <span style="font-weight:700; color:var(--navy); font-size:15px;">Upload Hasil Input</span>
+          </div>
+          <p style="font-size:13px; color:var(--text); opacity:0.7; flex:1; margin:0 0 16px 0;">Punya file Excel berisi stok yang sudah diisi tim? Unggah di sini untuk digabungkan secara instan.</p>
+          <button class="btn btn-navy" onclick="document.getElementById('excelInput').click()" style="width:100%; padding:10px; font-weight:600; font-size:13.5px;">
+            Upload File Excel
+          </button>
+        </div>
+
+      </div>
+    </div>
+    
+    <div class="wizard-footer" style="margin-top: 20px;">
+      <button type="button" class="btn" style="background:#f1f3f5;color:var(--text-main);padding:10px 20px;font-weight:600;border:1px solid #d1d5db;" onclick="switchPage('csv')">&larr; Kembali</button>
+      <button type="button" class="btn btn-primary" onclick="switchPage('stock')" style="padding:10px 20px;font-weight:600;">Lewati / Mulai Input Stock &rarr;</button>
+    </div>
+  </div>
+</div>
+
 <!-- PAGE: DASHBOARD (List Toko) -->
 <div class="page-container" id="page-dashboard">
   <div class="dash-page">
     <div style="text-align:center; padding: 0 0 16px 0;">
       <img src="data:image/webp;base64,UklGRjInAABXRUJQVlA4WAoAAAAQAAAAjwEAnAAAQUxQSJITAAABDLhtIwmSxPzD7u65+7fOjIgJ6KfpPxiGN2+QmRkUFKnwVlFJNSrVVqk8cZ1st+W1aDxbHH2SRRwEb6JHVOhGoVWFfuLeaGs7JknbtrUjqsu6Rttj2LYuG233ZdvXledl20bz8lW4bNu2zbqurGomjsjYf8RxnucRccaF+pURMQHWaNtW9bbZ790n2WEYbmIHDWEoM4UZ9JWZmZk0GqYxyszM3LouqIyBMnPrOuWGSY79HVg/7vv0yfaX/xExASz6f9H/i/5fpKNYXrYbbG9smp3e8cW16z74wffug24XKLo3/Y/GtxPc04fu/dn00O0HBESKhy2aRNSHVcZBxDxrKmMl6nXbbDmxrm6braFpu67rispkE+3q0tyGqAv14iYjETMam8t4iLlQ33Y2AjEX6lvXkYi5Fmguo7rXtiLmSkO3/wymwI6Hn3WPs+5x1lE7A5gUEwNk1zPOOv9Vr7rgrDvvBmBaxPOSEQPY+dizZgYzg8OWSWClDGDnMwYzg8HMyp0FWDExQMsPHswMBqfvsQJQrfF8Tnx4SXf3Ub7Uh6WJedZKiAGs239mZjAzuNcKASY586xOIDE48qlf2hb5G7720jssAytksOwOb/7RTVF78w/fcvkuYFKgucHKu7ziWzdGNq7/7oVngGgJBe7w0q/dEL2b//P9px4JokXEYM1Zr/rpRqe++Q+bH7sHWK7wMXjPQxhnAzn+aZ/akuid//krzwA0M7lb6aSvB4DX1OtfvrvaxWil3V++HiDdzdwd4Lq3Hyy14zTTT519xezs7PO2l5pWe5z9D2qvqX/yVKmM16l5+E8A0muAvPSBUlmEVlpx4b+pvQa4Ye19pFZqlj5rdqqaqh62VEDYrZqqqtlXzv6MAIJfzb5ydraqnrw7kmt11OyTq2qquj3aQoypx/2S2usE+MmzO3VC5S7VVFVNVQejE6Zo+7cB5pn0plvAlQ9S24xVVJ7xLwiLZGSGOWx8/U7qFmY6mv5Halp61H8hzJPeTLeA7x+ibpyi238PwjzpzXQDrriD2lam8rKrwS0yqTPcIN4+rbbTGfTfDcd5VZR+NZ5pmnYD2S0rRBqpcOffQJpn0pthCZffRUVkzc2R/YLYZCk64qeE05tJfxi8S20zRtGay8CCsdPgj/dTN8YJvsnMbrXHN9rlw2DJuOHc8EB1zTo97nosqDOT/nBuebK8hXPApWDJmOnws8M0rQfappTSbDon8/Y0k4ZjRFg9k15Xp/YvNpfSfNq2jkaKvC7wYNwwNj9DxtrpNJ/SXPqTIpOk1ar/MaR2D8iwoA7nAypNoykddQOe1GHmEWae1Gnccqa6hR2PA8ajtPL3eEKYWbiZZw8Y8SBpk6IBOEC6A+GW1J68AG9k7H8lw2QR07jhCDUPwCOiH2dnro4UJVO8tslfWYgYxPTaRqo7b45+sJievApdtzUGEf34msgkkbLTpQwBMoEbrgLwpB7yfpUmRUffglN7ssB0as98rLpFeeGOf2VIerJAyx4i4/aida1uf607QAB51c0AXhGWF2INjNv8CWNkuJm7mQeAc+PBGoxxzRhtbSSin465GJlu5u5mkUBu5imsnx5KcQXOBDW9jiFAwNyD77fnjvc66YI/QlQMeaSsruiYeQIgAv704bMfcb+jX3b2uv9ABEDk/NFqx0tu3oDjwF/fevZz7/eIsy/4zs0QPRg/oK5pl/wcB3CGH3rgETvtff+Hv/UGMgEit+2pWqPsvyWc3vRggeGA87fucWNc3Q3x3qaYj3wEC7WAtP4pa24aZK6dKMp+N3sCyU0DjVz6lP/gVcSG7UVyrVbPEwAOnzl5WiN3Ovmb4ADBVcvatlWdGDd9+JglGrnfOdfhPRj3wXKdHo0BOJcdoZH7vw4CwOINeE5s2Xcj0RvA3z/9qvNOOfnpr1r7L8iA4GfXkI3e2Z9JwzEirJ5JI3KeF/ORzYBrv/WqF5988innve93Dg4Rf/lJDGLomoninIsBGdffV10pTVNKJ624lM1uZpviYXhG2vJTHMD5w0mSSldK6boi6aQ/4ADGJ1QKZJB84hBJXdeVrutaafW38B7Pb6vmiubSgeDSndWVtmlK6aTjb2LoZjZ3/T5oxnhjpOg17EPHbq+RO532eTAI+uueF6VfNxLj+JQGmYDLHrRMI8sh5/4VTwaRnzRmP0wHnMtYQq30WP2VyF8xouh8DCDFp1ZiJtSKKSs/FQnAOVbWLgb9/jPBTKiVHss+i1fE4GRsqNEeN5GQeeOe6jRSe5x6feQvw4eK7orR249vnACYu5m7Arf9KQaRCxKWnnfPe97zsU947PcIwPnBYx//2Mfe856X7YaUE53+DUHdj3+cA6i7mbkB694SCwMiJpGw8loSgr+aSR0Yq966ceOmjRuuPLxpq7Y5yDwBj08sxWnpLP10BBD5+yUi7VI8EFeaO7teFVlZPBsf6nR8BuB8QUULdY6+ZsPGTRs3vHkfkdy6ESleuxQ3oVbMuMXHMEbmmp6KA8ZTNW4R54kYdT++tCdiQq2ow30Gg6R/wiiHbQrA+BBOY6Ft0QcwIPjtcpTWxk5/jwCcE7FW/biGJULbHi/CKo+PYLmn4oDxnKZbEErLojtlUPfjhYjR0tC7sLHEh5d0dyN6nt0t7WoZhepP06uIb63CaSnOhX3PiWTcEe95j7RA3IZde1qt2RxZDW+NU9B5GF7l59stDP6yRpTWIrtcSwIRP1mqubdjgHPqOKjbsEvNm7GqH58VV1pr0RXEOPmie414ljotvIRxQgRAxvSBOO173BOfULfOyvkmbdp2OhcDjHU4JUWW/5eEzBt2RFr047E4BU0fwYCMG9YhmTf1GOdoaoyWop2uIoDBwr/3QClYmpU3RS7SPbeqK7AquBdOyR6fwieRsPPNJBCcypJRNEvWE4BzppbBeS8GGJfhzTJu2Fm0hOvp2Te9tuYR6UCwoahsAdMpOECKZ+MULXoqvs3Jqi0E4PwMkyIqe9yQOYHQ3m8zqvzJfrgWK7pXBhD8dylSSB4y4mqsWcQPESmhujfZszXXaKVlAsna3dS1xVyXpAE5uPkA1TJNqw3ENmacvBAAxkvEKeu6CJtEzvMxgIxtFwAuZTo9HQOcL7Q9K9uzQ5IE53umzSyuFafMfreQC1JbvocDOD+5k2QmZUxfwQGPj2MU7pqXYtuY89BwINMPQQtps/ctmRNIZMf/EgABn72XpFLaRXl3j3GWyi/bVCU37Ii0eDtlBH4ZC82MM2N+EIARr7q9pK404wlTGwjA4r7ipZS9Ugy69hYMcC6XULrVpfgEwvQgHyZABlzxzD0kNV0zjvQzAkj+8vVPfbL0NzcCZM4dgLZ4dDH7dRuMV8T8EAHxiQfvLKkUaaEc5tSRjkNLgf0wFrrVNN/DAeM8ebFOl2CTiE7PxoPagWs+8ZBVkrq2zW97tkqPc/EWlxTTdmK8OeaT2oH1rz9umYRLi9tTJ9evRYo5V0bqlvQbAnAesAWKzsAnkorOAqsgDNj47RfsLZk2aLXfrWRP+AhHnd3qXuODKG+K8Ip0B67++IN7YNLAeRIOBL9aLqOY6lijna7sy1O2QKtV85kTSa0e+F/cK0h34Nq33xlMGhyQI7bCxbjnGCHKk8CT3rAAfviUXcCaPAcDnI9hjOBu0e9UqwMhIdm4QlKs0U7XMaE0pQM+BREVkG7g7zoOtG5NjHAb+eb+WV1ClKN+CpYVkO4R/7x6N7TBs0Z8ejTndG61bxW7XT+xVKTBpRCeFZBGDF62HG23VV7QKXA1L/wnWPQACynir5eg0upTozm7c2tixF5bZNcJprZIT/klYNED9Afxo73Q3GrvSb7wmpe9dKSvffXa9+0l0ilKo91eeiWkZU/EIEVchchYndO51d43f7vbKjBBbvv22QgsemDIX1aqzewfGecEjW2HwGDtvb8eEQtpMARpfFhdMs/ZOk7f5vaPTA7vJB3BztdNNDBg/2d9D/DowfjJkiIgrPpDRM+gW+ojVpXuIQ6cesVfIqI/qGAzz8QyT8SB5G+rkBE8cxsTVv0hAnAeKB/B8hsnHJgBd7vo7+A9DHmOnOEf1TxNzpgat+sQiANr7vqmf0Z4T9r8sRgod6ROrt9xJG/BOgX8qOaJW6DoKJwJB+pI2z/6F2RWkf/YQQCVD4UDxtuaMbpVp0DMgF2e9U+8wuJduVXzJOCD22PFWn0R75bIF8IB4+OyYp2egk0+oO2k8tLMBAiOwcB5WRjgfFsyPud2DBBz2P1TRJWDbesRBP2NACyegxfT1AaiW85rw4Bg/RQjeNtthNR0rR6akYDlufjQhQMHkpuXI2PivDBS1wBx9A4CoL9wOgbWfBUHPL6JlirNPTOyaw8JBzK4p1ipZvqvxG2E1EzrzXjFBzEQ9p4lAeNx4mPz/IkAWvRzvIp7DLkuSQNYGNxWrFCnt2B0SzmknwkYb8ELWXM8wW2G2vbgYSYEv2RY7ds44FyK/odhqnkRBqR4Hg6mU/AqxUa8TNvsPZ+5jSE7/IoAMq9er1pI38cnkFptM06j5Rvp+UPGuLyH9DuqLE5TRkpnyuixOj1qxKurRjv9gwDwzUepLMqUPoSzrTkvxwCMt2lqUTo9EGcClW+053zlrEUBkWX/ywSc76lrFqPR2B1YYDveY3qcJ6lI6nQJVgV/Xtq0izCtM3G2OeVQiwr3MzS9CEW7/y9j8igP+vhH5ubmvjr3sdJIs9IeOcwE4804gHM2BuBcoOlFKCpvn/vK3NxXv/qhHUU6If62ua/Mzc19ee6lmhqnffqI43raZuUtkQDOl6SujfR0x6sitz2M76ZXmVffUVPNOJ2WfJ1g8rh8JmrfI9NG03oVBjjPyons9v9MIC0frq4dp9PSzzPyDKwLwvIhIx+uqWYhMqVv4kAM76RWkorehFU463aSmNSJOhx1NcFEOIYegquPkrpW6prSavnXcSaQccc0a+7um3kPuNY007r9TZGQOTwMHcL0EIYAmfk8qWsbNKXRql8xdHffxAfF6AImF7DJ3d2CR0pdO0J7eko6EGyYblS3zT63eFY4fzwdEHM3dwNWvhACj20P02fxioCX7SihPmyNpEf+CyN88mC8N4zaeP8+gLl3XZHusp4APH/WKvmiTzAEyOCde0nqNuxFah+7AQNw1i8T7Yaw81UZAJmcNS21Pqzw5PlIwHiduh4VPRPrweGLF+9BrR/y+N9GJkF/t7TZ46qMikzWv/gwp3afR3wfnKR/sqjuPh1R4bH1JccI2b0vuokAMB4vq2nLst9i1MY1F6+ifsmZ34cAiBzeW0Y3MD2cYUUmv3/GKuVP2gAJpM/vo7avKVqH9RARceO3r3jxs8975ouv+flCRB+cH/+B7BxFD2fYAw7x8w+++MVPe/aLr/jpLRBJ8O/vZ04cjIuxrOhHxA/e9PRnnHX2umshAJwrplupUavlv8EqHDZ+/Ol3PP30M8643wd+D54AnsPTVOgKnd7KsAKHjT94wdOf/vQXfSUiEsA4X0Ujm3bpnxn2QL8fTdNCYKwvp+HdU6e3srmPMJq6Q2QeqZvIiYPzTDwq0hltCRH9wb/3QWlo7PzDmK9IY6ER1Cnm7ozTHbHexpjLEM5opza+u8SkDuWAPzLsg3QzczOLBFL8ch/OmwhivY2RBj2Q4dbrCXjk+ey4dRLhmgWvgLDakzpF3BKjsbHTdyOcOt2idgvq6McvTsRp8ryay0c2nUNEN0R/oYJ0q506h/xrGUpTY/8f4NG38BzGL/ZEzq45a+ymGyGiz46wvjGNeBCydjLR6XHXYJ7VgiPFv26J0VJZ8VJwT8ZNd+I9u+E0enGaSSndvHC/cr9IcynNp23rcqjo6yI8qgWnJ99aIaW5MfU+8BgnDb6zBztwTppNKc30z2uT5lJKM+mhJf5icynNp23rGiHCRdsIz3HC+feZ6rF2Os2nNJOunTAqWrkWcIvMnkw3iA/sg9Ja4b7fA9wisyczzIHf3BmMZo+P/MlYqX9GdssKySHCnX8EaR7Zl+kOm8+ZVktblR74R0jzyJ4MN7CLl6DG3SJ/K6zRKZF/TLum3UB2ywpphDgHfAxwi8yedAtYt0qdyJqbI3v1pFGRHvqFTdReU//kYjAKiql96BduovaaevjlR02jQmORlQ+pqmrqKRcilBUuraaqaqq6PUqtGL3H/ZI63d0D4NZP31Vq1b4pWvrUy6m9BrjxfUcIBVn6sGqqmnrKQ1VoKKx5fFVV1VS1H9JCrY6afXJVTVW3R2np6JjPXEft7p4A3z1dKkLlLtVUVU1V+yITRm0jHfjIt/9yPqmH///BeXcWqpQtklY88u2/nE9653/9rsccIskoLoy1ofZuz/303+fpnf/Pl5++WiqNFrVIuscLv3XlrdR25edfuI9UhAmrrbT8Me/+9Ty913/3ZfeWmlaTvrSStOLIwcxgMLN6V0kyypdWklYcOZgZzAzusKKR1JSG9uJZo7x51pohRZK2X37/wczM4MQVO0tqWy12UxpJO+xz+mAwM3PwDpJKq7zn24jnpUTpslYAlSKpWXGHwczM4F7LJDVF/eZZmURSWzotsO3ahpE2pdNCS9dqojZtV7TAtmu1RUvXanTpGk3opus0uu2KbjNF1IdVGEcR9WEVYRKLmLu7iTCGoubursJEF1F3dxMW/b/o/0X/L/p/0f//5wdWUDggehMAADBYAJ0BKpABnQA+USaQRiOiIaEj8ipIcAoJaW7hdVEb7Cv+Z/jl39/3D8nfEr9D/gPy49bXN/1m5qft5+g82u9/gEflP80/2Xh47K/OP8z+x3sBeqH0T/e+Fl/feg31C/2PuAfzP+U/7b0k/s/+L8aD6v6gP8a/n3+j/vX7xf436Tf4T/k/578dvaJ+Wf4H/pf4/4BP41/PP9V/dv8h+03/////3s+uL9mvYc/T37+yOmG3O+0+YNud9p8wbc77T5g2532nzBtzvtPmDbnfafMG3KruWa0Ch2532mJdm91zqbkl//mYq1oarRqATaNDaQ+E29J7S4GkYk1EylewZtBD+x+oLHvFNv8vt+7QELqemQYgkf+gRDMipOgNSmMbBM9lDPqLUPXpgpwJ+D8p0fObxzOx1yJiP7asn/AYqwpOxeQ/qCf+oMa6z0rtFfSkVs6XksvXKTUSrcimH3q2Exe9TmTmyTaIygQEok871fcb5zvDeM0XK4IX7+s4gTMrOcpZPxoOqwUk8Kep+CLBZKXrdVuz0oaRrxUZYcUlep7XW9TiyfhROfc6sz8VESLPNprx7R4GBKSmpDTuH0ZyMWE6uqUnrB2ITbLwUSHwAYeXWt3JeOY3HJjCosrfPmzxjgEAawM6PQVDShdZxThR+tcN9liKLvBr5gQn+dW/1mRpnVXj01WeC7218yDBTMUJSvPaHgeKlE0D/cVrVUO/U4EDwc40G24v01pCfElNBtWka1cXNwxQ6ogumEQC6lqQd1C/bIPFXlOt/FOlpaVSh4MRX6HwWscsn6+PHAJhhnbEuR5o5X4h1vglDathAunqhv0B7xOdJVc6oO3c30533qrPny9x+mlkmwmyNguERhs6rgnd0R9etMyInrrdg2Y7DmX498RV7SENFZ8Zp7jUofl4iq8nZLxFV5OyXiKrydkvEVXk7JeIqvJ10AD+/9KfAApHTd8E5Xksa1ilaGfasECi3P/96Qm8e8nIdSFFmaJmT+W18H0NNEOjPmFYNRFgOI29CPx00kgFxzhJVPe8arEdhWwEu1G7jbxaL9UYfhiy2di/O1OxurZkk6hMGgr2GABzxhWgCNLu5Jz5XNz+NX9v0iq1ITO/ybrOYKHRt1VTU8p3noX9wIhzFxy784IbVhpe7rBMhn81879n2/APA/FW7w7MAYGSqJZlohyMUJGg9VIwNYVbs3g/nwQoXSWHxDIA6hiztzLPQiCm2c1lMhwxaQt6HdrW5N8YvH19Wz4Xymruql13BK9nBYxu3A+QofvKBjiAy9l6xkAHInMRYZrNlKQC4Yj1oF3ot146qfKcfCojE3NHWBBgXDrl2ebbDXZDdv41tD3A2Ewl8ploTdPQr9PT3gCzl7rGvnyAWszbsHq+RiI8vOl+3UFecODh3m+cc/mF6n9afp/KrIcoqG45BTWo6n9WUEVflcHoLSQi4nW3kV+4PcpQsFwopvD2nBlqTbSZdc/JgPMtR5zbgp62Acx4kYBiPukeB+SNvIAy0nReZQZOyrIpZcbwbjvsDM4JcpB4hiP3VREgrrr+csleEUpGNCZJi5BuJiYJHhp26Q8irQ4DSj275dW3Ykbf6HxkNZ0px6NUNLbQIopIPiSuHtire1wzMEk5+B/S5WGFzgc2tFCZqS7tNQZ8gvGjadQ9KjBYrkYTSflSDxqxDn2lsVhYKsl56KYD2W8iNr/TLFGQB+kdHmc33K4WX0qp5Sss2bQ2ucxv8ZD5ihrzpvpfG89f1wgavjyylz5cgQQcq0AtJMTAKYO8zQSLwZ8Ke4ZgCZ87tucfs8I+VCPHM5/JUPB94qAz1lj7SE27AOqPzhOPl2XIANSX+D6A+qwtwM9E6oMM0x4tEKe0M9rCw9umCv75nrMDVTiw6cR6l4ehPjObfAy2sMasP19fVB132xk++P6ibHQWd74Hdko/gJ0lVFrhMV4r9KJ+7wk4N13FqoJF2dQBRemgFOSODF5cFt+7S14YuxJKSEt8zrIK/H3m8wtws+vkaQ+Z2VFgUhi+n1G1Jooj45jOYBStd5bj3OXYi2NybGB+EmgcsR+QHcagNlb8yp9zd7OGgBSQ+pmy087QYPiA5mJZXxK3pHv42vmVdWTcYf05YNRwBfWObcUThW9w6j31YXlYq7QIcFsOPEGe7gQc9HeaTn9V+yWNV04N3pyoPAo+krLBTYiw9SzPsbNFarfiI03Uu76Lri7+ACU4EFWzL7iNOpbSnWFpPlXN6zyIQgT5mVCjnsPqbW2m75Fq7PzcNZg2/obM0/VrMrJwat4bOQOap8OHl4x686pZT5ct6JF+PxM7kl19jOEvlzLhojvjS2T4jNT33/TLczkzco9MHpkdiI1FcHYslzhSVWtUX+KCi+X7WhfFjOAylLximIh3JXwwjE5CcVrxLi5Dxp/iKrbS0uebQDebWvnkPMoMrdPwpiRmox99sRdfXVs9Y1fG4E8iuZK0cY6DIFzHs+S1umrTxLXDaAnvyWFjaYhWVbgA3Tnx39GEDnPex985V1o6VRi9s5aujUxTWEmjf6UpLJut4hytSSGEeh6k0HFLQrCORTmVMisAfB2KLUpxbk4z4fHD1L8izHNPngB8hCRqHluHxpGrm2DtKgNHjuGTb1cSEcvDtyaOJ0RhYuJLT5I2DiljQdNw+OGp5vk9GHtBT5RVhYMiYai2FMENDbcaoDOQYbtZI+ywmiFmqXo2yD0QT3hHBEo0EqnReAJNBDv1To56eCRd+H9EeZaMwqBnV7ukgWQgtk+nJ6reloMyD9FvqC1er8qFToQL30SKqRR7XhzuZhYl82stQK1lMdck2o3x3AcDfEuMX/KQ+EJ3Kvv5lXjeHBFXYF/2Bkno9j9psSHGTG+G8XOd3sGEYVI/r0a656i3IIv+UFzcfs4uwvKXSLY9r5zQLsDBcDpD585jTyiP5Vlgtc52PcnpzQBpyFI5F7P3wOmNSdC+UpGAzZLkHRkwvIm27BxzLMOuBuEwr7NxQ50Ij6NLBF7fabhR01ASM7zUf110IufuiuAaL0Q2WdbVJgcHYAqZC15WmnjQK7ie7jkPgRXaa9gcF8JSnzLfO6hfxrcosSEKhHO6l1pi3WQWtKJdISc/vkukIQGDWbhx1nzhS6Lcwp+Vv8u01nqC2PVlqIn/87hVz/Fh/ZZ/WwDPBvE/vJ+YYDfNUk4daOpLgbC/tey9bxz07QatqNBbwwMUOPMIiuAWdw1uzH0W3tH+FMXiwJ0Ybk3tF0LcCI+Ui6j/rqV1Ehx6ncr3p2hz3VLeioN05MjVVmVVivW+SXcW643okI4OspFHfeJxAB2Tw09aC6w6xSAC8JHSdppleMExv7rqCqcSlv46EQ1OpT41Xzrm8riD2uGFRMoadssKzQjx3u0mFiLTNe3Gjl2jgKbyxKIeaN0YWZdfokv9bqMLA3uxR8o1nMB0z0bWwVIqHim9tNzJZyg2FnB/LSjg4OjgdCEiKjI4uDF426aFjGBIdx57xvv9bkUnDi8VHGW+fm7kDlJ7+SIng9zlsEdYUiIjnXLoxzhj4q73DiHi5oI40SXP1gC9nQLOMdqBXCkNsHHQRo09Ql/ymma/bjfozCOWw3ZkFcsJ++Eca1qrdFZEf8CkNlnub9jXguvZVWCs+q7sBH3FhbK3zO8o/FWSOSf/CRKN14etBLkdgoIe8fldHbfUAs1EAXK9EZPeq7MJe7ZcBkcaT4H6EGLlcMZ49USG5yP8DF/Y/JneTBWZdYokW07XJhnUYHjMSKcIjp7XkY3p7ACGbnn2mDM43qvp4qPnkPIbbhemUUvcoD+tDOvGLSwHmtZuBZHfM/PF7K+IgpQRDqJ7+CbbYn876tSFQS+tNE+SKfTD8yJo0+IWtDWTzGz9GZEtSwiPO1LXqabPJsuz4QCmMqNlQJuPLUXuKPOcaXFGa1Dfok/gu/53ahqte2RB+Z+QTYzaGPiubWH5LvGFE52CX7MilRtPZaEk+bY2EktkFXp41n+CDnTQkzCKbgVaDV9zEuJNxsX0+PmFZhcdfKf5JSxwpFqHAc86p/UFE2Vsd44HPAMb0zLIaTBGuByK4pKLRUUXOs2oxjwrkMnNR3BUher7HzgQDpLROoMnrxqFE/xcnzMS/9RECMziyNL27H1hp4+4z8WbxCVlPxYT6K16/Eq/Yxyrc3ElP8uT99u3MG9M9sU756DrD7yCjwIw3ZWN83dl5O4JIj4oHKRYucsS0Dw2oA177LdeZT8N8kmYJX0w6EHO4fawe82lkYQeaViULIjijVT3+rldge0tVv51a5Vh/Uc4HtG4oUb5d3+aEc9nrBlVs/XpXX+bOGYnGovde+bPpHSk34tGnJJaX9AfYQvGnN2Y/BA/ZeivgjBfs+r38I4NcYZnIM6QvjJFaHBnZat5sTS0djXRUIlpIh3/9oxsVZJmj1+hjo5sMe2rqyK9sISXLUF+08mVJ/naVp88zbxHTfsTv6L+jAkJY0btuPEA+BX/rq3YfDrtl0w1ujFMzzJM+lxhr8s0dRUNICD9WJjnr8bZUnc/RIyb6NVZna5lmduyKfanIWnmnQ6HcShzW12pnIAMf+CsI2qkTqMcuO5oLMjpVrClpvwdMcl2ku22NihnHU75Hrbhkapz2HnKrZDOzv392USPNHvKAkhBZO14D2dlS0ytbNRVlKUVUjXiTpbUjigfmUbzGVuSx3LP7cfeHPpfZcrpbwOTVVxr/IPWgrvESsr8x6okDmcQDbtR0QSerINJ9y7RWQj3ioxnCyv9zhQVaI+PwbwrUgvfoaRiv+83WaaptplFyZjz6vha3Xye7+b+CIXR7VH3vE0ZN/9ClSm84srzaOmEbkxtcTIbB0z0LyoQ1/oxQPwzbQe4tMszWvQukchJkn7oGvm8Vv8IgToiruXmpAmUO1+1IgDPE97QgHPKwv4bpJm5/8G+5/IdIwaauYk3nAa9bfRUwOjYfADEfH6yoKVpN/fjgsQU4NJFxkLfyANgkOlNkIhsiPNnHsVt8UCf9/LX5II7fxXe4jjnCkgwizicnQ0XnAEDYUvaR/GHvzts9u2VcrFQTfGYsuNVW1dbAXzYlj2AA19qBf+exstgNkXuLOplcOtG2VpW2zfsyE04Ytq2jZQig9pBdvcnM1tjOtslTAybtvDMgAnOG1pnmiJLvO+uBlfxabFj5oIT9V24Owo+i/2qxcjdd1QWwZebYLGP95HitpVfvfZ7HmOLD2bTsSVJwU3WC51I55BKA06DyEqQmYCAb1BRxFPZX0m667amCnpt4aBYbOgx/8iGIuHryPKIHO3Vt3evwVvAeAxTYxgzUuwzdFHewTbGeMm+ecxXFGB2wkswnHjJViMZoY+6Mg/xbj4kUtqDDrF79iGZlGhGoennxHjIAY8dnV5xk2UPVDK0ZQWaNyqsoBTc118YWKCDCnGbz8QiD7XNUJlq2SBjhmKfbekrFVApwotbqv7QJCn4p08ZCiNcU45aX6MDZoQCw5SVUoYm63idQmRS3Hi/L2PjITGtKlpkpjnrmsiLPw2Qq6UtYpV5+A2QhXqt5dsnDBLEKCVLDL8onDDrZpX1LjpLoq55wbxp9Y3u+j9iwVBK/8MG5DceOEN/Ui1Bz0JhkqG9iQL+7HaDPodPRu/FxYKOJcIj8OWphZ2RF4sCk1tl/IYmtq7Fth3Y1oSt3Fbvvl7vzzWCHkgNGdl+QykK7qvQVONrbrdKfWtLz7Rvkd/MoNP4OKmknvwRguRAb0WRFppEdjVlvs5YgsOxV/b87jiK3E3SsT68DXCzNqPszsHTX3ptJRUAUnvsVpbrdZ3IOasbLSsu5yS3OdBUxoRBys53B8pnw+332hOIFkGyPiAr9AEA3eLpPwErB4DjZFSqWZp46NDMX5/E4t/0yHiRqLvufjXXhzmxpprWOQJynbK/vo+6RWGLMahgQjplcEp1ttvC0T/0XiCTQz4SrL22OrGG43VcWnQS31JXzsHp6cFQ4o/rvvfi0f6FtYzKeqK1Oj1V7tJ8WnyGf3AC4CFDhILv99IEXIjPJedyDYlTZ85WG90+/v6+DX72XICGwYRAU9bKNkyY767D5L+3gnj9l9Z2GStq7G1ZHfrK7YPS1jamqtIUa0UrzV9o/fHsLa6LAtrwuegNRVZyn+rKmBfEJE8XE3ZhsJ7pF+ZIFPanm9wICPU/n3vxbqen7nBkm7Lyz7no+GHQ473cwTBK95p9dvf88Zhx9keRgboO6efoPxoPM/x/XaxXx3um5jBsr8XiPlapKkwvKlUk6YY6fYtZtfFBwloJ29zCiDfzWyh7xI/UHSnn4ifZsIU1X6k5FHuhGqGTAQDV+7od31/nqfUKubBNTYUzkqzj/+sybWuNbNt9n6F0kDl8P7c8ykVv6gMM5FkCZKa/08lMzeRlMLXEA4uwMuAzCqXfYci6/TSOQo/XXMUZENYukCpxhaJ31rMrpW9rpP+3hlmxEDA8ax4VEUTZl7kMb3Q+QVYXEh2PAl52KjZ+ypHkasbh6tViVYv4ThG3fBFwuHGr0E4WyagTo50Xigvs0DSEg5WrphA3/XES4abAT4YFhdK5Dc9phI5zDQiIfSghbMe+GByxrQd+tP0+vv+damS6LhvWlCatXuJ1iB1vJoq0TytsGojEHPXxAClQsAAAAAAAAA==" alt="Sensatia Botanicals" style="height:64px; object-fit:contain;">
-    </div>
     </div>
 
     <div class="dash-welcome-banner">
@@ -4804,10 +4864,16 @@ select:disabled {
         <h1>Dashboard Stock Opname</h1>
         <p id="dashSubtitle">Memuat data sesi final secara real-time...</p>
       </div>
-      <button class="dash-welcome-btn" onclick="dashboardRefresh(true)">
-        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
-        Refresh Data
-      </button>
+      <div style="display:flex; gap:10px;">
+        <button class="dash-welcome-btn" onclick="dashboardRefresh(true)">
+          <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+          Refresh Data
+        </button>
+        <button class="dash-welcome-btn" onclick="switchPage('dashboard')" style="background:#27AE60; border-color:#2ecc71; color:#fff;" title="Sesi saat ini telah selesai. Klik untuk kembali ke Dashboard Utama dan memulai sesi baru.">
+          <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg>
+          ✅ Sesi Selesai - Mulai Baru
+        </button>
+      </div>
     </div>
 
     <!-- Label penanda: angka di bawah ini selalu agregat SEMUA toko final -->
@@ -5521,7 +5587,7 @@ function doLogout() {
 
 // ============ KELOLA TOKO ============
 const TOKO_KEY = 'sensatia_daftar_toko';
-const TOKO_VERSION = 'v2026-final-list-46az';
+const TOKO_VERSION = 'v2026-final-list-47az';
 // Reset toko list jika versi berubah
 (function(){
   try {
@@ -5587,10 +5653,11 @@ function stripKotaPrefix(nama) {
   const s = String(nama).trim();
   // Pola: <Kota><spasi opsional><- / – / :><spasi opsional><Nama Toko>
   const match = s.match(/^[^-–:]{1,40}[\-–:]\s*(.+)$/);
+  let res = s;
   if (match && match[1] && match[1].trim().length > 0) {
-    return match[1].trim();
+    res = match[1].trim();
   }
-  return s;
+  return res.toUpperCase();
 }
 
 function getDaftarToko() {
@@ -6607,6 +6674,11 @@ function fallbackExcelRiil(wb, sheetName) {
     if (storageCol === -1) storageCol = headers.indexOf('stock');
     let gudangCol  = headers.indexOf('gudang');
 
+    let nameCol    = headers.findIndex(h => h === 'nama produk' || h === 'nama');
+    let katCol     = headers.findIndex(h => h === 'kategori');
+    let hargaCol   = headers.findIndex(h => h.includes('harga'));
+    let swCol      = headers.findIndex(h => h.includes('stockwiz') || h === 'sw');
+
     if (skuCol === -1 || (storeCol === -1 && storageCol === -1 && gudangCol === -1)) continue;
 
     let matched = 0;
@@ -6615,19 +6687,49 @@ function fallbackExcelRiil(wb, sheetName) {
       if (!row || !row[skuCol]) continue;
       const sku = String(row[skuCol]).trim();
       if (!sku) continue;
-      const p = products.find(p => p.sku === sku);
-      if (p) {
-        if (storeCol !== -1 && row[storeCol] !== '' && row[storeCol] !== null && row[storeCol] !== undefined) {
-          const sv = Number(row[storeCol]); if (!isNaN(sv)) p.store = sv;
+      
+      let p = products.find(p => p.sku === sku);
+      
+      // Jika upload file hasil export ke sesi baru, produk belum ada di memori.
+      // Kita tambahkan otomatis dengan membaca kolom Nama, Kategori, Harga, SW.
+      if (!p) {
+        p = {
+          sku:      sku,
+          name:     (nameCol !== -1 && row[nameCol]) ? String(row[nameCol]).trim() : sku,
+          price:    (hargaCol !== -1 && row[hargaCol]) ? (Number(row[hargaCol]) || 0) : 0,
+          sw:       (swCol !== -1 && row[swCol] !== '' && row[swCol] !== undefined) ? (Number(row[swCol]) || 0) : 0,
+          store:    '',
+          storage:  '',
+          gudang:   '',
+          terjual:  '',
+          expireds: []
+        };
+        products.push(p);
+
+        let kat = (katCol !== -1 && row[katCol]) ? String(row[katCol]).trim() : 'LAINNYA';
+        if (!kat) kat = 'LAINNYA';
+        
+        let catObj = categoryMap.find(c => c.label === kat);
+        if (!catObj) {
+          catObj = { label: kat, skus: [] };
+          const launchIdx = categoryMap.findIndex(c => c.label === 'NEW PRODUCT | LAUNCHING');
+          if (launchIdx !== -1) categoryMap.splice(launchIdx + 1, 0, catObj);
+          else categoryMap.push(catObj);
         }
-        if (storageCol !== -1 && row[storageCol] !== '' && row[storageCol] !== null && row[storageCol] !== undefined) {
-          const sv = Number(row[storageCol]); if (!isNaN(sv)) p.storage = sv;
-        }
-        if (gudangCol !== -1 && row[gudangCol] !== '' && row[gudangCol] !== null && row[gudangCol] !== undefined) {
-          const sv = Number(row[gudangCol]); if (!isNaN(sv)) p.gudang = sv;
-        }
-        matched++;
+        if (!catObj.skus.includes(sku)) catObj.skus.push(sku);
+        skuCategoryLookup[sku] = kat;
       }
+
+      if (storeCol !== -1 && row[storeCol] !== '' && row[storeCol] !== null && row[storeCol] !== undefined) {
+        const sv = Number(row[storeCol]); if (!isNaN(sv)) p.store = sv;
+      }
+      if (storageCol !== -1 && row[storageCol] !== '' && row[storageCol] !== null && row[storageCol] !== undefined) {
+        const sv = Number(row[storageCol]); if (!isNaN(sv)) p.storage = sv;
+      }
+      if (gudangCol !== -1 && row[gudangCol] !== '' && row[gudangCol] !== null && row[gudangCol] !== undefined) {
+        const sv = Number(row[gudangCol]); if (!isNaN(sv)) p.gudang = sv;
+      }
+      matched++;
     }
 
     const eb = document.getElementById('excelBadge');
@@ -6860,6 +6962,11 @@ function updateRiilLive(el) {
   // Cegah nilai negatif
   if (!isNaN(n) && n < 0) { n = 0; el.value = 0; }
   products[idx][field] = (val === '' || isNaN(n)) ? '' : n;
+  // Ensure we only use val1Store for the new single-column logic
+  if (field === 'val1Store') {
+    products[idx].val1Storage = '';
+    products[idx].val1Gudang = '';
+  }
   products[idx]._updatedAt = Date.now();
   // Tandai input ini sebagai "sedang diedit" → cloud merge tidak boleh overwrite
   const sku = products[idx] ? products[idx].sku : null;
@@ -6913,68 +7020,49 @@ function mergeStockDariCloud(cloudProducts) {
     const localUpdatedAt = p._updatedAt || 0;
     const cloudUpdatedAt = cp._updatedAt || 0;
     
-    // SKIP MERGE: Jika data lokal diedit lebih baru (timestamp lebih besar)
-    // daripada data dari cloud, pertahankan data lokal!
-    if (localUpdatedAt > cloudUpdatedAt) {
-      return; // lewati iterasi ini (mirip continue di dalam forEach)
-    }
-
-    // Set _updatedAt ke versi cloud agar konsisten
+    // Set _updatedAt ke versi cloud jika cloud lebih baru (atau kita belum pernah edit)
     if (cloudUpdatedAt > localUpdatedAt) {
       p._updatedAt = cloudUpdatedAt;
     }
 
     const storeFocused   = activeId === 'store_'   + p.sku || _dirtyInputs.has('store_'   + p.sku);
     const storageFocused = activeId === 'storage_' + p.sku || _dirtyInputs.has('storage_' + p.sku);
+    const gudangFocused  = activeId === 'gudang_'  + p.sku || _dirtyInputs.has('gudang_'  + p.sku);
+    const terjualFocused = activeId === 'terjual_' + p.sku || _dirtyInputs.has('terjual_' + p.sku);
 
     if (!storeFocused && cp.store !== undefined && String(cp.store) !== String(p.store)) {
-      const cloudStoreEmpty = cp.store === '' || cp.store === null || cp.store === undefined;
-      const localStoreFilled = p.store !== '' && p.store !== null && p.store !== undefined;
-      if (!(cloudStoreEmpty && localStoreFilled)) {
-        p.store = cp.store; changed = true;
-        const storeEl = document.getElementById('store_' + p.sku);
-        if (storeEl && storeEl !== activeEl) {
-          // Tampilkan val1Store jika sudah ada (nilai koreksi final), bukan store asli
-          const dispStore = (p.val1Store !== undefined && p.val1Store !== '') ? p.val1Store : cp.store;
-          storeEl.value = dispStore !== '' ? dispStore : '';
-        }
+      p.store = cp.store; changed = true;
+      const storeEl = document.getElementById('store_' + p.sku);
+      if (storeEl && storeEl !== activeEl) {
+        // Tampilkan val1Store jika sudah ada (nilai koreksi final), bukan store asli
+        const dispStore = (p.val1Store !== undefined && p.val1Store !== '') ? p.val1Store : cp.store;
+        storeEl.value = dispStore !== '' ? dispStore : '';
       }
     }
+    
     if (!storageFocused && cp.storage !== undefined && String(cp.storage) !== String(p.storage)) {
-      const cloudStorageEmpty = cp.storage === '' || cp.storage === null || cp.storage === undefined;
-      const localStorageFilled = p.storage !== '' && p.storage !== null && p.storage !== undefined;
-      if (!(cloudStorageEmpty && localStorageFilled)) {
-        p.storage = cp.storage; changed = true;
-        const storageEl = document.getElementById('storage_' + p.sku);
-        if (storageEl && storageEl !== activeEl) {
-          const dispStorage = (p.val1Storage !== undefined && p.val1Storage !== '') ? p.val1Storage : cp.storage;
-          storageEl.value = dispStorage !== '' ? dispStorage : '';
-        }
+      p.storage = cp.storage; changed = true;
+      const storageEl = document.getElementById('storage_' + p.sku);
+      if (storageEl && storageEl !== activeEl) {
+        const dispStorage = (p.val1Storage !== undefined && p.val1Storage !== '') ? p.val1Storage : cp.storage;
+        storageEl.value = dispStorage !== '' ? dispStorage : '';
       }
     }
-    const gudangFocused = activeId === 'gudang_' + p.sku || _dirtyInputs.has('gudang_' + p.sku);
+    
     if (!gudangFocused && cp.gudang !== undefined && String(cp.gudang) !== String(p.gudang)) {
-      const cloudGudangEmpty = cp.gudang === '' || cp.gudang === null || cp.gudang === undefined;
-      const localGudangFilled = p.gudang !== '' && p.gudang !== null && p.gudang !== undefined;
-      if (!(cloudGudangEmpty && localGudangFilled)) {
-        p.gudang = cp.gudang; changed = true;
-        const gudangEl = document.getElementById('gudang_' + p.sku);
-        if (gudangEl && gudangEl !== activeEl) {
-          const dispGudang = (p.val1Gudang !== undefined && p.val1Gudang !== '') ? p.val1Gudang : cp.gudang;
-          gudangEl.value = dispGudang !== '' ? dispGudang : '';
-        }
+      p.gudang = cp.gudang; changed = true;
+      const gudangEl = document.getElementById('gudang_' + p.sku);
+      if (gudangEl && gudangEl !== activeEl) {
+        const dispGudang = (p.val1Gudang !== undefined && p.val1Gudang !== '') ? p.val1Gudang : cp.gudang;
+        gudangEl.value = dispGudang !== '' ? dispGudang : '';
       }
     }
-    const terjualFocused = activeId === 'terjual_' + p.sku || _dirtyInputs.has('terjual_' + p.sku);
+    
     if (!terjualFocused && cp.terjual !== undefined && String(cp.terjual) !== String(p.terjual)) {
-      const cloudTerjualEmpty = cp.terjual === '' || cp.terjual === null || cp.terjual === undefined;
-      const localTerjualFilled = p.terjual !== '' && p.terjual !== null && p.terjual !== undefined;
-      if (!(cloudTerjualEmpty && localTerjualFilled)) {
-        p.terjual = cp.terjual; changed = true;
-        const terjualEl = document.getElementById('terjual_' + p.sku);
-        if (terjualEl && terjualEl !== activeEl) {
-          terjualEl.value = cp.terjual !== '' ? cp.terjual : '';
-        }
+      p.terjual = cp.terjual; changed = true;
+      const terjualEl = document.getElementById('terjual_' + p.sku);
+      if (terjualEl && terjualEl !== activeEl) {
+        terjualEl.value = cp.terjual !== '' ? cp.terjual : '';
       }
     }
     // price & sw: update dari cloud HANYA jika device ini belum punya CSV lokal.
@@ -7000,34 +7088,22 @@ function mergeStockDariCloud(cloudProducts) {
     // Hanya update jika tidak sedang diedit user di device ini
     const v1StoreFocused   = activeId === 'val1store_' + p.sku || _dirtyInputs.has('val1Store_' + p.sku);
     if (!v1StoreFocused && cp.val1Store !== undefined && String(cp.val1Store) !== String(p.val1Store)) {
-      const cloudEmpty  = cp.val1Store === '' || cp.val1Store === null || cp.val1Store === undefined;
-      const localFilled = p.val1Store  !== '' && p.val1Store  !== null && p.val1Store  !== undefined;
-      if (!(cloudEmpty && localFilled)) {
-        p.val1Store = cp.val1Store; changed = true;
-        const el = document.getElementById('val1store_' + p.sku);
-        if (el && el !== activeEl) { el.value = cp.val1Store !== '' ? cp.val1Store : ''; }
-      }
+      p.val1Store = cp.val1Store; changed = true;
+      const el = document.getElementById('val1store_' + p.sku);
+      if (el && el !== activeEl) { el.value = cp.val1Store !== '' ? cp.val1Store : ''; }
     }
     // val1Storage tidak digunakan lagi (total disimpan di val1Store)
     const v1StorageFocused   = activeId === 'val1storage_' + p.sku || _dirtyInputs.has('val1Storage_' + p.sku);
     if (!v1StorageFocused && cp.val1Storage !== undefined && String(cp.val1Storage) !== String(p.val1Storage)) {
-      const cloudEmpty  = cp.val1Storage === '' || cp.val1Storage === null || cp.val1Storage === undefined;
-      const localFilled = p.val1Storage  !== '' && p.val1Storage  !== null && p.val1Storage  !== undefined;
-      if (!(cloudEmpty && localFilled)) {
-        p.val1Storage = cp.val1Storage; changed = true;
-        const el2 = document.getElementById('val1storage_' + p.sku);
-        if (el2 && el2 !== activeEl) { el2.value = cp.val1Storage !== '' ? cp.val1Storage : ''; }
-      }
+      p.val1Storage = cp.val1Storage; changed = true;
+      const el2 = document.getElementById('val1storage_' + p.sku);
+      if (el2 && el2 !== activeEl) { el2.value = cp.val1Storage !== '' ? cp.val1Storage : ''; }
     }
     const v1GudangFocused   = activeId === 'val1gudang_' + p.sku || _dirtyInputs.has('val1Gudang_' + p.sku);
     if (!v1GudangFocused && cp.val1Gudang !== undefined && String(cp.val1Gudang) !== String(p.val1Gudang)) {
-      const cloudEmpty  = cp.val1Gudang === '' || cp.val1Gudang === null || cp.val1Gudang === undefined;
-      const localFilled = p.val1Gudang  !== '' && p.val1Gudang  !== null && p.val1Gudang  !== undefined;
-      if (!(cloudEmpty && localFilled)) {
-        p.val1Gudang = cp.val1Gudang; changed = true;
-        const el3 = document.getElementById('val1gudang_' + p.sku);
-        if (el3 && el3 !== activeEl) { el3.value = cp.val1Gudang !== '' ? cp.val1Gudang : ''; }
-      }
+      p.val1Gudang = cp.val1Gudang; changed = true;
+      const el3 = document.getElementById('val1gudang_' + p.sku);
+      if (el3 && el3 !== activeEl) { el3.value = cp.val1Gudang !== '' ? cp.val1Gudang : ''; }
     }
 
     // ── Merge Validasi 2 dari cloud ──
@@ -7279,7 +7355,10 @@ function updateVal1(el) {
   let n = Number(val);
   if (!isNaN(n) && n < 0) { n = 0; el.value = 0; }
   products[idx][field] = (val === '' || isNaN(n)) ? '' : n;
+  // Setiap field val1 (Display/Stock/Gudang) kini independent — tidak saling menghapus.
+  // Pengguna bisa mengisi ketiga kolom secara bebas; calcRow menggunakannya semuanya.
   products[idx]._updatedAt = Date.now();
+
   // Tandai dirty — dulu field Validasi 1 TIDAK PERNAH ditandai dirty sama sekali,
   // hanya dilindungi selagi elemen sedang fokus. Begitu pindah field/klik area lain,
   // nilai yang baru diketik jadi rawan ditimpa oleh sync cloud. Dihapus lagi setelah
@@ -7540,7 +7619,7 @@ function applyWorkflowPhaseUI() {
 
   } else if (workflowPhase === 'val1') {
     info.innerHTML = isCreator
-      ? '<strong>Fase 2 — Validasi 1:</strong> Hitung ulang stok di kolom <em>Cek 1 Store</em> & <em>Cek 1 Storage</em>.'
+      ? '<strong>Fase 2 — Validasi 1:</strong> Hitung ulang stok di kolom <em>Display</em>, <em>Stock</em> &amp; <em>Gudang</em> (Validasi 1).'
       : '<strong>Fase 2 — Validasi 1:</strong> Menunggu Creator menyelesaikan validasi.';
     if (isCreator) {
       btn.style.display    = 'inline-flex';
@@ -7580,7 +7659,7 @@ function applyWorkflowPhaseUI() {
     info.innerHTML = '🎉 <strong>Stock Opname Selesai!</strong> Semua fase sudah tuntas.';
     if (isCreator) {
       btn.style.display    = 'inline-flex';
-      btn.textContent      = '✅ Finalisasi Sesi Ini';
+      btn.textContent      = 'Lanjut ke Tahap Finalisasi →';
       btn.style.background = '#27AE60';
       btn.style.color      = '#fff';
     } else {
@@ -7624,6 +7703,7 @@ function doWorkflowAction() {
       if (confirm('✅ Selesaikan Stock Opname (Lokal)?\\n\\nSeluruh data input akan di-reset dan dibersihkan untuk sesi berikutnya.')) {
         if (typeof resetData === 'function') resetData();
         showToast('✨ Sesi lokal berhasil di-reset!');
+        switchPage('dashboard');
       }
       return;
     }
@@ -8445,7 +8525,7 @@ function renderTable() {
       <td data-label="No."><span class="no-badge">${displayNo}</span></td>
       <td class="kode left" data-label="Kode" title="${p.sku}">${displaySku}</td>
       <td class="nama${isLainnyaSku(p.sku) ? ' nama-lainnya' : ''}" data-label="Produk"><span class="nama-text">${displayName}</span>${rowGroup.label ? `<span class="nama-cat-tag">${rowGroup.label}</span>` : ''}</td>
-      <td class="mono" data-label="Price">${fmt(p.price)}</td>
+      <td class="mono" data-label="Price" style="display:none;">${fmt(p.price)}</td>
       <td class="mono" data-label="Jumlah di Stockwiz">${p.sw !== '' ? p.sw : '<span class="dash">—</span>'}</td>
       <td data-label="Terjual" class="col-terjual"><input class="qty-input" type="number" min="0" placeholder="0" inputmode="numeric" enterkeyhint="next" autocomplete="off" value="${p.terjual !== '' && p.terjual !== undefined ? p.terjual : ''}" id="terjual_${p.sku}" data-idx="${realIdx}" data-field="terjual" oninput="updateRiilLive(this)" onchange="updateRiilDone(this)" onkeydown="qtyInputNav(event,this)" title="Jumlah unit yang sudah terjual selama periode stock opname"></td>
       <td data-label="Display" class="col-store"><input class="qty-input" type="number" min="0" placeholder="0" inputmode="numeric" enterkeyhint="next" autocomplete="off" value="${c.useVal1 && p.val1Store !== undefined && p.val1Store !== '' ? p.val1Store : (p.store !== '' ? p.store : '')}" id="store_${p.sku}" data-idx="${realIdx}" data-field="store" oninput="updateRiilLive(this)" onchange="updateRiilDone(this)" onkeydown="qtyInputNav(event,this)"></td>
@@ -9084,6 +9164,7 @@ function renderExpiredTable() {
 }
 
 function exportExpiredExcel() {
+  if (!confirm('Apakah Anda yakin ingin mengekspor data Expired ke Excel?')) return;
   ensureXLSX(function() { _doExportExpiredExcel(); });
 }
 function _doExportExpiredExcel() {
@@ -9508,6 +9589,7 @@ function buildExportRows() {
 }
 
 function downloadTemplateExcel() {
+  if (!confirm('Apakah Anda yakin ingin mengunduh Template Excel?')) return;
   ensureXLSX(function() { _doDownloadTemplateExcel(); });
 }
 function _doDownloadTemplateExcel() {
@@ -9612,6 +9694,7 @@ function _doDownloadTemplateExcel() {
 
 function exportExcel() {
   if (!products.length) { showToast('❌ Tidak ada data'); return; }
+  if (!confirm('Apakah Anda yakin ingin mengekspor data Stok ke Excel?')) return;
   ensureXLSX(function() { _doExportExcel(); });
 }
 function _doExportExcel() {
@@ -10826,6 +10909,7 @@ function _buildExportWorkbook() {
 async function doKirimKeDrive() {
   if (!products.length) { showToast('❌ Tidak ada data'); return; }
   if (!cekURLDikonfigurasi()) return;
+  if (!confirm('Apakah Anda yakin ingin mengirim data ini ke Google Drive?')) return;
 
   // Pastikan library XLSX sudah ter-load sebelum lanjut
   ensureXLSX(function() { _doKirimKeDriveCore(); });
@@ -11001,6 +11085,7 @@ function _emailSetProgress(pct, text) {
 function doKirimEmail() {
   if (!products.length) { showToast('❌ Tidak ada data'); return; }
   if (!cekURLDikonfigurasi()) return;
+  if (!confirm('Apakah Anda yakin ingin mengirim data ini via Email?')) return;
 
   // Validasi input email
   var e1 = document.getElementById('emailTujuan1');
@@ -11290,6 +11375,36 @@ function doResetAll() {
   }
 }
 
+function resetSemuaDataConfirm() {
+  if (confirm('⚠️ PERINGATAN: Apakah Anda yakin ingin MENGHAPUS SEMUA DATA di perangkat ini dan MULAI BARU? (Data yang belum dikirim ke Cloud akan HILANG)')) {
+    // 1. Keluar dari sesi jika ada
+    if (typeof activeSesiKode !== 'undefined' && activeSesiKode) {
+      keluarSesi(true);
+    }
+    // 2. Clear localStorage
+    localStorage.clear();
+    // 3. Reset state di memori
+    products = [];
+    _csvRawData = null;
+    csvDataMap = {};
+    document.getElementById('infoUnit').value = '';
+    document.getElementById('infoTanggal').value = '';
+    document.getElementById('infoPukulStart').value = '';
+    document.getElementById('infoPukulEnd').value = '';
+    daftarPetugas = [''];
+    petugasManualIdx.clear();
+    renderPetugasList();
+    
+    // 4. Update UI
+    renderTable();
+    updateTally();
+    
+    // 5. Kembali ke Dashboard
+    switchPage('dashboard');
+    showToast('Semua data berhasil di-reset. Aplikasi siap digunakan kembali.');
+  }
+}
+
 function resetData() {
   // Hapus produk CSV-tambahan di LAINNYA; pertahankan produk bawaan (master hardcode)
   // Produk bawaan ditentukan otomatis dari MASTER_PRODUCT_SKUS (tidak ada whitelist manual lagi)
@@ -11358,12 +11473,26 @@ function mulaiStockOpname() {
     tokoEl.focus();
     return;
   }
+  
+  // Cek apakah toko ini SUDAH ADA SESI AKTIF di Cloud
+  if (typeof _sgabAktifData !== 'undefined' && _sgabAktifData) {
+     const tokoVal = tokoEl.value;
+     const existingSesi = _sgabAktifData.find(s => s.unit === tokoVal);
+     if (existingSesi && activeSesiKode !== existingSesi.kode) {
+        const yes = confirm(`⚠️ Toko "${tokoVal}" sudah memiliki sesi yang sedang berjalan di cloud.\n\nApakah Anda ingin BERGABUNG dengan sesi tersebut daripada membuat sesi baru?`);
+        if (yes) {
+           gabungSesiDariCard(existingSesi.kode);
+           return;
+        }
+     }
+  }
+
   const hasData = products.some(p => p.store !== '' || p.storage !== '' || (p.gudang !== '' && p.gudang !== undefined))
     || (_csvRawData && _csvRawData.length > 0);
   if (hasData) {
     document.getElementById('mulaiOpnameModalOverlay').classList.add('open');
   } else {
-    switchPage('stock');
+    switchPage('csv');
   }
 }
 function closeMulaiOpnameConfirm() {
@@ -11405,7 +11534,7 @@ function doMulaiOpnameReset() {
     ]).catch(() => {});
   }
 
-  switchPage('stock');
+  switchPage('csv');
   showToast('🔄 Data lama direset, mulai input stock baru');
 }
 
@@ -11622,6 +11751,7 @@ function triggerAutoSync_placeholder() {
         if (cloudProds.length > 0) mergeStockDariCloud(cloudProds, true);
         const mergedProds = buatProdsUntukPush(cloudProds);
         await apiUpdateStock(activeSesiKode, mergedProds, currentNama);
+        _lastPushedStockSnapshot = JSON.stringify(products);
         _stockDirty = false;
       } catch(e) {
         // Silent fail — interval 8 detik akan retry
@@ -11969,7 +12099,8 @@ function saveProgress() {
         val1Gudang:      p.val1Gudang      !== undefined ? p.val1Gudang      : '',
         val2Approved:    p.val2Approved    || false,
         val2ApprovedBy:  p.val2ApprovedBy  || '',
-        val2ApprovedAt:  p.val2ApprovedAt  || ''
+        val2ApprovedAt:  p.val2ApprovedAt  || '',
+        _updatedAt:      p._updatedAt      || 0
       })),
       categoryMap: categoryMap.map(c => ({
         label: c.label,
@@ -11988,7 +12119,12 @@ function saveProgress() {
     };
     localStorage.setItem(SAVE_KEY, JSON.stringify(data));
     _flashSaveBadge();
-    _stockDirty = true; // tandai ada perubahan — akan dikirim ke cloud di sync berikutnya
+    
+    // Smart Dirty Flags: Hanya tandai stock kotor jika data stock BENAR-BENAR berubah
+    const newStockSnapshot = JSON.stringify(data.products);
+    if (newStockSnapshot !== _lastPushedStockSnapshot) {
+      _stockDirty = true; // tandai ada perubahan — akan dikirim ke cloud di sync berikutnya
+    }
   } catch(e) {
     console.warn('saveProgress failed:', e);
   }
@@ -12398,6 +12534,7 @@ function jmHideSync() {
 
 // Simpan & kirim ke cloud dari joiner mobile
 async function jmSimpanDanKirim() {
+  if (!confirm('Apakah Anda yakin ingin menyimpan dan mengirim data ke Cloud?')) return;
   // Commit semua input qty yang visible di JM view
   document.querySelectorAll('.jm-qty-input').forEach(function(el) {
     const idx   = parseInt(el.dataset.idx);
@@ -12512,6 +12649,7 @@ function loadProgress() {
           if (saved.val2Approved   !== undefined) p.val2Approved   = saved.val2Approved;
           if (saved.val2ApprovedBy !== undefined) p.val2ApprovedBy = saved.val2ApprovedBy;
           if (saved.val2ApprovedAt !== undefined) p.val2ApprovedAt = saved.val2ApprovedAt;
+          if (saved._updatedAt     !== undefined) p._updatedAt     = saved._updatedAt;
         }
       });
     }
@@ -12758,19 +12896,16 @@ const PAGENAV_MENU_META = {
   info:  { label: 'Data Toko', icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>' },
   stock: { label: 'Input Stock', icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>' },
   csv:   { label: 'Data CSV Stockwiz', icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>' },
-  report: { label: 'Report Hasil Opname', icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>' },
+  excel: { label: 'Excel Offline', icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>' },
+  report: { label: 'Dashboard Final', icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>' },
   dashboard: { label: 'Dashboard Utama', icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1H5a1 1 0 01-1-1V5zm0 10a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1H5a1 1 0 01-1-1v-4zM14 5a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1V5zm0 10a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z"/>' }
 };
 
 
 function startWizard() {
-  if (!document.getElementById('infoUnit').value) {
-    switchPage('info');
-  } else if (!window.csvData || window.csvData.length === 0) {
-    switchPage('csv');
-  } else {
-    switchPage('stock');
-  }
+  // Selalu buka Data Toko (Tahap 1) terlebih dahulu 
+  // agar user bisa membuat sesi atau memeriksa auditor.
+  switchPage('info');
 }
 
 function updateStepper(page) {
@@ -12778,7 +12913,7 @@ function updateStepper(page) {
   const stepper = document.getElementById('wizardStepper');
   if (!wizardNav || !stepper) return;
   
-  if (page === 'info' || page === 'csv' || page === 'stock') {
+  if (page === 'info' || page === 'csv' || page === 'excel' || page === 'stock') {
     wizardNav.classList.add('active');
     stepper.style.display = 'flex';
   } else {
@@ -12789,30 +12924,87 @@ function updateStepper(page) {
   const s1 = document.getElementById('step-1');
   const s2 = document.getElementById('step-2');
   const s3 = document.getElementById('step-3');
+  const s4 = document.getElementById('step-4');
+  const s5 = document.getElementById('step-5');
   const d1 = document.getElementById('step-div-1');
   const d2 = document.getElementById('step-div-2');
+  const d3 = document.getElementById('step-div-3');
+  const d4 = document.getElementById('step-div-4');
 
-  s1.className = 'step-item'; s2.className = 'step-item'; s3.className = 'step-item';
-  d1.className = 'step-divider'; d2.className = 'step-divider';
+  if(s1) s1.className = 'step-item'; 
+  if(s2) s2.className = 'step-item'; 
+  if(s3) s3.className = 'step-item'; 
+  if(s4) s4.className = 'step-item';
+  if(s5) s5.className = 'step-item';
+  if(d1) d1.className = 'step-divider'; 
+  if(d2) d2.className = 'step-divider'; 
+  if(d3) d3.className = 'step-divider';
+  if(d4) d4.className = 'step-divider';
 
   if (page === 'info') {
-    s1.classList.add('active');
+    if(s1) s1.classList.add('active');
   } else if (page === 'csv') {
-    s1.classList.add('completed');
-    d1.classList.add('completed');
-    s2.classList.add('active');
+    if(s1) s1.classList.add('completed');
+    if(d1) d1.classList.add('completed');
+    if(s2) s2.classList.add('active');
+  } else if (page === 'excel') {
+    if(s1) s1.classList.add('completed');
+    if(d1) d1.classList.add('completed');
+    if(s2) s2.classList.add('completed');
+    if(d2) d2.classList.add('completed');
+    if(s3) s3.classList.add('active');
   } else if (page === 'stock') {
-    s1.classList.add('completed');
-    d1.classList.add('completed');
-    s2.classList.add('completed');
-    d2.classList.add('completed');
-    s3.classList.add('active');
+    if(s1) s1.classList.add('completed');
+    if(d1) d1.classList.add('completed');
+    if(s2) s2.classList.add('completed');
+    if(d2) d2.classList.add('completed');
+    if(s3) s3.classList.add('completed');
+    if(d3) d3.classList.add('completed');
+    if(s4) s4.classList.add('active');
+  } else if (page === 'report') {
+    if(s1) s1.classList.add('completed');
+    if(d1) d1.classList.add('completed');
+    if(s2) s2.classList.add('completed');
+    if(d2) d2.classList.add('completed');
+    if(s3) s3.classList.add('completed');
+    if(d3) d3.classList.add('completed');
+    if(s4) s4.classList.add('completed');
+    if(d4) d4.classList.add('completed');
+    if(s5) s5.classList.add('active');
   }
 }
 
 
 // ============ DASHBOARD TOKO ============
-function renderDashboardToko() {
+let _tokoFinalSet = new Set();
+let _tokoFinalFetchedAt = 0;
+let _isFetchingTokoFinal = false;
+
+function fetchTokoFinal() {
+  if (_isFetchingTokoFinal) return;
+  if (Date.now() - _tokoFinalFetchedAt < 10000) return; // cache 10s
+  _isFetchingTokoFinal = true;
+  apiSesi('list', {}).then(res => {
+    if (res.ok && res.data) {
+      _tokoFinalSet.clear();
+      res.data.forEach(s => {
+        if (s.status === 'final' || s.status === 'final2') {
+          let tName = (s.unit || '').trim();
+          if (tName.includes(' - ')) tName = tName.split(' - ')[1].trim();
+          _tokoFinalSet.add(tName.toUpperCase());
+        }
+      });
+      _tokoFinalFetchedAt = Date.now();
+      if (activePage === 'dashboard' && (!document.getElementById('dashTokoEmptySearch') || document.getElementById('dashboardStoreGrid').innerHTML !== '')) {
+        renderDashboardToko(true);
+      }
+    }
+  }).catch(e => {}).finally(() => { _isFetchingTokoFinal = false; });
+}
+
+function renderDashboardToko(skipFetch = false) {
+  if (!skipFetch) fetchTokoFinal();
+  
   const grid = document.getElementById('dashboardStoreGrid');
   if (!grid) return;
   const list = getDaftarToko();
@@ -12832,6 +13024,7 @@ function renderDashboardToko() {
   sorted.forEach(toko => {
     const card = document.createElement('div');
     const isActive = (toko === activeToko);
+    const isFinal = _tokoFinalSet.has(toko.toUpperCase());
     
     card.className = 'dash-card hoverable';
     card.setAttribute('data-nama', toko.toLowerCase());
@@ -12852,13 +13045,13 @@ function renderDashboardToko() {
     const initial = toko.substring(0,2).toUpperCase();
     
     card.innerHTML = `
-      <div style="width:48px; height:48px; border-radius:10px; background:${isActive ? 'var(--green)' : 'var(--navy-pale)'}; color:${isActive ? '#fff' : 'var(--navy)'}; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:16px; flex-shrink:0;">
+      <div style="width:48px; height:48px; border-radius:10px; background:${isActive ? 'var(--green)' : (isFinal ? 'var(--navy2)' : 'var(--navy-pale)')}; color:${isActive ? '#fff' : (isFinal ? '#fff' : 'var(--navy)')}; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:16px; flex-shrink:0;">
         ${initial}
       </div>
       <div style="flex:1; min-width:0; position:relative;">
         <div style="font-weight:700; color:var(--navy); font-size:15px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; padding-right: 60px;">${toko}</div>
-        <div style="font-size:12px; color:${isActive ? 'var(--green)' : 'var(--text-muted)'}; margin-top:4px; font-weight:${isActive ? '600' : '400'};">${isActive ? 'Sedang Stock Opname' : 'Klik untuk mulai Stock Opname &rarr;'}</div>
-        ${isActive ? '<div style="position:absolute; top:0; right:0; background:var(--green); color:#fff; font-size:10px; font-weight:700; padding:3px 7px; border-radius:6px; letter-spacing:0.5px;">AKTIF</div>' : ''}
+        <div style="font-size:12px; color:${isActive ? 'var(--green)' : (isFinal ? 'var(--muted)' : 'var(--text-muted)')}; margin-top:4px; font-weight:${isActive || isFinal ? '600' : '400'};">${isActive ? 'Sedang Stock Opname' : (isFinal ? 'Stock Opname Selesai' : 'Klik untuk mulai Stock Opname &rarr;')}</div>
+        ${isActive ? '<div style="position:absolute; top:0; right:0; background:var(--green); color:#fff; font-size:10px; font-weight:700; padding:3px 7px; border-radius:6px; letter-spacing:0.5px;">AKTIF</div>' : (isFinal ? '<div style="position:absolute; top:0; right:0; background:var(--navy2); color:#fff; font-size:10px; font-weight:700; padding:3px 7px; border-radius:6px; letter-spacing:0.5px;">FINAL</div>' : '')}
       </div>
     `;
     grid.appendChild(card);
@@ -12906,7 +13099,7 @@ function filterDashboardToko() {
 function switchPage(page) {
   activePage = page;
   try { localStorage.setItem('so_active_page', page); } catch(e) {}
-  ['info','stock','csv','dashboard','report'].forEach(p => {
+  ['info','stock','csv','excel','dashboard','report'].forEach(p => {
     const el = document.getElementById('page-' + p);
     const nav = document.getElementById('pnav-' + p);
     if (el) el.classList.toggle('active', p === page);
@@ -13700,10 +13893,30 @@ const ACTIVE_SESI_KEY = 'sensatia_active_sesi';
 let activeSesiKode   = null;
 let activeSesiStatus = null; // 'aktif' | 'final' | 'final2' — status sesi yang sedang dibuka
 let sesiSyncTimer    = null;
-let sesiSyncInterval = 30000; // 30 detik (agar tidak boros limit 100k API/hari)
+let sesiSyncInterval = 60000; // 60 detik (menghemat API requests)
+let lastUserActionTime = Date.now();
+const IDLE_TIMEOUT = 3 * 60 * 1000; // 3 menit
+let _isIdle = false;
+
+function resetIdleTimer() {
+  lastUserActionTime = Date.now();
+  if (_isIdle) {
+    _isIdle = false;
+    // Jika bangun dari idle, tarik data terbaru (optional)
+    if (activeSesiKode && typeof refreshDataDariCloud === 'function') {
+      refreshDataDariCloud();
+    }
+  }
+}
+
+// Pasang event listener untuk mendeteksi aktivitas user
+window.addEventListener('mousemove', resetIdleTimer, { passive: true });
+window.addEventListener('keydown', resetIdleTimer, { passive: true });
+window.addEventListener('touchstart', resetIdleTimer, { passive: true });
 let _stockDirty        = false; // true jika ada perubahan products yang belum dikirim ke cloud
 let _blockCloudMerge   = false; // true → skip 1 siklus mergeStockDariCloud setelah reset/send
 let _lastPushedMetaSnapshot = null; // snapshot meta terakhir yang berhasil di-push — skip write kalau tidak berubah
+let _lastPushedStockSnapshot = null; // snapshot stock terakhir yang di-push
 let _sesiFinalLockHandled   = false; // true setelah handleSesiLockedByFinal() jalan sekali, cegah toast dobel
 // ── Timestamp edit lokal terakhir untuk field Toko & Tanggal. Dipakai supaya
 //    tick sync (tiap sesiSyncInterval) tidak menimpa balik nilai yang BARU
@@ -13782,6 +13995,7 @@ function applyDataSesiLangsung(sesi) {
     clearCsvProgress();
     // Setelah apply dari cloud: tidak perlu push (cloud sudah punya data ini)
     // dan tidak perlu block merge (data yang akan datang dari cloud sudah benar)
+    _lastPushedStockSnapshot = JSON.stringify(products);
     _stockDirty      = false;
     _blockCloudMerge = false;
   })();
@@ -13982,6 +14196,66 @@ function clearActiveSesi() {
   try { localStorage.removeItem(ACTIVE_SESI_KEY); } catch(e) {}
 }
 
+function renderSesiPanel() {
+  const panel = document.getElementById('sesiKolaborasiBody');
+  if (!panel) return;
+  
+  if (activeSesiKode) {
+    panel.innerHTML = `
+      <div style="background:#E8F5EE; border:1px solid #B2DFCB; border-radius:8px; padding:15px; margin-bottom:12px;">
+        <div style="display:flex; align-items:center; gap:8px; color:#1A7A4A; font-weight:700; margin-bottom:5px;">
+          <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          Sesi Aktif: <span style="font-size:16px;">${activeSesiKode}</span>
+        </div>
+        <div style="font-size:13px; color:#2c3e50;">Data akan disinkronisasi ke cloud. Rekan tim dapat bergabung dengan kode ini.</div>
+      </div>
+      <div style="display:flex; gap:10px; flex-wrap:wrap;">
+        <button class="btn btn-navy" onclick="simpanKirimKeCloud()" style="padding:9px 18px; font-weight:600; font-size:14px;">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="16" height="16" style="vertical-align:text-bottom; margin-right:5px;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/></svg> Simpan & Kirim
+        </button>
+        <button class="btn" onclick="keluarSesi()" style="padding:9px 18px; background:#FFEBEB; color:#E74C3C; border:1px solid #F5C6C6; font-weight:600; font-size:14px;">
+          Keluar Sesi
+        </button>
+      </div>
+    `;
+  } else {
+    panel.innerHTML = `
+      <div style="background:#FEF8EC; border:1px solid #F8D7A0; border-radius:8px; padding:15px; margin-bottom:12px;">
+        <div style="display:flex; align-items:center; gap:8px; color:#B7770D; font-weight:700; margin-bottom:5px;">
+          <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+          Belum ada sesi kolaborasi
+        </div>
+        <div style="font-size:13px; color:#2c3e50;">Jika tidak membuat sesi, Anda hanya akan bekerja secara offline. Buat sesi jika ingin merekam audit ke Cloud.</div>
+      </div>
+      <div style="display:flex; gap:10px; flex-wrap:wrap;">
+        <button class="btn btn-green" onclick="switchPage('dashboard'); dashSwitchTab('aktif');" style="padding:10px 20px; font-weight:700; font-size:14.5px;">
+          <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="vertical-align:text-bottom; margin-right:5px;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg> Buat Sesi Baru
+        </button>
+        <button class="btn btn-navy" onclick="switchPage('dashboard'); dashSwitchTab('aktif');" style="padding:10px 20px; font-weight:600; font-size:14px; background:var(--navy-pale); color:var(--navy); border:1px solid var(--border);">
+          <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="vertical-align:text-bottom; margin-right:5px;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg> Gabung Sesi
+        </button>
+      </div>
+    `;
+  }
+}
+
+function prefillBuatSesi() {
+  const tokoSel = document.getElementById('infoUnit');
+  let kodeDefault = '';
+  if (tokoSel && tokoSel.value) {
+    const tokoName = tokoSel.options[tokoSel.selectedIndex].text.replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
+    kodeDefault = tokoName + Math.floor(100 + Math.random() * 900);
+  } else {
+    kodeDefault = 'OPNAME' + Math.floor(1000 + Math.random() * 9000);
+  }
+  
+  openSesiModal();
+  const inputSesi = document.getElementById('sesiBaruInput');
+  if (inputSesi) {
+    inputSesi.value = kodeDefault;
+  }
+}
+
 function showSesiAktif(kode) {
   activeSesiKode = kode;
   document.getElementById('sesiKodeDisplay').textContent = kode;
@@ -13993,6 +14267,7 @@ function showSesiAktif(kode) {
   document.getElementById('sesiSoloInfo').style.display  = 'none';
   document.getElementById('sesiMultiInfo').style.display = 'block';
   startSesiSync();
+  renderSesiPanel();
   // Badge di header
   const badge = document.getElementById('sesiHeaderBadge');
   if (badge) badge.style.display = 'block';
@@ -14019,6 +14294,7 @@ function hideSesiAktif() {
   document.getElementById('sesiKodeAktif').style.display  = 'none';
   document.getElementById('sesiPanelBuat').style.display  = 'block';
   document.getElementById('sesiJoinedBanner').style.display = 'none';
+  renderSesiPanel();
   // Kembali ke mode Solo
   document.getElementById('sesiModeSolo').classList.add('active');
   document.getElementById('sesiModeMulti').classList.remove('active');
@@ -14274,14 +14550,13 @@ async function loadSesiCloud() {
           '<span>ID: ' + sesi.kode + '</span>' +
         '</div>' +
         '<div class="sesi-cloud-card-actions">' +
-          (isFinal && !isFinal2 && isSuperCreator() ?
             // Sesi sudah final (tahap 1) tapi belum final2 — supercreator dapat
             // tombol "Buka Sesi" khusus (bukan "Lihat Saja") supaya bisa masuk
             // kapan pun untuk mengoreksi data hitungan stock opname sebelum
             // dikunci permanen lewat Finalisasi 2 (lihat gambar contoh).
-            '<button class="btn-buka" style="background:#1B3A5C;color:#fff;border-color:#1B3A5C;" onclick="bukaSesi(\'' + sesi.kode + '\', false)">📂 Buka Sesi</button>' :
+          (isFinal && !isFinal2 && isSuperCreator() ? '<button class="btn-buka" style="background:#1B3A5C;color:#fff;border-color:#1B3A5C;" onclick="bukaSesi(\'' + sesi.kode + '\', false)">📂 Buka Sesi</button>' :
           isFinal ? '<button class="btn-buka" style="background:var(--navy-pale);color:var(--navy);border-color:var(--blue-border);" onclick="bukaSesi(\'' + sesi.kode + '\', true)">👁 Lihat Saja</button>' :
-            sesi.createdBy === currentNama ? '<button class="btn-buka" onclick="bukaSesi(\'' + sesi.kode + '\', false)">📂 Buka Sesi</button>' : '') +
+            currentRole === 'admin' ? '<button class="btn-buka" onclick="bukaSesi(\'' + sesi.kode + '\', false)">📂 Buka Sesi</button>' : '') +
           (!isFinal && currentRole !== 'admin' && !isActiveSesi ? '<button onclick="gabungSesiDariCard(\'' + sesi.kode + '\')" style="color:var(--navy);border-color:var(--blue-border);background:var(--blue-bg);">🔗 Gabung</button>' : '') +
           '<button class="btn-excel" onclick="exportSesiExcel(\'' + sesi.kode + '\')">📊 Excel</button>' +
           '<button class="btn-email" onclick="shareEmail(\'' + sesi.kode + '\',\'' + (sesi.unit||'') + '\',\'' + (sesi.tanggal||'') + '\')">✉️ Email</button>' +
@@ -14364,6 +14639,7 @@ async function buatSesiBaru() {
     showSesiAktif(res.kode);
     loadSesiCloud();
     // Data baru saja dipush ke cloud — tidak perlu push lagi di sync pertama
+    _lastPushedStockSnapshot = JSON.stringify(products);
     _stockDirty      = false;
     _blockCloudMerge = true;  // skip pull-balik di tick pertama (lokal sudah benar)
     startSesiSync();
@@ -14390,7 +14666,13 @@ async function buatSesiKosong() {
       products:  []
     });
     if (!res.ok) throw new Error(res.error || 'Gagal membuat sesi');
-    loadSesiCloud();
+    
+    // Refresh the list of active sessions so the newly created session appears
+    if (typeof dashboardFetchSesiAktif === 'function') {
+      dashboardFetchSesiAktif(true);
+      dashSwitchTab('aktif');
+    }
+    
     showToast('✅ Sesi kosong dibuat! Kode: ' + res.kode + ' — bagikan ke admin lain.');
   } catch(err) {
     showToast('❌ Gagal: ' + err.message);
@@ -14461,6 +14743,7 @@ async function gabungSesiDariCard(kode) {
     showSesiAktif(kode);
     closeSesiAudit();
     showToast('🔗 Bergabung ke sesi: ' + kode + '. Data dimuat!');
+    switchPage('stock');
   } catch(err) {
     showToast('❌ Tidak dapat terhubung ke cloud.');
   }
@@ -14590,6 +14873,7 @@ async function simpanKoreksiFinal() {
     // Push stock
     const mergedProds = buatProdsUntukPush(cloudProds);
     await apiUpdateStock(kode, mergedProds, currentNama);
+    _lastPushedStockSnapshot = JSON.stringify(products);
     _stockDirty = false;
     _dirtyInputs.clear();
 
@@ -14645,6 +14929,8 @@ async function hapusSesi(kode) {
     // dihapus masih bisa nongol di Dashboard karena tab itu memakai data cache
     // (_sgabAllData) yang tidak otomatis tahu ada sesi yang baru saja dihapus.
     _sgabLoaded = false;
+    _tokoFinalFetchedAt = 0;
+    fetchTokoFinal();
     loadSesiCloud();
     showToast('🗑 Sesi dihapus dari cloud.');
   } catch(err) { showToast('❌ ' + err.message); }
@@ -14658,6 +14944,14 @@ async function finalizeSesiCloud(kode) {
     showToast('⛔ Hanya Creator yang dapat melakukan finalisasi.');
     return;
   }
+  
+  const uncounted = products.filter(p => p.sw > 0 && p.store === '' && p.storage === '' && (p.gudang === '' || p.gudang === undefined));
+  if (uncounted.length > 0) {
+    if (!confirm('⚠️ PERINGATAN!\n\nAda ' + uncounted.length + ' item dengan Stok Sistem (SW) > 0 yang BELUM ANDA INPUT jumlah fisiknya (kosong/terlewat).\n\nJika dilanjutkan, item-item ini akan dianggap 0 dan menyebabkan selisih minus pada laporan.\n\nKlik OK untuk tetap memfinalisasi (menganggapnya 0), atau Cancel untuk membatalkan dan kembali mengisi data tersebut.')) {
+      return;
+    }
+  }
+
   if (!confirm('Finalisasi sesi ' + kode + '? Status akan berubah jadi "final" dan tidak bisa diedit lagi.')) return;
   try {
     showToast('⏳ Menyimpan data final...');
@@ -14688,6 +14982,8 @@ async function finalizeSesiCloud(kode) {
     // saja difinalisasi ini) — tanpa ini, Dashboard bisa menampilkan data
     // basi sampai user pencet tombol Refresh manual.
     _sgabLoaded = false;
+    _tokoFinalFetchedAt = 0;
+    fetchTokoFinal();
 
     if (!isSuperCreator()) {
       // Admin biasa: perangkat ini langsung auto-reset & keluar dari sesi
@@ -14717,8 +15013,18 @@ async function dashFinalizeSesi(kode) {
   if (!confirm('Finalisasi sesi ' + kode + '? Status akan berubah jadi "final" dan tidak bisa diedit lagi.')) return;
   try {
     showToast('⏳ Mengunduh data sesi & memfinalisasi...');
-    const resRead = await apiSesi('get', { kode });
+    let resRead = await apiSesi('get', { kode });
     if (!resRead.ok) throw new Error(resRead.error || 'Gagal membaca sesi dari cloud');
+    if (resRead.data && resRead.data.status === 'final') {
+      try {
+        const resArch = await apiSesi('getArchive', { kode });
+        if (resArch.ok && resArch.data && resArch.data.products) {
+          resRead = resArch;
+        }
+      } catch (errArch) {
+        // Abaikan error jika archive belum ada, tetap gunakan hasil 'get'
+      }
+    }
     const cloudSesi = resRead.data;
     const prods = cloudSesi.products || [];
     const expiredRows = prods
@@ -14730,6 +15036,8 @@ async function dashFinalizeSesi(kode) {
     if (!resFin.ok) throw new Error(resFin.error || 'Gagal finalisasi');
     
     _sgabLoaded = false;
+    _tokoFinalFetchedAt = 0;
+    fetchTokoFinal();
     loadSesiCloud();
     showToast('✅ Sesi ' + kode + ' berhasil difinalisasi!');
     if (activeSesiKode === kode) {
@@ -14739,6 +15047,7 @@ async function dashFinalizeSesi(kode) {
       hideSesiAktif();
     }
     if (typeof dashboardRefresh === 'function') dashboardRefresh(true);
+    switchPage('report');
   } catch(e) {
     showToast('❌ ' + e.message);
   }
@@ -14754,6 +15063,14 @@ async function finalizeSesiCloud2(kode) {
     showToast('⛔ Hanya supercreator yang dapat melakukan Finalisasi 2.');
     return;
   }
+  
+  const uncounted = products.filter(p => p.sw > 0 && p.store === '' && p.storage === '' && (p.gudang === '' || p.gudang === undefined));
+  if (uncounted.length > 0) {
+    if (!confirm('⚠️ PERINGATAN!\n\nAda ' + uncounted.length + ' item dengan Stok Sistem (SW) > 0 yang belum diinput jumlah fisiknya (kosong/terlewat).\n\nJika dikunci permanen, item-item ini akan tetap dianggap 0 dan menyebabkan selisih minus.\n\nKlik OK untuk tetap mengunci (menganggapnya 0), atau Cancel untuk membatalkan.')) {
+      return;
+    }
+  }
+
   if (!confirm(
     'Finalisasi 2 sesi ' + kode + '?\n\n' +
     'Setelah ini, sesi akan TERKUNCI PERMANEN — tidak bisa diedit lagi oleh ' +
@@ -14798,6 +15115,7 @@ async function finalizeSesiCloud2(kode) {
 // ---- Export Excel dari sesi ----
 async function exportSesiExcel(kode) {
   if (!cekURLDikonfigurasi()) return;
+  if (!confirm('Apakah Anda yakin ingin mengekspor Sesi ini ke Excel?')) return;
   showToast('⏳ Mengambil data dari cloud...');
   try {
     const res = await apiSesi('get', { kode });
@@ -14847,16 +15165,16 @@ function buatProdsUntukPush(cloudProds) {
   (cloudProds || []).forEach(cp => { cloudMap[cp.sku] = cp; });
   return (products || []).map(p => {
     const cloud = cloudMap[p.sku] || {};
-    const isFilledLocal = v => v !== '' && v !== undefined && v !== null;
-    const storeVal   = isFilledLocal(p.store)   ? p.store   : (cloud.store   !== undefined ? cloud.store   : p.store);
-    const storageVal = isFilledLocal(p.storage)  ? p.storage : (cloud.storage !== undefined ? cloud.storage : p.storage);
-    const gudangVal  = isFilledLocal(p.gudang)  ? p.gudang  : (cloud.gudang  !== undefined ? cloud.gudang  : p.gudang);
+    // Lokal sudah aman (karena mergeStockDariCloud sudah dijalankan sebelum push)
+    // Jadi push semua nilai lokal apa adanya (termasuk jika dikosongkan jadi '')
+    const storeVal   = p.store;
+    const storageVal = p.storage;
+    const gudangVal  = p.gudang;
 
-    // ── Merge Validasi 1 — ambil nilai terbaru antara lokal vs cloud ──
-    // Lokal diutamakan jika sudah diisi; fallback ke cloud.
-    const v1StoreVal   = isFilledLocal(p.val1Store)   ? p.val1Store   : (cloud.val1Store   !== undefined ? cloud.val1Store   : '');
-    const v1StorageVal = isFilledLocal(p.val1Storage) ? p.val1Storage : (cloud.val1Storage !== undefined ? cloud.val1Storage : '');
-    const v1GudangVal  = isFilledLocal(p.val1Gudang)  ? p.val1Gudang  : (cloud.val1Gudang  !== undefined ? cloud.val1Gudang  : '');
+    // ── Merge Validasi 1 ──
+    const v1StoreVal   = p.val1Store;
+    const v1StorageVal = p.val1Storage;
+    const v1GudangVal  = p.val1Gudang;
 
     // ── Merge Validasi 2 — approved tidak bisa di-un-approve lewat merge otomatis ──
     // Jika cloud sudah approved, pertahankan status approved (tidak boleh dikembalikan
@@ -14893,8 +15211,15 @@ function startSesiSync() {
   _sesiFinalLockHandled = false;
   startExpiredSync();  // ← expired sync berjalan paralel, interval tersendiri
   sesiSyncTimer = setInterval(async () => {
+    if (Date.now() - lastUserActionTime > IDLE_TIMEOUT) {
+      if (!_isIdle) {
+        _isIdle = true;
+        console.log("User is idle. Suspending sync requests.");
+      }
+      return; // Skip sync if idle
+    }
+    
     // ── FIX: kunci kode sesi di awal tick, jangan baca activeSesiKode global
-    // berulang kali di sepanjang tick. ──
     // Bug lama: tick ini membaca `activeSesiKode` langsung di setiap titik
     // (sebelum & sesudah beberapa `await`). stopSesiSync() cuma clearInterval()
     // — TIDAK membatalkan tick yang sedang berjalan/await. Jadi kalau user
@@ -15016,6 +15341,7 @@ function startSesiSync() {
           // punya sesi baru itu dari sini — biarkan tick sesi baru yang urus.
           return;
         }
+        _lastPushedStockSnapshot = JSON.stringify(products);
         _stockDirty = false;
         // Push sukses → lokal sekarang == cloud untuk semua field yang baru dikirim.
         // Baru sekarang aman melepas semua flag dirty (boleh ditimpa sync berikutnya).
@@ -15275,6 +15601,7 @@ async function simpanKirimKeCloud() {
     showToast('⚠️ Tidak ada sesi aktif. Buat atau buka sesi terlebih dahulu.');
     return;
   }
+  if (!confirm('Apakah Anda yakin ingin mengirim data lokal ini ke Cloud?')) return;
   if (!cekURLDikonfigurasi()) return;
   const btn = document.getElementById('btnSimpanKirim');
   const origHTML = btn ? btn.innerHTML : '';
@@ -15304,6 +15631,7 @@ async function simpanKirimKeCloud() {
     if (!resMeta.ok) { showToast('❌ Meta: ' + (resMeta.error || 'Gagal.')); return; }
     if (!resStock.ok) { showToast('❌ Stock: ' + (resStock.error || 'Gagal.')); return; }
     // Kirim berhasil — tandai bersih & block pull-balik 1 siklus (agar data lokal tidak ditimpa cloud)
+    _lastPushedStockSnapshot = JSON.stringify(products);
     _stockDirty      = false;
     _blockCloudMerge = true;
     showToast('✅ Meta + Stock berhasil dikirim ke cloud!');
@@ -16173,15 +16501,28 @@ async function dashboardRefresh(force) {
       const chunk = finalSesi.slice(i, i + CHUNK);
       const promises = chunk.map(async (s) => {
         try {
-          const [resGet, resExp] = await Promise.all([
-            apiSesi('get', { kode: s.kode }),
-            apiSesi('getExpired', { kode: s.kode })
-          ]);
+          let resGet;
+          try {
+            resGet = await apiSesi('getArchive', { kode: s.kode });
+            if (!resGet || !resGet.data || !resGet.data.products) {
+              throw new Error('Archive missing products');
+            }
+          } catch(err1) {
+            resGet = await apiSesi('get', { kode: s.kode });
+          }
+          
+          let resExp;
+          try {
+            resExp = await apiSesi('getExpired', { kode: s.kode });
+          } catch(err2) {
+            resExp = null;
+          }
+          
           // Kalau 'get' gagal (mis. 404 — sesi sudah dihapus tapi masih sempat
           // nongol di 'list' karena KV list() eventually-consistent), JANGAN
           // dimasukkan sebagai kartu kosong — kembalikan null lalu difilter di
           // bawah, supaya sesi yang sudah dihapus tidak muncul di Dashboard.
-          if (!resGet.ok) return null;
+          if (!resGet || !resGet.data) return null;
           return {
             kode:     s.kode,
             unit:     stripKotaPrefix(s.unit) || '—',
@@ -16190,7 +16531,7 @@ async function dashboardRefresh(force) {
             // daftar semua petugas yang pernah ikut mengisi — konsisten dengan
             // daftar sesi di modal "Kelola Sesi".
             petugas:  s.createdBy || (Array.isArray(s.petugas) ? s.petugas.join(', ') : (s.petugas || '—')),
-            products: (resGet.data && resGet.data.products) ? resGet.data.products : [],
+            products: (resGet.data && resGet.data.products) ? resGet.data.products : (resGet.data && resGet.data.stock ? resGet.data.stock : []),
             expireds: (resExp && resExp.ok && resExp.data && resExp.data.expireds) ? resExp.data.expireds : []
           };
         } catch(e) {
@@ -16339,7 +16680,7 @@ function dashboardRenderAktif() {
     const phaseTxt = PHASE_LABEL[d.phase] || '✏️ Input Data';
 
     return `
-      <div class="dash-session-card" onclick="dashOpenLiveSelisih('${d.kode}')" title="Klik untuk lihat Selisih (Plus &amp; Minus) secara live">
+      <div class="dash-session-card" style="cursor:default;">
         <div class="dash-session-card-top">
           <div class="dash-session-unit" title="${escHtml(d.unit)}">🏪 ${escHtml(d.unit)}</div>
           <span class="dash-phase-badge ${phaseCls}">${phaseTxt}</span>
@@ -16355,10 +16696,10 @@ function dashboardRenderAktif() {
             <div class="val">${d.terisi} / ${d.totalProduk}</div>
           </div>
         </div>
-        <div class="dash-session-card-live-hint">
+        <div class="dash-session-card-live-hint" style="background:transparent; border-top:none; padding-top:4px;">
           ${d.phase === 'done' 
-            ? `<div style="display:flex; gap:10px; width:100%;"><button class="btn" style="flex:1; background:var(--navy); color:#fff; border-radius:6px; padding:6px 0; font-size:12px; border:none; cursor:pointer;" onclick="event.stopPropagation(); dashFinalizeSesi('${d.kode}')">✅ Finalisasi</button></div>` 
-            : `⚖️ Lihat Selisih (Plus &amp; Minus) Live`}
+            ? `<div style="display:flex; gap:8px; width:100%;"><button class="btn" style="flex:1; background:var(--navy); color:#fff; border-radius:6px; padding:8px 0; font-size:12px; border:none; cursor:pointer;" onclick="dashFinalizeSesi('${d.kode}')">✅ Finalisasi</button></div>` 
+            : `<div style="display:flex; gap:8px; width:100%;"><button class="btn btn-navy" style="flex:1; padding:8px 0; font-size:12px;" onclick="gabungSesiDariCard('${d.kode}')">✏️ Lanjut Input</button><button class="btn btn-outline" style="flex:1; padding:8px 0; font-size:12px;" onclick="dashOpenLiveSelisih('${d.kode}')">⚖️ Lihat Selisih</button></div>`}
         </div>
       </div>`;
   }).join('');
@@ -17011,6 +17352,7 @@ function _sgabParseExpDate(dateStrOrBulan, tahun) {
 // ── Export Excel Gabungan ────────────────────────────────────────
 function sgabExportExcel() {
   if (!_sgabLoaded || !_sgabAllData.length) { showToast('⚠️ Belum ada data untuk diekspor.'); return; }
+  if (!confirm('Apakah Anda yakin ingin mengekspor Gabungan Sesi ke Excel?')) return;
   ensureXLSX(() => { _sgabDoExport(); });
 }
 
