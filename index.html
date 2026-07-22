@@ -1836,8 +1836,8 @@ input.dash-session-search {
 .sgab-chart-total-chip .val.green { color: var(--green); }
 .sgab-chart-total-chip .val.red   { color: var(--red); }
 .sgab-chart-total-chip .val.navy  { color: var(--navy); }
-.sgab-chart-svg-wrap { width: 100%; overflow-x: auto; }
-.sgab-chart-svg-wrap svg { display: block; width: 100%; height: auto; }
+.sgab-chart-svg-wrap { width: 100%; overflow-x: auto; overflow-y: auto; max-height: 460px; padding-right: 8px; }
+.sgab-chart-svg-wrap svg { display: block; width: 100%; min-width: 600px; height: auto; }
 .sgab-bar-label-text { font-size: 11.5px; fill: var(--text); font-family: 'Inter', sans-serif; }
 .sgab-bar-value-text { font-size: 11px; font-weight: 700; fill: var(--navy); font-family: 'Inter', sans-serif; }
 
@@ -17163,8 +17163,24 @@ function _sgabValueTextCenter(str, barX, barW, font) {
 }
 
 function sgabRenderCharts(metricsArg) {
-  const metrics = metricsArg || _sgabFilterOnlySelisih(sgabComputeStoreMetrics(sgabGetFiltered().data));
+  let metrics = metricsArg || _sgabFilterOnlySelisih(sgabComputeStoreMetrics(sgabGetFiltered().data));
   const mode = (document.getElementById('sgabChartMetric') || {value:'netval'}).value;
+  
+  // Create a copy to sort and filter to avoid mutating the original
+  metrics = [...metrics];
+  
+  if (mode === 'netval') {
+    // Hanya tampilkan yang punya selisih (net/plus/minus) > 0, urutkan dari selisih terbesar
+    metrics = metrics.filter(m => (m.plusVal > 0 || Math.abs(m.minusVal) > 0));
+    metrics.sort((a, b) => (b.plusVal + Math.abs(b.minusVal)) - (a.plusVal + Math.abs(a.minusVal)));
+  } else if (mode === 'selisih') {
+    metrics = metrics.filter(m => (m.plus > 0 || m.minus > 0));
+    metrics.sort((a, b) => (b.plus + b.minus) - (a.plus + a.minus));
+  } else if (mode === 'expired') {
+    metrics = metrics.filter(m => m.expired > 0);
+    metrics.sort((a, b) => b.expired - a.expired);
+  }
+
   const wrapEl  = document.getElementById('sgabChartSvgWrap');
   const titleEl = document.getElementById('sgabChartTitle');
   const subEl   = document.getElementById('sgabChartSubtitle');
