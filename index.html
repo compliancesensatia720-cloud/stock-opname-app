@@ -13160,6 +13160,19 @@ function renderDashboardToko(skipFetch = false) {
 }
 
 function pilihTokoDariDashboard(nama) {
+  if (typeof _sgabAktifData !== 'undefined') {
+    const aktif = _sgabAktifData.find(d => d.unit === nama);
+    if (aktif) {
+       if (confirm(`Toko ${nama} saat ini sedang di-stock opname (Sesi Aktif belum final oleh ${aktif.petugas}). Lanjut input stock atau finalisasi pada sesi tersebut?`)) {
+          joinSesiCloud(aktif.kode);
+          return;
+       } else {
+          showToast('Harap selesaikan sesi aktif terlebih dahulu sebelum membuat sesi baru untuk toko ini.');
+          return;
+       }
+    }
+  }
+
   const sel = document.getElementById('infoUnit');
   if (sel) {
     sel.value = nama;
@@ -17073,9 +17086,9 @@ function dashSesiApplyFilter() {
     const netCls = m.netVal > 0 ? 'green' : m.netVal < 0 ? 'red' : '';
     return `
       <div class="dash-session-card" onclick="dashGoToSelisihToko('${escHtml(d.kode)}')" title="Klik untuk lihat detail plus/minus di tab Selisih Stok">
-        <div class="dash-session-card-top">
-          <div class="dash-session-unit" title="${escHtml(d.unit)}">🏪 ${escHtml(d.unit)}</div>
-          <div style="display:flex;align-items:center;gap:8px;">
+        <div class="dash-session-card-top" style="align-items: center;">
+          <div class="dash-session-unit" title="${escHtml(d.unit)}" style="flex:1; min-width:0;">🏪 ${escHtml(d.unit)}</div>
+          <div style="display:flex;align-items:center;gap:8px;flex-shrink:0;">
             <div class="dash-session-date">${escHtml(d.tanggal || '—')}</div>
             ${isSuperCreator() ? `<button onclick="event.stopPropagation(); hapusSesi('${escHtml(d.kode)}')" style="background:none;border:none;cursor:pointer;font-size:16px;padding:0;opacity:0.7;" title="Hapus Sesi Final">🗑️</button>` : ''}
           </div>
