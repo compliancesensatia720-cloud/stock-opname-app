@@ -16702,9 +16702,12 @@ function dashboardRenderAktif() {
 
     return `
       <div class="dash-session-card" style="cursor:default;">
-        <div class="dash-session-card-top">
-          <div class="dash-session-unit" title="${escHtml(d.unit)}">🏪 ${escHtml(d.unit)}</div>
-          <span class="dash-phase-badge ${phaseCls}">${phaseTxt}</span>
+        <div class="dash-session-card-top" style="align-items: center;">
+          <div class="dash-session-unit" title="${escHtml(d.unit)}" style="flex:1; min-width:0;">🏪 ${escHtml(d.unit)}</div>
+          <div style="display:flex;align-items:center;gap:8px;flex-shrink:0;">
+            <span class="dash-phase-badge ${phaseCls}">${phaseTxt}</span>
+            ${isSuperCreator() ? `<button onclick="event.stopPropagation(); hapusSesi('${escHtml(d.kode)}')" style="background:none;border:none;cursor:pointer;font-size:16px;padding:0;opacity:0.7;" title="Hapus Sesi Aktif">🗑️</button>` : ''}
+          </div>
         </div>
         <div class="dash-session-petugas">👤 ${escHtml(d.petugas)} · 📅 ${tgl}</div>
         <div class="dash-session-metrics">
