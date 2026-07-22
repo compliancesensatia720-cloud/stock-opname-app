@@ -3918,7 +3918,7 @@ select:disabled {
       </button>
 
       <div class="sidebar-section-title">Export & Distribusi</div>
-      <button type="button" class="sidebar-item" onclick="exportExcel();closeMobileSidebar()">
+      <button type="button" class="sidebar-item" onclick="openModalExportPilih();closeMobileSidebar()">
         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
         Export Hasil
       </button>
@@ -9692,26 +9692,127 @@ function _doDownloadTemplateExcel() {
 }
 
 
+// ── Export dari Cloud Modal ───────────────────────────────────────
+let _exportSesiData = [];
+
+function openModalExportPilih() {
+  document.getElementById('modalExportPilih').style.display = 'flex';
+  loadExportList();
+}
+
+async function loadExportList() {
+  const container = document.getElementById('exportListContainer');
+  const loading = document.getElementById('exportListLoading');
+  container.innerHTML = '';
+  loading.style.display = 'block';
+
+  try {
+    const res = await apiSesi('list');
+    _exportSesiData = res.data || [];
+    renderExportList();
+  } catch(e) {
+    container.innerHTML = '<div style="padding:15px;color:var(--red);text-align:center;">Gagal mengambil data: ' + e.message + '</div>';
+  } finally {
+    loading.style.display = 'none';
+  }
+}
+
+function renderExportList() {
+  const container = document.getElementById('exportListContainer');
+  if (!_exportSesiData.length) {
+    container.innerHTML = '<div style="padding:15px;text-align:center;color:var(--muted);">Belum ada sesi di cloud.</div>';
+    return;
+  }
+
+  const q = (document.getElementById('exportListSearch').value || '').toLowerCase();
+  const st = document.getElementById('exportListStatus').value;
+
+  let filtered = _exportSesiData.filter(d => {
+    if (q && !(d.unit||'').toLowerCase().includes(q) && !(d.petugas||'').toLowerCase().includes(q) && !(d.kode||'').toLowerCase().includes(q)) return false;
+    const isFin = (d.status === 'final');
+    if (st === 'final' && !isFin) return false;
+    if (st === 'aktif' && isFin) return false;
+    return true;
+  });
+
+  filtered.sort((a,b) => Date.parse(b.updatedAt || b.tanggal || 0) - Date.parse(a.updatedAt || a.tanggal || 0));
+
+  if (!filtered.length) {
+    container.innerHTML = '<div style="padding:15px;text-align:center;color:var(--muted);">Tidak ada toko yang cocok.</div>';
+    return;
+  }
+
+  container.innerHTML = filtered.map(d => {
+    const isFin = (d.status === 'final');
+    const badge = isFin ? '<span style="background:var(--green);color:#fff;padding:2px 6px;border-radius:4px;font-size:10px;font-weight:600;">FINAL</span>'
+                        : '<span style="background:#f0ad4e;color:#fff;padding:2px 6px;border-radius:4px;font-size:10px;font-weight:600;">AKTIF</span>';
+    return `
+      <div style="border:1.5px solid var(--border);border-radius:10px;padding:12px;display:flex;justify-content:space-between;align-items:center;background:#fff;">
+        <div>
+          <div style="font-weight:600;font-size:14px;color:var(--navy);margin-bottom:4px;display:flex;align-items:center;gap:6px;">
+            ${escHtml(d.unit)} ${badge}
+          </div>
+          <div style="font-size:11.5px;color:var(--muted);">
+            👤 ${escHtml(d.petugas || '-')} · 📅 ${escHtml(d.tanggal || '-')} · <span style="font-family:monospace;opacity:0.7;">${d.kode}</span>
+          </div>
+        </div>
+        <button onclick="exportSesiCloud('${d.kode}', event)" style="background:#1B3A5C;color:#fff;border:none;padding:6px 12px;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:4px;">
+          📥 Unduh Excel
+        </button>
+      </div>
+    `;
+  }).join('');
+}
+
+async function exportSesiCloud(kode, event) {
+  if (!confirm('Download Excel untuk toko ini?')) return;
+  const btn = event.currentTarget;
+  const oldText = btn.innerHTML;
+  btn.innerHTML = '⏳ Menyiapkan...';
+  btn.disabled = true;
+
+  try {
+    const res = await apiSesi('get', { kode });
+    if (res.data) {
+      ensureXLSX(function() { 
+        try {
+          _doExportExcel(res.data); 
+          document.getElementById('modalExportPilih').style.display = 'none';
+        } catch(err) {
+          showToast('❌ Gagal render Excel: ' + err.message);
+        }
+      });
+    } else {
+      showToast('❌ Data kosong atau tidak ditemukan');
+    }
+  } catch(e) {
+    showToast('❌ Gagal export: ' + e.message);
+  } finally {
+    btn.innerHTML = oldText;
+    btn.disabled = false;
+  }
+}
+
 function exportExcel() {
   if (!products.length) { showToast('❌ Tidak ada data'); return; }
   if (!confirm('Apakah Anda yakin ingin mengekspor data Stok ke Excel?')) return;
   ensureXLSX(function() { _doExportExcel(); });
 }
-function _doExportExcel() {
-  if (!products.length) { showToast('❌ Tidak ada data'); return; }
+function _doExportExcel(customData) {
+  const prods = customData ? (customData.products || []) : products;
+  if (!prods.length) { showToast('❌ Tidak ada data'); return; }
 
-  const unit       = document.getElementById('infoUnit').value || 'Sensatia Botanicals';
-  const tanggal    = document.getElementById('infoTanggal').value || todayStr();
-  const start      = document.getElementById('infoPukulStart').value || '';
-  const end        = document.getElementById('infoPukulEnd').value || '';
-  const zone       = document.getElementById('infoPukulZone').value || '';
+  const unit       = customData ? (customData.unit || 'Sensatia Botanicals') : (document.getElementById('infoUnit').value || 'Sensatia Botanicals');
+  const tanggal    = customData ? (customData.tanggal || todayStr()) : (document.getElementById('infoTanggal').value || todayStr());
+  const start      = customData ? (customData.pukul_start || '') : (document.getElementById('infoPukulStart').value || '');
+  const end        = customData ? (customData.pukul_end || '') : (document.getElementById('infoPukulEnd').value || '');
+  const zone       = customData ? (customData.pukul_zone || '') : (document.getElementById('infoPukulZone').value || '');
   const pukul      = [start, end ? '– ' + end : '', zone].filter(Boolean).join(' ');
-  const petugasStr = daftarPetugas.filter(n=>n.trim()).join(', ') || '—';
-  const prefix     = 'StockOpname_' + unit.replace(/[^a-zA-Z0-9]/g,'_') + '_' + todayStr();
-
-  const pl  = products.filter(p => calcRow(p).status === 'plus');
-  const ml  = products.filter(p => calcRow(p).status === 'minus');
-  const bl  = products.filter(p => calcRow(p).status === 'balance');
+  const petugasStr = customData ? ((customData.petugas || '').split(',').map(s=>s.trim()).filter(Boolean).join(', ') || '—') : (daftarPetugas.filter(n=>n.trim()).join(', ') || '—');
+  const prefix     = 'StockOpname_' + unit.replace(/[^a-zA-Z0-9]/g,'_') + '_' + (customData ? (customData.tanggal || todayStr()) : todayStr());
+  const pl  = prods.filter(p => calcRow(p).status === 'plus');
+  const ml  = prods.filter(p => calcRow(p).status === 'minus');
+  const bl  = prods.filter(p => calcRow(p).status === 'balance');
   const sumQ = function(arr) { return arr.reduce(function(s,p){ return s + Math.abs(calcRow(p).selisihQty||0); }, 0); };
   const sumV = function(arr) { return arr.reduce(function(s,p){ return s + Math.abs(calcRow(p).selisihVal||0); }, 0); };
   const netQty = sumQ(pl) - sumQ(ml);
@@ -9786,7 +9887,7 @@ function _doExportExcel() {
   ];
   rows1.push(['No.','Kategori','Kode SKU','Nama Produk','Harga (Rp)','QTY Stockwiz','Terjual','Display','Stock','Gudang','Total','Selisih QTY','Selisih Value (Rp)','Keterangan','Catatan']);
   var FIRST_DATA_ROW1 = rows1.length; // index baris (0-based) data produk pertama
-  products.forEach(function(p,i) {
+  prods.forEach(function(p,i) {
     var c = calcRow(p);
     var st = c.status;
     // val1AssumeZero/Balance: stok tidak ditemukan / sw=0 → tampilkan 0 di Display/Stock/Gudang
@@ -9806,14 +9907,14 @@ function _doExportExcel() {
       p.catatan||(_assumeRow ? '(asumsi: stok belum ditemukan / balance)' : '')]);
   });
   var LAST_DATA_ROW1 = rows1.length - 1; // index baris (0-based) data produk terakhir
-  var t1sw = products.reduce(function(s,p){return s+(p.sw!==''?Number(p.sw):0);},0);
-  var t1tj = products.reduce(function(s,p){return s+(p.terjual!==''&&p.terjual!==undefined?Number(p.terjual):0);},0);
-  var t1s  = products.reduce(function(s,p){return s+(p.store!==''?Number(p.store):0);},0);
-  var t1st = products.reduce(function(s,p){return s+(p.storage!==''?Number(p.storage):0);},0);
-  var t1g  = products.reduce(function(s,p){return s+((p.gudang!==''&&p.gudang!==undefined)?Number(p.gudang):0);},0);
-  var t1r  = products.reduce(function(s,p){var c=calcRow(p);return s+(c.total||0);},0);
-  var t1q  = products.reduce(function(s,p){var c=calcRow(p);return s+(c.selisihQty||0);},0);
-  var t1v  = products.reduce(function(s,p){var c=calcRow(p);return s+(c.selisihVal||0);},0);
+  var t1sw = prods.reduce(function(s,p){return s+(p.sw!==''?Number(p.sw):0);},0);
+  var t1tj = prods.reduce(function(s,p){return s+(p.terjual!==''&&p.terjual!==undefined?Number(p.terjual):0);},0);
+  var t1s  = prods.reduce(function(s,p){return s+(p.store!==''?Number(p.store):0);},0);
+  var t1st = prods.reduce(function(s,p){return s+(p.storage!==''?Number(p.storage):0);},0);
+  var t1g  = prods.reduce(function(s,p){return s+((p.gudang!==''&&p.gudang!==undefined)?Number(p.gudang):0);},0);
+  var t1r  = prods.reduce(function(s,p){var c=calcRow(p);return s+(c.total||0);},0);
+  var t1q  = prods.reduce(function(s,p){var c=calcRow(p);return s+(c.selisihQty||0);},0);
+  var t1v  = prods.reduce(function(s,p){var c=calcRow(p);return s+(c.selisihVal||0);},0);
   rows1.push([]);
   var TOTAL_ROW1 = rows1.length; // index baris (0-based) baris TOTAL
   rows1.push(['','','','TOTAL','',t1sw,t1tj,t1s,t1st,t1g,t1r,t1q,t1v,'','']);
@@ -9825,7 +9926,7 @@ function _doExportExcel() {
   // J=9 Gudang, K=10 Total, L=11 Selisih QTY, M=12 Selisih Value, E=4 Harga Jual
   for (var r1 = FIRST_DATA_ROW1; r1 <= LAST_DATA_ROW1; r1++) {
     var xr = r1 + 1; // nomor baris Excel (1-based) utk referensi rumus
-    var c = calcRow(products[r1 - FIRST_DATA_ROW1]);
+    var c = calcRow(prods[r1 - FIRST_DATA_ROW1]);
     // Total = Display + Stock + Gudang (SUM aman meski H:J ada yang kosong)
     setFormula(ws1, r1, 10, 'SUM(H'+xr+':J'+xr+')', c.total!==null?c.total:0);
     // Selisih QTY = Total - (QTY Stockwiz - Terjual) — hanya ditulis kalau datanya
@@ -9870,7 +9971,7 @@ function _doExportExcel() {
       for (var c1t=0; c1t<COLS1; c1t++) applyStyle(ws1, rowR, c1t, mkS('FF1B3A5C','FFFFFFFF',true,11,false,false,'center'));
       return;
     }
-    var p = products[idx];
+    var p = prods[idx];
     if (!p) return;
     var st = calcRow(p).status || 'pending';
     var bg = (idx % 2 === 0) ? (STATUS_BG[st] || 'FFF4F6F9') : 'FFFFFFFF';
@@ -10012,7 +10113,7 @@ function _doExportExcel() {
   var s3DataStart = rows3.length;
   var r3No = 0;
   var s3Products = [];
-  products.forEach(function(p) {
+  prods.forEach(function(p) {
     var c = calcRow(p);
     // Sertakan baris val1AssumeZero (status=minus) & val1AssumeBalance (status=balance) selain eitherFilled
     if (!c.eitherFilled && !c.val1AssumeZero && !c.val1AssumeBalance) return;
@@ -10114,7 +10215,7 @@ function _doExportExcel() {
   var CAT_LABEL4 = ['< 3 Bulan','3–6 Bulan','7–9 Bulan','> 9 Bulan','Belum Diisi','SUDAH EXPIRED'];
 
   var expRows = [];
-  products.forEach(function(p) {
+  prods.forEach(function(p) {
     var c = calcRow(p);
     var statusLabel = {plus:'Plus',minus:'Minus',balance:'Balance',pending:'Pending'}[c.status] || '';
     if (!p.expireds || p.expireds.length === 0) {
@@ -10191,7 +10292,7 @@ function _doExportExcel() {
   rows5.push(['No.','Kode SKU','Nama Produk','Display (Input)','Stock (Input)','Gudang (Input)','Cek 1 Display','Cek 1 Stock','Cek 1 Gudang','Status Val.1','Val.2 Approved','Approved Oleh']);
   var r5No = 0;
   var s5Prods = [];
-  products.forEach(function(p) {
+  prods.forEach(function(p) {
     r5No++;
     s5Prods.push(p);
     var isValidN5 = function(v){ return v !== '' && v !== null && v !== undefined && !isNaN(v); };
@@ -10224,7 +10325,7 @@ function _doExportExcel() {
       val1StatusLabel, val2Label, approvedBy]);
   });
   rows5.push([]);
-  var s5ApprovedCount = products.filter(function(p){ return p.val2Approved; }).length;
+  var s5ApprovedCount = prods.filter(function(p){ return p.val2Approved; }).length;
   rows5.push(['','','TOTAL PRODUK: ' + s5Prods.length + ' item','','','','','','','','Val.2 Approved: ' + s5ApprovedCount,'']);
 
   var ws5 = XLSX.utils.aoa_to_sheet(rows5);
@@ -10232,8 +10333,8 @@ function _doExportExcel() {
   ws5['!rows'] = [{hpt:26}];
   ws5['!merges'] = [{ s:{r:0,c:0}, e:{r:0,c:COLS5-1} }];
   ws5['!freeze'] = { xSplit:0, ySplit:5 };
-  if (products.length > 0) {
-    ws5['!autofilter'] = { ref: XLSX.utils.encode_range({ s:{r:4,c:0}, e:{r:5+products.length-1, c:COLS5-1} }) };
+  if (prods.length > 0) {
+    ws5['!autofilter'] = { ref: XLSX.utils.encode_range({ s:{r:4,c:0}, e:{r:5+prods.length-1, c:COLS5-1} }) };
   }
 
   // Styling Sheet 5
@@ -13533,6 +13634,31 @@ function soCardOverrideBadge(sesi) {
   </div>
 </div>
 
+
+<!-- Modal: Pilih Toko untuk Export (Cloud) -->
+<div id="modalExportPilih" class="modal" onclick="if(event.target===this) this.style.display='none'">
+  <div class="modal-content" style="max-width: 650px;">
+    <button class="modal-close" onclick="document.getElementById('modalExportPilih').style.display='none'">✕</button>
+    <h2 style="font-size:18px;margin:0 0 16px 0;font-weight:600;color:var(--navy);">Pilih Toko untuk Di-export</h2>
+    
+    <div style="display:flex;gap:10px;margin-bottom:16px;">
+      <input type="text" id="exportListSearch" placeholder="🔍 Cari toko / petugas..." oninput="renderExportList()" style="flex:1;padding:8px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;outline:none;" onfocus="this.style.borderColor='var(--navy)'" onblur="this.style.borderColor='var(--border)'">
+      <select id="exportListStatus" onchange="renderExportList()" style="padding:8px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;outline:none;background:#fff;">
+        <option value="all">Semua Status</option>
+        <option value="final">Final / Final 2</option>
+        <option value="aktif">Sedang Berjalan</option>
+      </select>
+      <button class="btn btn-outline" style="padding:8px 12px;font-size:12px;flex-shrink:0;" onclick="loadExportList()">🔄 Refresh</button>
+    </div>
+
+    <div id="exportListLoading" style="display:none;text-align:center;padding:20px;font-size:13px;color:var(--muted);">
+      ⏳ Mengambil daftar sesi dari cloud...
+    </div>
+    <div id="exportListContainer" style="display:flex;flex-direction:column;gap:12px;max-height:60vh;overflow-y:auto;padding-right:4px;">
+      <!-- Card sesi di-inject ke sini -->
+    </div>
+  </div>
+</div>
 
 <!-- SESI AUDIT MODAL -->
 <div id="sesiOverlay" onclick="closeSesiOutside(event)">
