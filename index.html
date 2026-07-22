@@ -3907,20 +3907,6 @@ select:disabled {
         Dashboard Final
       </button>
 
-      <div class="sidebar-section-title">Export & Distribusi</div>
-      <button type="button" class="sidebar-item" onclick="openDriveModal();closeMobileSidebar()">
-        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/></svg>
-        Kirim ke Drive
-      </button>
-      <button type="button" class="sidebar-item" onclick="openEmailModal();closeMobileSidebar()">
-        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
-        Kirim Email
-      </button>
-      <button type="button" class="sidebar-item" onclick="window.open('https://drive.google.com/drive/folders/1zSaUvItqGSb7V19KmgUWB0sy6xcCX60Q','_blank');closeMobileSidebar()">
-        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7a2 2 0 012-2h4l2 2h8a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V7z"/></svg>
-        Buka Folder Drive
-      </button>
-
       <div class="sidebar-section-title" style="margin-top:20px; color:#E74C3C;">Reset Sistem</div>
       <button type="button" class="sidebar-item" onclick="resetSemuaDataConfirm();closeMobileSidebar()" style="color:#E74C3C; font-weight:600; background:rgba(231,76,60,0.05);">
         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
@@ -5073,10 +5059,24 @@ select:disabled {
     <!-- Footer: info baris + export -->
     <div class="sgab-footer" id="dashFooter" style="display:none;position:static;border-top:1px solid var(--border);margin-top:10px;padding-top:12px;">
       <span class="sgab-footer-info" id="sgabFooterInfo">—</span>
-      <button class="btn btn-green" onclick="sgabExportExcel()">
-        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="15" height="15"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
-        Export Excel
-      </button>
+      <div style="display:flex; gap:8px;">
+        <button class="btn btn-green" onclick="sgabExportExcel()">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="15" height="15"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+          Export Excel
+        </button>
+        <button class="btn btn-outline" style="background:#fff;border-color:var(--border);" onclick="sgabOpenDriveModal()">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="15" height="15"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/></svg>
+          Drive
+        </button>
+        <button class="btn btn-outline" style="background:#fff;border-color:var(--border);" onclick="sgabOpenEmailModal()">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="15" height="15"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+          Email
+        </button>
+        <button class="btn btn-outline" style="background:#fff;border-color:var(--border);" onclick="window.open('https://drive.google.com/drive/folders/1zSaUvItqGSb7V19KmgUWB0sy6xcCX60Q','_blank')">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="15" height="15"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7a2 2 0 012-2h4l2 2h8a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V7z"/></svg>
+          Folder
+        </button>
+      </div>
     </div>
 
   </div>
@@ -10266,6 +10266,7 @@ function _doExportExcel(customData) {
 const DRIVE_FOLDER_KEY = 'sensatia_drive_folder_id';
 
 function openDriveModal() {
+  _isSgabExport = false;
   if (!products.length) { showToast('❌ Tidak ada data untuk dikirim'); return; }
   _driveResetUI();
   document.getElementById('driveModalOverlay').classList.add('open');
@@ -10923,7 +10924,7 @@ async function _doKirimKeDriveCore() {
     _driveSetProgress(15, '⚙️ Membangun workbook Excel...');
     await new Promise(function(r){ setTimeout(r, 50); }); // allow repaint
 
-    var wb = _buildExportWorkbook();
+    var wb = _isSgabExport ? _sgabBuildWorkbook() : _buildExportWorkbook();
     _driveSetProgress(40, '📦 Mengkonversi ke format binary...');
     await new Promise(function(r){ setTimeout(r, 30); });
 
@@ -10949,6 +10950,11 @@ async function _doKirimKeDriveCore() {
     // Step 2: Generate filename
     var unit_    = (document.getElementById('infoUnit').value || 'Sensatia').replace(/[^a-zA-Z0-9]/g,'_');
     var tanggal_ = document.getElementById('infoTanggal').value || todayStr();
+
+    if (_isSgabExport) {
+        const filterToko = document.getElementById('sgabFilterToko').value;
+        unit_ = (filterToko || 'Gabungan').replace(/[^a-zA-Z0-9]/g,'_');
+    }
     var fileName = 'StockOpname_' + unit_ + '_' + tanggal_ + '.xlsx';
 
     _driveSetProgress(75, '☁️ Mengirim ke Google Drive...');
@@ -11005,6 +11011,7 @@ async function _doKirimKeDriveCore() {
 // ================================================================
 
 function openEmailModal() {
+  _isSgabExport = false;
   if (!products.length) { showToast('❌ Tidak ada data untuk dikirim'); return; }
   _emailResetUI();
   // Isi summary card
@@ -11141,7 +11148,7 @@ async function _doKirimEmailCore() {
     _emailSetProgress(15, '⚙️ Membangun workbook Excel...');
     await new Promise(function(r){ setTimeout(r, 50); });
 
-    var wb = _buildExportWorkbook();
+    var wb = _isSgabExport ? _sgabBuildWorkbook() : _buildExportWorkbook();
 
     _emailSetProgress(40, '📦 Mengkonversi ke binary...');
     await new Promise(function(r){ setTimeout(r, 30); });
@@ -11162,6 +11169,14 @@ async function _doKirimEmailCore() {
     var petugas  = daftarPetugas.filter(function(n){ return n.trim(); }).join(', ') || '—';
     var total    = products.length;
     var terisi   = products.filter(function(p){ return (Number(p.store)||0) + (Number(p.storage)||0) + (Number(p.gudang)||0) > 0; }).length;
+
+    if (_isSgabExport) {
+        const filterToko = document.getElementById('sgabFilterToko').value;
+        unit = filterToko || 'Gabungan';
+        const { data } = sgabGetFiltered();
+        total = data.length;
+        terisi = total;
+    }
     var fileName = 'StockOpname_' + unit.replace(/[^a-zA-Z0-9]/g,'_') + '_' + tanggal.replace(/-/g,'') + '.xlsx';
 
     var sapaan  = petugas !== '—' ? 'Yth. ' + petugas + ',' : 'Yth. Tim / Petugas Stock Opname,';
@@ -17353,13 +17368,55 @@ function _sgabParseExpDate(dateStrOrBulan, tahun) {
 }
 
 // ── Export Excel Gabungan ────────────────────────────────────────
+
+function sgabOpenDriveModal() {
+  if (!_sgabLoaded || !_sgabAllData.length) { showToast('⚠️ Belum ada data untuk dikirim.'); return; }
+  _isSgabExport = true;
+  _driveResetUI();
+  document.getElementById('driveModalOverlay').classList.add('open');
+}
+
+function sgabOpenEmailModal() {
+  if (!_sgabLoaded || !_sgabAllData.length) { showToast('⚠️ Belum ada data untuk dikirim.'); return; }
+  _isSgabExport = true;
+  _emailResetUI();
+  
+  // Isi summary card berdasarkan sesi yang aktif di Dashboard
+  const { data } = sgabGetFiltered();
+  let unitName = 'Gabungan Semua Toko';
+  let tgl = todayStr();
+  let petugasStr = 'Banyak Petugas';
+  if (data.length > 0) {
+     const filterToko = document.getElementById('sgabFilterToko').value;
+     if (filterToko) {
+       unitName = filterToko;
+       const sample = data.find(d => d.unit === filterToko) || data[0];
+       tgl = sample.tanggal || tgl;
+       petugasStr = sample.petugas || petugasStr;
+     }
+  }
+
+  var el = function(id){ return document.getElementById(id); };
+  if (el('emailInfoUnit'))    el('emailInfoUnit').textContent    = unitName;
+  if (el('emailInfoTanggal')) el('emailInfoTanggal').textContent = tgl;
+  if (el('emailInfoSku'))     el('emailInfoSku').textContent     = 'Data dari Cloud';
+  if (el('emailInfoPetugas')) el('emailInfoPetugas').textContent = petugasStr;
+  
+  document.getElementById('emailModalOverlay').classList.add('open');
+}
+
 function sgabExportExcel() {
   if (!_sgabLoaded || !_sgabAllData.length) { showToast('⚠️ Belum ada data untuk diekspor.'); return; }
   if (!confirm('Apakah Anda yakin ingin mengekspor Gabungan Sesi ke Excel?')) return;
-  ensureXLSX(() => { _sgabDoExport(); });
+  ensureXLSX(() => { 
+    const wb = _sgabBuildWorkbook(); 
+    const today = new Date().toISOString().split('T')[0];
+    XLSX.writeFile(wb, 'SummaryGabungan_Sensatia_' + today + '.xlsx');
+    showToast('✅ Export Excel gabungan berhasil diunduh!');
+  });
 }
 
-function _sgabDoExport() {
+function _sgabBuildWorkbook() {
   const { data, q } = sgabGetFiltered();
   const today = new Date().toISOString().split('T')[0];
   const wb = XLSX.utils.book_new();
@@ -17558,8 +17615,8 @@ function _sgabDoExport() {
 
   XLSX.utils.book_append_sheet(wb, wsExp, 'Expired Gabungan');
 
-  XLSX.writeFile(wb, 'SummaryGabungan_Sensatia_' + today + '.xlsx');
-  showToast('✅ Export Excel gabungan berhasil diunduh!');
+  return wb;
+
 }
 
 // ================================================================
