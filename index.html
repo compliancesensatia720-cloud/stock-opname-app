@@ -14562,7 +14562,8 @@ async function loadSesiCloud() {
           '<button class="btn-email" onclick="shareEmail(\'' + sesi.kode + '\',\'' + (sesi.unit||'') + '\',\'' + (sesi.tanggal||'') + '\')">✉️ Email</button>' +
           (currentRole === 'admin' && !isFinal ? '<button onclick="finalizeSesiCloud(\'' + sesi.kode + '\')" style="color:var(--green);border-color:var(--green-border);">✅ Finalisasi</button>' : '') +
           (isFinal && !isFinal2 && isSuperCreator() ? '<button onclick="finalizeSesiCloud2(\'' + sesi.kode + '\')" style="color:#fff;background:#7A2E2E;border-color:#7A2E2E;">🔒 Finalisasi 2</button>' : '') +
-          (currentRole === 'admin' ? '<button class="btn-hapus" onclick="hapusSesi(\'' + sesi.kode + '\')">🗑 Hapus</button>' : '') +
+          (!isFinal && currentRole === 'admin' ? '<button class="btn-hapus" onclick="hapusSesi(\'' + sesi.kode + '\')">🗑 Hapus</button>' :
+           isFinal && isSuperCreator() ? '<button class="btn-hapus" onclick="hapusSesi(\'' + sesi.kode + '\')">🗑 Hapus</button>' : '') +
         '</div>';
       listEl.appendChild(card);
     });
