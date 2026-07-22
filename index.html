@@ -14328,7 +14328,7 @@ async function apiSesi(action, payload) {
   // minta, dipakai a.l. untuk cek bypass supercreator di action yang
   // dikunci-final (lihat SUPERCREATOR_NAMES di worker.js).
   const body = new URLSearchParams({
-    payload: JSON.stringify({ action, actorNama: currentNama, ...payload })
+    payload: JSON.stringify({ action, actorNama: currentNama, actorRole: currentRole, ...payload })
   });
   const res = await fetch(APPS_SCRIPT_URL, {
     method: 'POST',

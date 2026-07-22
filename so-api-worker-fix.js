@@ -126,8 +126,8 @@ const LOCKED_AFTER_FINAL = new Set(['updateStock', 'updateCSV', 'updateExpired',
 // frontend & backend bisa saling tidak sinkron (mis. UI kebuka tapi
 // request tetap ditolak worker, atau sebaliknya).
 const SUPERCREATOR_NAMES = new Set(['YASA KARYADA']);
-function isSuperCreatorName(nama) {
-  return SUPERCREATOR_NAMES.has((nama || '').trim().toUpperCase());
+function isSuperCreator(nama, role) {
+  return role === 'admin' && SUPERCREATOR_NAMES.has((nama || '').trim().toUpperCase());
 }
 
 export default {
@@ -179,7 +179,8 @@ export default {
 
         if (metaCheck.status === 'final') {
           const actor = data.actorNama || data.updatedBy || data.finalizedBy || '';
-          if (isSuperCreatorName(actor)) {
+          const role = data.actorRole || '';
+          if (isSuperCreator(actor, role)) {
             // ── BYPASS: catat override ke log permanen di meta sebelum
             // lanjut ke handler asli. Ini SATU-SATUNYA jejak audit bahwa
             // sesi final ini diubah lagi setelah dikunci — jangan dihapus.
@@ -256,8 +257,8 @@ export default {
           };
 
           await kv.put(`meta:${kode}`, JSON.stringify(meta));
-          await putStock(r2, kode, []);
-          await putExpired(r2, kode, { expireds: [], updatedBy: '' });
+          await putStock(r2, kv, kode, []);
+          await putExpired(r2, kv, kode, { expireds: [], updatedBy: '' });
 
           // (Tidak ada lagi addToIndex — lihat catatan index:sesi di header file)
 
@@ -390,7 +391,7 @@ export default {
             const finalProds = Array.from(currentMap.values());
 
             // 3. Simpan hasil gabungan ke R2
-            await putStock(r2, kode, finalProds);
+            await putStock(r2, kv, kode, finalProds);
 
             // 4. Update Meta (HANYA JIKA JUMLAH PRODUK BERUBAH)
             // Ini untuk menghemat kuota KV put() yang sangat terbatas (1000/hari di free tier).
@@ -418,7 +419,7 @@ export default {
           const rows = Array.isArray(csvRows) ? csvRows : [];
           
           // 1. Lakukan operasi I/O lambat (upload ke R2) TERLEBIH DAHULU
-          await putCsv(r2, kode, { csvFilename: csvFilename || '', csvRows: rows });
+          await putCsv(r2, kv, kode, { csvFilename: csvFilename || '', csvRows: rows });
 
           // 2. BARU baca meta dari KV sesudah upload selesai.
           const meta = data._metaCache || await kv.get(`meta:${kode}`, 'json');
@@ -447,7 +448,7 @@ export default {
           if (!metaExists) return jsonResp({ ok: false, error: 'Sesi tidak ditemukan' }, 404);
 
           const rows = Array.isArray(expireds) ? expireds : [];
-          await putExpired(r2, kode, {
+          await putExpired(r2, kv, kode, {
             expireds:  rows,
             updatedBy: updatedBy || '',
             updatedAt: new Date().toISOString(),
@@ -483,9 +484,9 @@ export default {
 
           // Atomic 1-step backend orchestration
           const promises = [];
-          if (Array.isArray(currentStock)) promises.push(putStock(r2, kode, currentStock));
+          if (Array.isArray(currentStock)) promises.push(putStock(r2, kv, kode, currentStock));
           if (Array.isArray(currentExpired)) {
-            promises.push(putExpired(r2, kode, { expireds: currentExpired, updatedBy: finalizedBy || '', updatedAt: now }));
+            promises.push(putExpired(r2, kv, kode, { expireds: currentExpired, updatedBy: finalizedBy || '', updatedAt: now }));
           }
 
           const archivePayload = {
@@ -493,9 +494,13 @@ export default {
             products: Array.isArray(currentStock) ? currentStock : [],
             archivedAt: now
           };
-          promises.push(r2.put(`archive/${kode}.json`, JSON.stringify(archivePayload), {
-            httpMetadata: { contentType: 'application/json' }
-          }));
+          if (r2) {
+            promises.push(r2.put(`archive/${kode}.json`, JSON.stringify(archivePayload), {
+              httpMetadata: { contentType: 'application/json' }
+            }));
+          } else {
+            promises.push(kv.put(`archive:${kode}`, JSON.stringify(archivePayload)));
+          }
 
           promises.push(kv.put(`meta:${kode}`, JSON.stringify(meta)));
 
@@ -515,7 +520,8 @@ export default {
           if (!kode) return jsonResp({ ok: false, error: 'kode required' }, 400);
 
           const actor = data.actorNama || finalized2By || '';
-          if (!isSuperCreatorName(actor)) {
+          const role = data.actorRole || '';
+          if (!isSuperCreator(actor, role)) {
             return jsonResp({ ok: false, error: 'Hanya supercreator yang dapat melakukan Finalisasi 2.' }, 403);
           }
 
@@ -537,9 +543,9 @@ export default {
 
           // Atomic 1-step backend orchestration
           const promises = [];
-          if (Array.isArray(currentStock)) promises.push(putStock(r2, kode, currentStock));
+          if (Array.isArray(currentStock)) promises.push(putStock(r2, kv, kode, currentStock));
           if (Array.isArray(currentExpired)) {
-            promises.push(putExpired(r2, kode, { expireds: currentExpired, updatedBy: actor, updatedAt: now }));
+            promises.push(putExpired(r2, kv, kode, { expireds: currentExpired, updatedBy: actor, updatedAt: now }));
           }
           promises.push(kv.put(`meta:${kode}`, JSON.stringify(meta)));
           
@@ -557,10 +563,15 @@ export default {
           if (!kode) return jsonResp({ ok: false, error: 'kode required' }, 400);
           if (!archivePayload) return jsonResp({ ok: false, error: 'data required' }, 400);
 
-          await r2.put(`archive/${kode}.json`, JSON.stringify({
+          const payloadToSave = JSON.stringify({
             ...archivePayload,
             archivedAt: new Date().toISOString(),
-          }), { httpMetadata: { contentType: 'application/json' } });
+          });
+          if (r2) {
+            await r2.put(`archive/${kode}.json`, payloadToSave, { httpMetadata: { contentType: 'application/json' } });
+          } else {
+            await kv.put(`archive:${kode}`, payloadToSave);
+          }
 
           return jsonResp({ ok: true, kode });
         }
@@ -570,10 +581,17 @@ export default {
           const { kode } = data;
           if (!kode) return jsonResp({ ok: false, error: 'kode required' }, 400);
 
-          const obj = await r2.get(`archive/${kode}.json`);
-          if (!obj) return jsonResp({ ok: false, error: 'Archive tidak ditemukan' }, 404);
-
-          const archiveData = await obj.json();
+          let archiveData;
+          if (r2) {
+            const obj = await r2.get(`archive/${kode}.json`);
+            if (obj) archiveData = await obj.json();
+          }
+          if (!archiveData) {
+            const legacy = await kv.get(`archive:${kode}`, 'json');
+            archiveData = legacy;
+          }
+          
+          if (!archiveData) return jsonResp({ ok: false, error: 'Archive tidak ditemukan' }, 404);
           return jsonResp({ ok: true, data: archiveData });
         }
 
@@ -581,18 +599,19 @@ export default {
           const { kode } = data;
           if (!kode) return jsonResp({ ok: false, error: 'kode required' }, 400);
 
-          await Promise.all([
+          const tasks = [
             kv.delete(`meta:${kode}`),
             kv.delete(`expired:${kode}`),
             kv.delete(`stock:${kode}`),
-            kv.delete(`csv:${kode}`),
-            r2.delete(`stock/${kode}.json`),
-            r2.delete(`csv/${kode}.json`),
-            // archive/{kode}.json SENGAJA TIDAK dihapus — snapshot final
-            // dianggap catatan permanen (sama seperti CSVStockwiz global).
-          ]);
-
-          // (Tidak ada lagi removeFromIndex — lihat catatan index:sesi di header file)
+            kv.delete(`csv:${kode}`)
+          ];
+          if (r2) {
+            tasks.push(r2.delete(`stock/${kode}.json`));
+            tasks.push(r2.delete(`csv/${kode}.json`));
+          }
+          await Promise.all(tasks);
+          // archive/{kode}.json SENGAJA TIDAK dihapus — snapshot final
+          // dianggap catatan permanen (sama seperti CSVStockwiz global).
 
           return jsonResp({ ok: true, deleted: kode });
         }
@@ -641,41 +660,59 @@ async function listMetaKodes(kv) {
   return kodes;
 }
 
-async function putStock(r2, kode, products) {
-  await r2.put(`stock/${kode}.json`, JSON.stringify(products), {
-    httpMetadata: { contentType: 'application/json' },
-  });
+async function putStock(r2, kv, kode, products) {
+  if (r2) {
+    await r2.put(`stock/${kode}.json`, JSON.stringify(products), {
+      httpMetadata: { contentType: 'application/json' },
+    });
+  } else {
+    await kv.put(`stock:${kode}`, JSON.stringify(products));
+  }
 }
 
 async function getStock(r2, kv, kode) {
-  const obj = await r2.get(`stock/${kode}.json`);
-  if (obj) return await obj.json();
+  if (r2) {
+    const obj = await r2.get(`stock/${kode}.json`);
+    if (obj) return await obj.json();
+  }
   const legacy = await kv.get(`stock:${kode}`, 'json');
   return legacy || [];
 }
 
-async function putCsv(r2, kode, csvObj) {
-  await r2.put(`csv/${kode}.json`, JSON.stringify(csvObj), {
-    httpMetadata: { contentType: 'application/json' },
-  });
+async function putCsv(r2, kv, kode, csvObj) {
+  if (r2) {
+    await r2.put(`csv/${kode}.json`, JSON.stringify(csvObj), {
+      httpMetadata: { contentType: 'application/json' },
+    });
+  } else {
+    await kv.put(`csv:${kode}`, JSON.stringify(csvObj));
+  }
 }
 
 async function getCsv(r2, kv, kode) {
-  const obj = await r2.get(`csv/${kode}.json`);
-  if (obj) return await obj.json();
+  if (r2) {
+    const obj = await r2.get(`csv/${kode}.json`);
+    if (obj) return await obj.json();
+  }
   const legacy = await kv.get(`csv:${kode}`, 'json');
   return legacy || null;
 }
 
-async function putExpired(r2, kode, expObj) {
-  await r2.put(`expired/${kode}.json`, JSON.stringify(expObj), {
-    httpMetadata: { contentType: 'application/json' },
-  });
+async function putExpired(r2, kv, kode, expObj) {
+  if (r2) {
+    await r2.put(`expired/${kode}.json`, JSON.stringify(expObj), {
+      httpMetadata: { contentType: 'application/json' },
+    });
+  } else {
+    await kv.put(`expired:${kode}`, JSON.stringify(expObj));
+  }
 }
 
 async function getExpired(r2, kv, kode) {
-  const obj = await r2.get(`expired/${kode}.json`);
-  if (obj) return await obj.json();
+  if (r2) {
+    const obj = await r2.get(`expired/${kode}.json`);
+    if (obj) return await obj.json();
+  }
   const legacy = await kv.get(`expired:${kode}`, 'json');
   return legacy || { expireds: [] };
 }
