@@ -3908,7 +3908,7 @@ select:disabled {
     <div class="sidebar-footer" style="padding: 20px 24px; border-top: 1px solid rgba(255,255,255,0.1); margin-top: auto; display: flex; flex-direction: column; gap: 12px;">
       <button class="header-modern-pill" id="btnSesiHeader" onclick="switchPage('report'); dashSwitchTab('aktif'); closeMobileSidebar()" title="Lihat daftar Sesi Aktif" style="position:relative; justify-content:center; width:100%; border:none; box-shadow:none;">
         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg>
-        <span class="btn-label-sesi">Sesi Aktif</span>
+        <span class="btn-label-sesi" id="btnSesiHeaderLabel">Sesi Aktif</span>
         <span id="sesiHeaderBadge" style="display:none;position:absolute;top:0;right:2px;width:10px;height:10px;background:#2ecc71;border-radius:50%;border:2px solid #fff;"></span>
       </button>
       <div class="header-modern-pill" id="roleBadge" onclick="showLogoutConfirm();closeMobileSidebar()" title="Klik untuk logout" style="justify-content:center; width:100%; border:none; box-shadow:none;">
@@ -7546,6 +7546,7 @@ function initWorkflowBanner() {
   }
   renderWorkflowStepper();
   applyWorkflowPhaseUI();
+  updateSidebarActiveSession();
 }
 
 function renderWorkflowStepper() {
@@ -12583,6 +12584,34 @@ function simpanLokal() {
 }
 
 // ---- Restore data stock + meta dari localStorage ----
+
+function updateSidebarActiveSession() {
+  const btn = document.getElementById('btnSesiHeader');
+  const lbl = document.getElementById('btnSesiHeaderLabel');
+  if (!btn || !lbl) return;
+
+  const localUnit = document.getElementById('infoUnit') ? document.getElementById('infoUnit').value : '';
+  const hasLocalSession = (typeof activeSesiKode !== 'undefined' && activeSesiKode) || (typeof products !== 'undefined' && products.length > 0);
+  
+  if (hasLocalSession) {
+    btn.style.display = 'flex';
+    let shortName = localUnit || 'Sesi Aktif';
+    if (shortName.length > 15) shortName = shortName.substring(0, 15) + '...';
+    lbl.textContent = shortName;
+    
+    // Change onclick to jump to input page
+    btn.onclick = function() {
+       switchPage('stock');
+       closeMobileSidebar();
+    };
+    btn.title = 'Lanjut Input Stock untuk ' + localUnit;
+    btn.style.background = 'rgba(46, 204, 113, 0.15)'; // Hijau tipis
+    btn.style.color = '#2ecc71';
+  } else {
+    btn.style.display = 'none';
+  }
+}
+
 function loadProgress() {
   try {
     const raw = localStorage.getItem(SAVE_KEY);
