@@ -3908,10 +3908,6 @@ select:disabled {
       </button>
 
       <div class="sidebar-section-title">Export & Distribusi</div>
-      <button type="button" class="sidebar-item" onclick="openModalExportPilih();closeMobileSidebar()">
-        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-        Export Hasil
-      </button>
       <button type="button" class="sidebar-item" onclick="openDriveModal();closeMobileSidebar()">
         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/></svg>
         Kirim ke Drive
@@ -9682,107 +9678,6 @@ function _doDownloadTemplateExcel() {
 }
 
 
-// ── Export dari Cloud Modal ───────────────────────────────────────
-let _exportSesiData = [];
-
-function openModalExportPilih() {
-  document.getElementById('modalExportPilih').style.display = 'flex';
-  loadExportList();
-}
-
-async function loadExportList() {
-  const container = document.getElementById('exportListContainer');
-  const loading = document.getElementById('exportListLoading');
-  container.innerHTML = '';
-  loading.style.display = 'block';
-
-  try {
-    const res = await apiSesi('list');
-    _exportSesiData = res.data || [];
-    renderExportList();
-  } catch(e) {
-    container.innerHTML = '<div style="padding:15px;color:var(--red);text-align:center;">Gagal mengambil data: ' + e.message + '</div>';
-  } finally {
-    loading.style.display = 'none';
-  }
-}
-
-function renderExportList() {
-  const container = document.getElementById('exportListContainer');
-  if (!_exportSesiData.length) {
-    container.innerHTML = '<div style="padding:15px;text-align:center;color:var(--muted);">Belum ada sesi di cloud.</div>';
-    return;
-  }
-
-  const q = (document.getElementById('exportListSearch').value || '').toLowerCase();
-  const st = document.getElementById('exportListStatus').value;
-
-  let filtered = _exportSesiData.filter(d => {
-    if (q && !(d.unit||'').toLowerCase().includes(q) && !(d.petugas||'').toLowerCase().includes(q) && !(d.kode||'').toLowerCase().includes(q)) return false;
-    const isFin = (d.status === 'final');
-    if (st === 'final' && !isFin) return false;
-    if (st === 'aktif' && isFin) return false;
-    return true;
-  });
-
-  filtered.sort((a,b) => Date.parse(b.updatedAt || b.tanggal || 0) - Date.parse(a.updatedAt || a.tanggal || 0));
-
-  if (!filtered.length) {
-    container.innerHTML = '<div style="padding:15px;text-align:center;color:var(--muted);">Tidak ada toko yang cocok.</div>';
-    return;
-  }
-
-  container.innerHTML = filtered.map(d => {
-    const isFin = (d.status === 'final');
-    const badge = isFin ? '<span style="background:var(--green);color:#fff;padding:2px 6px;border-radius:4px;font-size:10px;font-weight:600;">FINAL</span>'
-                        : '<span style="background:#f0ad4e;color:#fff;padding:2px 6px;border-radius:4px;font-size:10px;font-weight:600;">AKTIF</span>';
-    return `
-      <div style="border:1.5px solid var(--border);border-radius:10px;padding:12px;display:flex;justify-content:space-between;align-items:center;background:#fff;">
-        <div>
-          <div style="font-weight:600;font-size:14px;color:var(--navy);margin-bottom:4px;display:flex;align-items:center;gap:6px;">
-            ${escHtml(d.unit)} ${badge}
-          </div>
-          <div style="font-size:11.5px;color:var(--muted);">
-            👤 ${escHtml(d.petugas || '-')} · 📅 ${escHtml(d.tanggal || '-')} · <span style="font-family:monospace;opacity:0.7;">${d.kode}</span>
-          </div>
-        </div>
-        <button onclick="exportSesiCloud('${d.kode}', event)" style="background:#1B3A5C;color:#fff;border:none;padding:6px 12px;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:4px;">
-          📥 Unduh Excel
-        </button>
-      </div>
-    `;
-  }).join('');
-}
-
-async function exportSesiCloud(kode, event) {
-  if (!confirm('Download Excel untuk toko ini?')) return;
-  const btn = event.currentTarget;
-  const oldText = btn.innerHTML;
-  btn.innerHTML = '⏳ Menyiapkan...';
-  btn.disabled = true;
-
-  try {
-    const res = await apiSesi('get', { kode });
-    if (res.data) {
-      ensureXLSX(function() { 
-        try {
-          _doExportExcel(res.data); 
-          document.getElementById('modalExportPilih').style.display = 'none';
-        } catch(err) {
-          showToast('❌ Gagal render Excel: ' + err.message);
-        }
-      });
-    } else {
-      showToast('❌ Data kosong atau tidak ditemukan');
-    }
-  } catch(e) {
-    showToast('❌ Gagal export: ' + e.message);
-  } finally {
-    btn.innerHTML = oldText;
-    btn.disabled = false;
-  }
-}
-
 function exportExcel() {
   if (!products.length) { showToast('❌ Tidak ada data'); return; }
   if (!confirm('Apakah Anda yakin ingin mengekspor data Stok ke Excel?')) return;
@@ -13637,31 +13532,6 @@ function soCardOverrideBadge(sesi) {
   </div>
 </div>
 
-
-<!-- Modal: Pilih Toko untuk Export (Cloud) -->
-<div id="modalExportPilih" class="modal" onclick="if(event.target===this) this.style.display='none'">
-  <div class="modal-content" style="max-width: 650px;">
-    <button class="modal-close" onclick="document.getElementById('modalExportPilih').style.display='none'">✕</button>
-    <h2 style="font-size:18px;margin:0 0 16px 0;font-weight:600;color:var(--navy);">Pilih Toko untuk Di-export</h2>
-    
-    <div style="display:flex;gap:10px;margin-bottom:16px;">
-      <input type="text" id="exportListSearch" placeholder="🔍 Cari toko / petugas..." oninput="renderExportList()" style="flex:1;padding:8px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;outline:none;" onfocus="this.style.borderColor='var(--navy)'" onblur="this.style.borderColor='var(--border)'">
-      <select id="exportListStatus" onchange="renderExportList()" style="padding:8px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;outline:none;background:#fff;">
-        <option value="all">Semua Status</option>
-        <option value="final">Final / Final 2</option>
-        <option value="aktif">Sedang Berjalan</option>
-      </select>
-      <button class="btn btn-outline" style="padding:8px 12px;font-size:12px;flex-shrink:0;" onclick="loadExportList()">🔄 Refresh</button>
-    </div>
-
-    <div id="exportListLoading" style="display:none;text-align:center;padding:20px;font-size:13px;color:var(--muted);">
-      ⏳ Mengambil daftar sesi dari cloud...
-    </div>
-    <div id="exportListContainer" style="display:flex;flex-direction:column;gap:12px;max-height:60vh;overflow-y:auto;padding-right:4px;">
-      <!-- Card sesi di-inject ke sini -->
-    </div>
-  </div>
-</div>
 
 <!-- SESI AUDIT MODAL -->
 <div id="sesiOverlay" onclick="closeSesiOutside(event)">
