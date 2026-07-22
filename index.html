@@ -13194,6 +13194,34 @@ function filterDashboardToko() {
   }
 }
 
+// ── Guard: cek apakah CSV sudah diupload (ada data sw/price dari Stockwiz) ────
+function hasCsvData() {
+  // Cek _csvRawData (in-memory) — cara paling cepat
+  if (typeof _csvRawData !== 'undefined' && _csvRawData.length > 0) return true;
+  // Cek products global — jika ada yang punya sw > 0, berarti CSV pernah diload
+  if (typeof products !== 'undefined' && products.some(p => (p.sw || 0) > 0)) return true;
+  // Cek localStorage CSV key sebagai fallback (misalnya setelah reload)
+  try {
+    const raw = localStorage.getItem(typeof CSV_KEY !== 'undefined' ? CSV_KEY : 'sensatia_csv_progress');
+    if (raw) {
+      const d = JSON.parse(raw);
+      if (d && d.rows && d.rows.length > 0) return true;
+    }
+    // Cek price map
+    const pMap = localStorage.getItem(typeof CSV_PRICE_KEY !== 'undefined' ? CSV_PRICE_KEY : 'sensatia_csv_pricemap');
+    if (pMap) {
+      const pm = JSON.parse(pMap);
+      if (pm && Object.keys(pm).length > 0) return true;
+    }
+  } catch(e) {}
+  return false;
+}
+
+// ── Guard: cek apakah sesi aktif dari cloud sudah ada ───────────────
+function hasSesiCloud() {
+  return (typeof activeSesiKode !== 'undefined' && !!activeSesiKode);
+}
+
 function switchPage(page) {
   activePage = page;
   try { localStorage.setItem('so_active_page', page); } catch(e) {}
@@ -13221,6 +13249,23 @@ function switchPage(page) {
       jmSave.classList.remove('visible');
     }
   }
+  // ── GUARD: blokir masuk halaman Input Stock jika belum ada data CSV ──────
+  // Pengecualian: hasSesiCloud() → user bergabung sesi cloud yang sudah punya data
+  if (page === 'stock' && !hasCsvData() && !hasSesiCloud()) {
+    showToast('⚠️ Upload CSV Stockwiz terlebih dahulu! Data stok sistem (SW) dan harga dari CSV diperlukan sebelum bisa input stock fisik.', 4500);
+    // Arahkan ke halaman upload CSV
+    activePage = 'csv';
+    try { localStorage.setItem('so_active_page', 'csv'); } catch(e) {}
+    ['info','stock','csv','excel','dashboard','report'].forEach(p => {
+      const el = document.getElementById('page-' + p);
+      const nav = document.getElementById('pnav-' + p);
+      if (el) el.classList.toggle('active', p === 'csv');
+      if (nav) nav.classList.toggle('active', p === 'csv');
+    });
+    updateStepper('csv');
+    return;
+  }
+
   if (page === 'stock') {
     refreshTable && refreshTable();
     const storeBadge = document.getElementById('activeStoreBadge');
@@ -16605,46 +16650,67 @@ async function dashboardRefresh(force) {
     loadEl.textContent = `⏳ Mengambil data ${finalSesi.length} sesi final...`;
 
     // 2. Fetch paralel (max 5 sekaligus untuk hindari rate limit)
+    // ── PERBAIKAN BUG: Tidak lagi bergantung pada 'getArchive' yang bisa
+    //    belum ada di backend — gunakan 'get' langsung dengan fallback robust.
+    //    Normalisasi field: backend bisa mengembalikan products, stock, atau
+    //    currentStock — semua dihandle agar tidak ada data toko yang kosong.
     const CHUNK = 5;
     const hasil = [];
     for (let i = 0; i < finalSesi.length; i += CHUNK) {
       const chunk = finalSesi.slice(i, i + CHUNK);
       const promises = chunk.map(async (s) => {
         try {
-          let resGet;
-          try {
-            resGet = await apiSesi('getArchive', { kode: s.kode });
-            if (!resGet || !resGet.data || !resGet.data.products) {
-              throw new Error('Archive missing products');
+          // Langsung gunakan 'get' — lebih reliable dan konsisten
+          let resGet = await apiSesi('get', { kode: s.kode });
+
+          // Jika 'get' gagal, coba 'getArchive' sebagai fallback
+          if (!resGet || !resGet.data) {
+            try {
+              resGet = await apiSesi('getArchive', { kode: s.kode });
+            } catch(err2) {
+              resGet = null;
             }
-          } catch(err1) {
-            resGet = await apiSesi('get', { kode: s.kode });
           }
-          
+
           let resExp;
           try {
             resExp = await apiSesi('getExpired', { kode: s.kode });
-          } catch(err2) {
+          } catch(errExp) {
             resExp = null;
           }
-          
+
           // Kalau 'get' gagal (mis. 404 — sesi sudah dihapus tapi masih sempat
           // nongol di 'list' karena KV list() eventually-consistent), JANGAN
           // dimasukkan sebagai kartu kosong — kembalikan null lalu difilter di
           // bawah, supaya sesi yang sudah dihapus tidak muncul di Dashboard.
           if (!resGet || !resGet.data) return null;
+
+          // ── NORMALISASI FIELD: backend bisa pakai nama berbeda ────────────
+          // Field 'products' adalah standar baru, 'stock' adalah format lama,
+          // 'currentStock' adalah format dari finalize action — handle semua.
+          const d = resGet.data;
+          const prodArray = (
+            (Array.isArray(d.products)     && d.products.length     > 0 ? d.products     : null) ||
+            (Array.isArray(d.stock)        && d.stock.length        > 0 ? d.stock        : null) ||
+            (Array.isArray(d.currentStock) && d.currentStock.length > 0 ? d.currentStock : null) ||
+            []
+          );
+
+          // Jika sesi ada di list tapi products benar-benar kosong setelah semua
+          // fallback, kembalikan tetap (bukan null) dengan array kosong agar
+          // toko tetap muncul dengan angka 0 — lebih informatif daripada hilang.
           return {
             kode:     s.kode,
-            unit:     stripKotaPrefix(s.unit) || '—',
-            tanggal:  s.tanggal || '',
-            // Nama yang ditampilkan = pembuat sesi di awal (createdBy), bukan
-            // daftar semua petugas yang pernah ikut mengisi — konsisten dengan
-            // daftar sesi di modal "Kelola Sesi".
-            petugas:  s.createdBy || (Array.isArray(s.petugas) ? s.petugas.join(', ') : (s.petugas || '—')),
-            products: (resGet.data && resGet.data.products) ? resGet.data.products : (resGet.data && resGet.data.stock ? resGet.data.stock : []),
-            expireds: (resExp && resExp.ok && resExp.data && resExp.data.expireds) ? resExp.data.expireds : []
+            unit:     stripKotaPrefix(s.unit || d.unit || '') || '—',
+            tanggal:  s.tanggal || d.tanggal || '',
+            petugas:  s.createdBy || d.createdBy || (Array.isArray(s.petugas) ? s.petugas.join(', ') : (s.petugas || '—')),
+            products: prodArray,
+            expireds: (resExp && resExp.ok && resExp.data && resExp.data.expireds) ? resExp.data.expireds :
+                      (Array.isArray(d.expireds) ? d.expireds : [])
           };
         } catch(e) {
+          // Jangan hilangkan sesi hanya karena error jaringan sementara
+          // Kembalikan null agar difilter, tapi jangan crash seluruh batch
           return null;
         }
       });
