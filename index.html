@@ -14376,7 +14376,7 @@ function renderSesiPanel() {
         <div style="font-size:13px; color:#2c3e50;">Jika tidak membuat sesi, Anda hanya akan bekerja secara offline. Buat sesi jika ingin merekam audit ke Cloud.</div>
       </div>
       <div style="display:flex; gap:10px; flex-wrap:wrap;">
-        <button class="btn btn-green" onclick="switchPage('dashboard'); dashSwitchTab('aktif');" style="padding:10px 20px; font-weight:700; font-size:14.5px;">
+        <button class="btn btn-green" onclick="buatSesiBaru(this)" style="padding:10px 20px; font-weight:700; font-size:14.5px;">
           <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="vertical-align:text-bottom; margin-right:5px;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg> Buat Sesi Baru
         </button>
         <button class="btn btn-navy" onclick="switchPage('dashboard'); dashSwitchTab('aktif');" style="padding:10px 20px; font-weight:600; font-size:14px; background:var(--navy-pale); color:var(--navy); border:1px solid var(--border);">
@@ -14751,11 +14751,14 @@ function applySesiCloudFilter() {
 // Langkah: 1) create row di AuditSesi (meta) → dapat kode
 //           2) upload products ke StockData_[KODE] (sheet terpisah)
 // Keduanya dilakukan saat buat — bukan tiap 8 detik.
-async function buatSesiBaru() {
+async function buatSesiBaru(triggerBtn = null) {
   if (!cekURLDikonfigurasi()) return;
-  const btn = document.getElementById('btnBuatSesi');
-  btn.disabled = true;
-  btn.textContent = '⏳ Mengupload ke Google Sheets...';
+  const btn = triggerBtn || document.getElementById('btnBuatSesi');
+  const originalText = btn ? btn.innerHTML : '';
+  if (btn) {
+    btn.disabled = true;
+    btn.textContent = '⏳ Mengupload ke Google Sheets...';
+  }
 
   try {
     pastikanDiriMasukPetugas(); // creator otomatis masuk daftar auditor
@@ -14795,8 +14798,10 @@ async function buatSesiBaru() {
   } catch(err) {
     showToast('❌ Gagal: ' + err.message);
   } finally {
-    btn.disabled = false;
-    btn.textContent = 'Atau Gunakan Data Saat Ini (Upload Lokal → Cloud)';
+    if (btn) {
+      btn.disabled = false;
+      btn.innerHTML = originalText || 'Atau Gunakan Data Saat Ini (Upload Lokal &rarr; Cloud)';
+    }
   }
 }
 
