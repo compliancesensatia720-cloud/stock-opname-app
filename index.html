@@ -4316,30 +4316,31 @@ select:disabled {
     <table id="mainTable" style="display:none;">
       <thead>
         <tr>
-          <th style="width:32px;">No.</th>
-          <th class="left" style="width:90px;min-width:90px;">Kode SKU</th>
-          <th class="left" style="min-width:220px;">Nama Produk</th>
-          <th style="width:72px;min-width:72px;display:none;">Harga<br><span style="font-weight:400;font-size:10px;opacity:0.8;">(Rp)</span></th>
-          <th style="width:66px;min-width:66px;">QTY<br><span style="font-weight:400;font-size:10px;opacity:0.8;">Stockwiz</span></th>
-          <th class="col-terjual" style="width:64px;min-width:64px;" title="Jumlah unit yang sudah terjual selama periode stock opname — mengurangi ekspektasi Stock Sistem saat menghitung Selisih">Terjual</th>
-          <th colspan="4" style="min-width:280px;">Jumlah Riil</th>
-          <th style="min-width:60px;" title="QTY Selisih" class="col-selisih">QTY<br><span style="font-weight:400;font-size:10px;opacity:0.8;">Selisih</span></th>
-          <th style="min-width:80px;" title="Nilai Selisih dihitung dari Harga Jual" class="col-selisih">VALUE<br><span style="font-weight:400;font-size:10px;opacity:0.8;">Selisih</span></th>
-          <th colspan="5" style="min-width:370px;background:#EBF5FB;color:#1B3A5C;border-left:2px solid #B2CDED;" title="Validasi 1: Hitung ulang oleh petugas ke-2" class="col-val1">✅ Validasi 1</th>
-          <th style="min-width:90px;background:#E8F5EE;color:#1A7A4A;border-left:2px solid #B2DFCB;" title="Validasi 2: Konfirmasi / Approve oleh Supervisor" class="col-val2">🔒 Val. 2</th>
-          <th style="width:130px;min-width:130px;display:none;">Exp. Date</th>
-          <th class="col-keterangan" style="width:90px;min-width:90px;">Ket.</th>
-          <th style="min-width:110px;">Catatan</th>
+          <th rowspan="2" style="width:32px;">No.</th>
+          <th rowspan="2" class="left" style="width:90px;min-width:90px;">Kode SKU</th>
+          <th rowspan="2" class="left" style="min-width:220px;">Nama Produk</th>
+          <th rowspan="2" style="width:72px;min-width:72px;display:none;">Harga<br><span style="font-weight:400;font-size:10px;opacity:0.8;">(Rp)</span></th>
+          <th rowspan="2" style="width:66px;min-width:66px;">QTY<br><span style="font-weight:400;font-size:10px;opacity:0.8;">Stockwiz</span></th>
+          <th rowspan="2" class="col-terjual" style="width:64px;min-width:64px;" title="Jumlah unit yang sudah terjual selama periode stock opname — mengurangi ekspektasi Stock Sistem saat menghitung Selisih">Terjual</th>
+          <th colspan="4" style="min-width:280px;border-bottom:1px solid rgba(255,255,255,0.2);">Jumlah Riil</th>
+          <th rowspan="2" style="min-width:60px;" title="QTY Selisih" class="col-selisih">QTY<br><span style="font-weight:400;font-size:10px;opacity:0.8;">Selisih</span></th>
+          <th rowspan="2" style="min-width:80px;" title="Nilai Selisih dihitung dari Harga Jual" class="col-selisih">VALUE<br><span style="font-weight:400;font-size:10px;opacity:0.8;">Selisih</span></th>
+          <th colspan="5" style="min-width:370px;background:#EBF5FB;color:#1B3A5C;border-left:2px solid #B2CDED;border-bottom:1px solid #B2CDED;" title="Validasi 1: Hitung ulang oleh petugas ke-2" class="col-val1">✅ Validasi 1</th>
+          <th rowspan="2" style="min-width:90px;background:#E8F5EE;color:#1A7A4A;border-left:2px solid #B2DFCB;" title="Validasi 2: Konfirmasi / Approve oleh Supervisor" class="col-val2">🔒 Val. 2</th>
+          <th rowspan="2" style="width:130px;min-width:130px;display:none;">Exp. Date</th>
+          <th rowspan="2" class="col-keterangan" style="width:90px;min-width:90px;">Ket.</th>
+          <th rowspan="2" style="min-width:110px;">Catatan</th>
         </tr>
         <tr>
-          <th></th><th></th><th></th><th></th><th></th><th></th>
-          <th class="col-store" style="min-width:78px;">Display</th><th class="col-storage" style="min-width:78px;">Stock</th><th class="col-gudang" style="min-width:78px;">Gudang</th><th style="width:72px;min-width:72px;" title="Total = Display + Stock + Gudang">Total</th>
-          <th class="col-selisih" style="width:60px;"></th><th class="col-selisih" style="width:80px;"></th>
-          <th style="min-width:78px;background:#EBF5FB;font-weight:600;color:#1B3A5C;border-left:2px solid #B2CDED;padding:12px 6px;" class="col-val1">Display</th><th style="min-width:78px;background:#EBF5FB;font-weight:600;color:#1B3A5C;padding:12px 6px;" class="col-val1">Stock</th><th style="min-width:78px;background:#EBF5FB;font-weight:600;color:#1B3A5C;padding:12px 6px;" class="col-val1">Gudang</th>
-          <th style="min-width:90px;background:#EBF5FB;font-weight:600;color:#1B3A5C;padding:12px 6px;" class="col-val1" title="Total = Display + Stock + Gudang (Validasi 1)">Total</th>
-          <th style="min-width:80px;background:#EBF5FB;font-weight:600;color:#1B3A5C;padding:12px 6px;" class="col-val1">Status</th>
-          <th style="min-width:90px;background:#E8F5EE;font-weight:600;color:#1A7A4A;" class="col-val2">Approve</th>
-          <th></th><th></th><th></th>
+          <th class="col-store" style="min-width:78px;padding:8px 6px;">Display</th>
+          <th class="col-storage" style="min-width:78px;padding:8px 6px;">Stock</th>
+          <th class="col-gudang" style="min-width:78px;padding:8px 6px;">Gudang</th>
+          <th style="width:72px;min-width:72px;padding:8px 6px;" title="Total = Display + Stock + Gudang">Total</th>
+          <th style="min-width:78px;background:#EBF5FB;font-weight:600;color:#1B3A5C;border-left:2px solid #B2CDED;padding:8px 6px;" class="col-val1">Display</th>
+          <th style="min-width:78px;background:#EBF5FB;font-weight:600;color:#1B3A5C;padding:8px 6px;" class="col-val1">Stock</th>
+          <th style="min-width:78px;background:#EBF5FB;font-weight:600;color:#1B3A5C;padding:8px 6px;" class="col-val1">Gudang</th>
+          <th style="min-width:90px;background:#EBF5FB;font-weight:600;color:#1B3A5C;padding:8px 6px;" class="col-val1" title="Total = Display + Stock + Gudang (Validasi 1)">Total</th>
+          <th style="min-width:80px;background:#EBF5FB;font-weight:600;color:#1B3A5C;padding:8px 6px;" class="col-val1">Status</th>
         </tr>
       </thead>
       <tbody id="tableBody"></tbody>
@@ -4439,20 +4440,18 @@ select:disabled {
     <table id="tableSelisih" style="font-size:12.5px;">
       <thead>
         <tr>
-          <th style="width:36px;">No.</th>
-          <th class="left" style="min-width:100px;">Kode SKU</th>
-          <th class="left" style="min-width:220px;">Nama Produk</th>
-          <th style="min-width:72px;display:none;">Harga<br><span style="font-weight:400;font-size:10px;opacity:0.8;">(Rp)</span></th>
-          <th style="min-width:70px;">QTY<br><span style="font-weight:400;font-size:10px;opacity:0.8;">Stockwiz</span></th>
-          <th style="min-width:70px;">Jumlah Riil</th>
-          <th colspan="2" style="min-width:130px;" title="Nilai Selisih dihitung dari Harga Jual">Total Selisih</th>
-          <th style="min-width:70px;">KETERANGAN</th>
+          <th rowspan="2" style="width:36px;">No.</th>
+          <th rowspan="2" class="left" style="min-width:100px;">Kode SKU</th>
+          <th rowspan="2" class="left" style="min-width:220px;">Nama Produk</th>
+          <th rowspan="2" style="min-width:72px;display:none;">Harga<br><span style="font-weight:400;font-size:10px;opacity:0.8;">(Rp)</span></th>
+          <th rowspan="2" style="min-width:70px;">QTY<br><span style="font-weight:400;font-size:10px;opacity:0.8;">Stockwiz</span></th>
+          <th rowspan="2" style="min-width:70px;">Jumlah Riil</th>
+          <th colspan="2" style="min-width:130px;border-bottom:1px solid rgba(255,255,255,0.2);" title="Nilai Selisih dihitung dari Harga Jual">Total Selisih</th>
+          <th rowspan="2" style="min-width:70px;">KETERANGAN</th>
         </tr>
         <tr>
-          <th></th><th></th><th></th><th></th><th></th><th></th>
-          <th style="min-width:65px;">QTY</th>
-          <th style="min-width:100px;">Value</th>
-          <th></th>
+          <th style="min-width:65px;padding:8px 6px;">QTY</th>
+          <th style="min-width:100px;padding:8px 6px;">Value</th>
         </tr>
       </thead>
       <tbody id="bodySelisih"></tbody>
@@ -4516,20 +4515,18 @@ select:disabled {
     <table id="tableDetail" style="font-size:12.5px;">
       <thead>
         <tr>
-          <th style="width:36px;">No.</th>
-          <th class="left" style="min-width:100px;">Kode SKU</th>
-          <th class="left" style="min-width:220px;">Nama Produk</th>
-          <th style="min-width:90px;display:none;">Harga (Rp)</th>
-          <th style="min-width:80px;">QTY di Stockwiz</th>
-          <th style="min-width:80px;">Jumlah Riil</th>
-          <th colspan="2" style="min-width:130px;">Total Selisih</th>
-          <th style="min-width:60px;">KETERANGAN</th>
+          <th rowspan="2" style="width:36px;">No.</th>
+          <th rowspan="2" class="left" style="min-width:100px;">Kode SKU</th>
+          <th rowspan="2" class="left" style="min-width:220px;">Nama Produk</th>
+          <th rowspan="2" style="min-width:90px;display:none;">Harga (Rp)</th>
+          <th rowspan="2" style="min-width:80px;">QTY di Stockwiz</th>
+          <th rowspan="2" style="min-width:80px;">Jumlah Riil</th>
+          <th colspan="2" style="min-width:130px;border-bottom:1px solid rgba(255,255,255,0.2);">Total Selisih</th>
+          <th rowspan="2" style="min-width:60px;">KETERANGAN</th>
         </tr>
         <tr>
-          <th></th><th></th><th></th><th></th><th></th><th></th>
-          <th style="min-width:65px;">QTY</th>
-          <th style="min-width:100px;">Value</th>
-          <th></th>
+          <th style="min-width:65px;padding:8px 6px;">QTY</th>
+          <th style="min-width:100px;padding:8px 6px;">Value</th>
         </tr>
       </thead>
       <tbody id="bodyDetail"></tbody>
