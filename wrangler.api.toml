@@ -1,3 +1,7 @@
 name = "so-api"
 main = "so-api-worker-fix.js"
 compatibility_date = "2024-03-20"
+
+[[kv_namespaces]]
+binding = "SO_KV"
+id = "ec0a1c1517d34fa1b366f110a91d4b7b"
