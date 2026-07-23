@@ -16350,15 +16350,22 @@ function sgabRenderSelisih(data, q) {
   // Total keseluruhan (semua toko/SKU yang lolos filter, bukan cuma halaman
   // yang sedang tampil) — dijumlah dari seluruh baris tiap grup.
   if (footTr) {
-    let totQty = 0, totVal = 0;
+    let totQtyPlus = 0, totQtyMinus = 0, totVal = 0;
     groups.forEach(g => g.rows.forEach(({ c }) => {
-      totQty += (c.selisihQty || 0);
+      const q = c.selisihQty || 0;
+      if (q > 0) totQtyPlus += q;
+      else if (q < 0) totQtyMinus += Math.abs(q);
       totVal += (c.selisihVal || 0);
     }));
-    const qtyCls = totQty > 0 ? 'sgab-val-pos' : totQty < 0 ? 'sgab-val-neg' : 'sgab-val-zero';
+    
     const valCls = totVal > 0 ? 'sgab-val-pos' : totVal < 0 ? 'sgab-val-neg' : 'sgab-val-zero';
+    
+    // Tampilkan total QTY sebagai +Plus / -Minus
     document.getElementById('sgabFootSelisihQty').innerHTML =
-      `<span class="${qtyCls}">${totQty > 0 ? '+' : ''}${totQty.toLocaleString('id-ID')}</span>`;
+      `<span class="sgab-val-pos" style="margin-right:4px;">+${totQtyPlus.toLocaleString('id-ID')}</span>` +
+      `<span style="color:var(--muted);font-weight:normal;">/</span>` +
+      `<span class="sgab-val-neg" style="margin-left:4px;">−${totQtyMinus.toLocaleString('id-ID')}</span>`;
+      
     document.getElementById('sgabFootSelisihVal').innerHTML =
       `<span class="${valCls}">${totVal > 0 ? '+' : totVal < 0 ? '−' : ''}Rp\u00A0${Math.abs(totVal).toLocaleString('id-ID')}</span>`;
     footTr.style.display = '';
