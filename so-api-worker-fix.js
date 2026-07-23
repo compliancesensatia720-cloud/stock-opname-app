@@ -155,7 +155,7 @@ export default {
     const r2 = env.SO_R2 || env.R2;
 
     if (!kv) {
-      return jsonResp({ ok: false, error: 'KV Namespace tidak ditemukan. Pastikan sudah di-bind sebagai SO_KV atau KV di Cloudflare Dashboard.' }, 500);
+      return jsonResp({ ok: false, error: 'KV Namespace tidak ditemukan. env keys: ' + Object.keys(env || {}).join(', ') + '. Pastikan sudah di-bind sebagai SO_KV.' }, 500);
     }
 
     try {
