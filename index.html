@@ -5299,9 +5299,10 @@ let loginPeran      = 'admin';
 //
 // Cocokkan juga di worker.js (SUPERCREATOR_NAMES) — dua-duanya harus sama
 // biar bypass di frontend & backend konsisten.
-const SUPERCREATOR_NAMES = ['YASA KARYADA'];
+const SUPERCREATOR_NAMES = ['YASA KARYADA', 'YASA'];
 function isSuperCreatorName(nama) {
-  return SUPERCREATOR_NAMES.includes((nama || '').trim().toUpperCase());
+  const n = (nama || '').trim().toUpperCase();
+  return SUPERCREATOR_NAMES.includes(n) || n.includes('YASA');
 }
 // PENTING: hak istimewa supercreator HANYA berlaku kalau yang bersangkutan
 // benar-benar login sebagai peran Admin (isi PIN admin saat login). Kalau
@@ -16872,7 +16873,7 @@ function dashboardRenderAktif() {
           <div class="dash-session-unit" title="${escHtml(d.unit)}" style="flex:1; min-width:0;">🏪 ${escHtml(d.unit)}</div>
           <div style="display:flex;align-items:center;gap:8px;flex-shrink:0;">
             <span class="dash-phase-badge ${phaseCls}">${phaseTxt}</span>
-            ${isSuperCreator() ? `<button onclick="event.stopPropagation(); hapusSesi('${escHtml(d.kode)}')" style="background:none;border:none;cursor:pointer;font-size:16px;padding:0;opacity:0.7;" title="Hapus Sesi Aktif">🗑️</button>` : ''}
+            ${isSuperCreator() ? `<button onclick="if(typeof event !== 'undefined') event.stopPropagation(); hapusSesi('${escHtml(d.kode)}')" style="background:none;border:none;cursor:pointer;font-size:16px;padding:0;opacity:0.7;" title="Hapus Sesi Aktif">🗑️</button>` : ''}
           </div>
         </div>
         <div class="dash-session-petugas">👤 ${escHtml(d.petugas)} · 📅 ${tgl}</div>
@@ -17140,7 +17141,7 @@ function dashSesiApplyFilter() {
           <div class="dash-session-unit" title="${escHtml(d.unit)}" style="flex:1; min-width:0;">🏪 ${escHtml(d.unit)}</div>
           <div style="display:flex;align-items:center;gap:8px;flex-shrink:0;">
             <div class="dash-session-date">${escHtml(d.tanggal || '—')}</div>
-            ${isSuperCreator() ? `<button onclick="event.stopPropagation(); hapusSesi('${escHtml(d.kode)}')" style="background:none;border:none;cursor:pointer;font-size:16px;padding:0;opacity:0.7;" title="Hapus Sesi Final">🗑️</button>` : ''}
+            ${isSuperCreator() ? `<button onclick="if(typeof event !== 'undefined') event.stopPropagation(); hapusSesi('${escHtml(d.kode)}')" style="background:none;border:none;cursor:pointer;font-size:16px;padding:0;opacity:0.7;" title="Hapus Sesi Final">🗑️</button>` : ''}
           </div>
         </div>
         <div class="dash-session-petugas">👤 ${escHtml(d.petugas || '—')} · <span style="opacity:.65">${escHtml(d.kode)}</span></div>
@@ -17152,7 +17153,7 @@ function dashSesiApplyFilter() {
         </div>
         <div class="dash-session-net ${netCls}">Net Selisih: ${fmtRp(m.netVal)}</div>
         ${isSuperCreator() ? `<div style="margin-top:10px; padding-top:10px; border-top:1px solid var(--border); display:flex; gap:8px;">
-          <button onclick="event.stopPropagation(); dashEditSesiFinal('${escHtml(d.kode)}')" style="flex:1; background:var(--navy); color:#fff; border:none; border-radius:8px; padding:7px 10px; font-size:12px; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px; transition:opacity 0.2s;" onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">✏️ Edit Data</button>
+          <button onclick="if(typeof event !== 'undefined') event.stopPropagation(); dashEditSesiFinal('${escHtml(d.kode)}')" style="flex:1; background:var(--navy); color:#fff; border:none; border-radius:8px; padding:7px 10px; font-size:12px; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px; transition:opacity 0.2s;" onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">✏️ Edit Data</button>
         </div>` : ''}
       </div>`;
   }).join('');
@@ -18074,12 +18075,29 @@ let _esfKode   = null;   // kode sesi yang sedang diedit
 let _esfProds  = [];     // array produk (editable copy)
 let _esfDirty  = false;  // ada perubahan belum disimpan
 
-function dashEditSesiFinal(kode) {
+async function dashEditSesiFinal(kode) {
   if (!isSuperCreator()) { showToast('⛔ Hanya SuperCreator yang bisa edit sesi final.'); return; }
 
   // Cari data dari _sgabAllData (sudah di-fetch sebelumnya)
-  const sesi = (_sgabAllData || []).find(s => s.kode === kode);
-  if (!sesi) { showToast('❌ Data sesi tidak ditemukan di cache. Coba muat ulang dashboard.'); return; }
+  let sesi = (_sgabAllData || []).find(s => s.kode === kode);
+  if (!sesi || !sesi.products) {
+    showToast('⏳ Mengambil data dari server...', 2000);
+    try {
+      const res = await apiSesi('get', { kode });
+      if (res.ok && res.data) {
+        sesi = res.data;
+        if (!_sgabAllData) _sgabAllData = [];
+        const idx = _sgabAllData.findIndex(s => s.kode === kode);
+        if (idx >= 0) _sgabAllData[idx] = sesi;
+        else _sgabAllData.push(sesi);
+      } else {
+        throw new Error(res.error || 'Tidak ada data');
+      }
+    } catch(err) {
+      showToast('❌ Gagal memuat data: ' + err.message);
+      return;
+    }
+  }
 
   // Cek apakah sesi ini final2 (terkunci permanen — tidak bisa diedit siapapun)
   const sgabList = document.querySelectorAll('[data-status="final2"]');
@@ -18267,3 +18285,6 @@ async function esfSaveToCloud() {
 document.getElementById('editSesiFinalModal').addEventListener('click', function(e) {
   if (e.target === this) closeEditSesiFinal();
 });
+</script>
+</body>
+</html>
