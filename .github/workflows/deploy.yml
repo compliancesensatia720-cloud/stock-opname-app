@@ -10,11 +10,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Deploy Frontend (so)
+      - name: Deploy Frontend to Cloudflare Pages
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          command: deploy -c wrangler.frontend.toml
+          command: pages deploy . --project-name stock-opname-app
 
   deploy-api:
     runs-on: ubuntu-latest

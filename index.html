@@ -4955,7 +4955,6 @@ select:disabled {
               <th style="width:36px" class="ctr">No</th>
               <th>Kode SKU</th>
               <th>Nama Produk</th>
-              <th>Toko</th>
               <th class="num">QTY Stockwiz</th>
               <th class="num">QTY Riil</th>
               <th class="num">Selisih QTY</th>
@@ -4966,7 +4965,7 @@ select:disabled {
           <tbody id="sgabBodySelisih"></tbody>
           <tfoot id="sgabFootSelisih" style="display:none;">
             <tr>
-              <td colspan="6" style="text-align:right;padding:8px 12px;font-weight:700;color:#1B3A5C;">TOTAL SELISIH</td>
+              <td colspan="5" style="text-align:right;padding:8px 12px;font-weight:700;color:#1B3A5C;">TOTAL SELISIH</td>
               <td class="num" id="sgabFootSelisihQty" style="font-weight:700;color:#1B3A5C;"></td>
               <td class="num" id="sgabFootSelisihVal" style="font-weight:700;color:#1B3A5C;"></td>
               <td></td>
@@ -16284,7 +16283,7 @@ function sgabRenderSelisih(data, q) {
 
     if (multiToko) {
       html += `<tr class="grp-header" onclick="sgabToggleGroup('${g.kode}')">
-        <td colspan="9">
+        <td colspan="8">
           <div class="grp-header-row">
             <div class="grp-header-left">
               <span class="grp-toggle">${isCollapsed ? '▶' : '▼'}</span>
@@ -16320,7 +16319,6 @@ function sgabRenderSelisih(data, q) {
         <td class="ctr" data-label="No" style="color:var(--muted);font-size:12px">${start + i + 1}</td>
         <td data-label="Kode SKU"><span class="sgab-sku">${escHtml(p.sku)}</span></td>
         <td data-label="Nama Produk"${isLainnyaSku(p.sku) ? ' class="nama-lainnya"' : ''}>${escHtml(p.name || '')}</td>
-        <td data-label="Toko"><span class="sgab-toko-pill">${escHtml(d.unit)}</span></td>
         <td class="num" data-label="QTY Stockwiz">${fmt(p.sw)}</td>
         <td class="num" data-label="QTY Riil">${fmt(c.total)}</td>
         <td class="num" data-label="Selisih QTY">${fmtSel(c.selisihQty)}</td>
@@ -16336,7 +16334,7 @@ function sgabRenderSelisih(data, q) {
         else btns += `<button class="sgab-page-btn ${pn === curPage ? 'active-page' : ''}" onclick="sgabGroupGoPage('${g.kode}',${pn})">${pn}</button>`;
       });
       btns += `<button class="sgab-page-btn" onclick="sgabGroupGoPage('${g.kode}',${curPage + 1})" ${curPage >= totalPages ? 'disabled' : ''}>›</button>`;
-      html += `<tr class="sgab-group-page-row"><td colspan="9">
+      html += `<tr class="sgab-group-page-row"><td colspan="8">
         <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;">
           <span style="font-size:11.5px;color:var(--muted);">Menampilkan ${start + 1}–${Math.min(start + SGAB_GROUP_PAGE_SIZE, g.rows.length)} dari ${g.rows.length} SKU toko ini</span>
           <div class="sgab-page-btns">${btns}</div>
