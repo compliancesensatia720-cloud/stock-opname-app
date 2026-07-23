@@ -16638,6 +16638,8 @@ async function dashboardRefresh(force) {
     if (!resList.ok) throw new Error(resList.error || 'Gagal ambil list sesi');
 
     const finalSesi = (resList.data || []).filter(s => s.status === 'final' || s.status === 'final2');
+    // Simpan list meta sesi (termasuk status) untuk cek final2 di modal edit
+    window._sgabSesiListMeta = resList.data || [];
     if (!finalSesi.length) {
       loadEl.textContent = '📭 Belum ada sesi dengan status "final".';
       document.getElementById('dashSubtitle').textContent = '0 sesi final ditemukan';
@@ -17140,6 +17142,9 @@ function dashSesiApplyFilter() {
           <div class="dash-metric-chip" style="background:#FFF6ED; padding:4px 0; border-radius:8px; display:flex; flex-direction:column; justify-content:center; align-items:center;"><div class="lbl" style="font-size:9.5px; color:#B5620A">Expired</div><div class="val orange" style="font-size:13.5px">${m.expiredSKU}<span style="font-weight:600;font-size:9.5px;">/${m.expiredQty}</span></div></div>
         </div>
         <div class="dash-session-net ${netCls}">Net Selisih: ${fmtRp(m.netVal)}</div>
+        ${isSuperCreator() ? `<div style="margin-top:10px; padding-top:10px; border-top:1px solid var(--border); display:flex; gap:8px;">
+          <button onclick="event.stopPropagation(); dashEditSesiFinal('${escHtml(d.kode)}')" style="flex:1; background:var(--navy); color:#fff; border:none; border-radius:8px; padding:7px 10px; font-size:12px; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px; transition:opacity 0.2s;" onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">✏️ Edit Data</button>
+        </div>` : ''}
       </div>`;
   }).join('');
 }
@@ -17986,5 +17991,270 @@ function saveQuickEdit() {
   if (typeof dashboardRefresh === 'function') dashboardRefresh();
 }
 </script>
-</body>
-</html>
+
+<!-- ═══════════════════════════════════════════════════════════
+     MODAL: Edit Sesi Final (SuperCreator Only)
+     Memungkinkan YASA KARYADA mengedit data produk pada sesi
+     yang sudah final, lalu menyimpannya kembali ke cloud.
+═══════════════════════════════════════════════════════════ -->
+<div id="editSesiFinalModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.65); z-index:99999; align-items:flex-start; justify-content:center; padding:20px; backdrop-filter:blur(4px); overflow-y:auto;">
+  <div style="background:#fff; border-radius:16px; width:100%; max-width:960px; margin:auto; overflow:hidden; box-shadow:0 20px 60px rgba(0,0,0,0.3); display:flex; flex-direction:column; max-height:90vh;">
+
+    <!-- Header -->
+    <div style="padding:18px 24px; border-bottom:1px solid var(--border); background:linear-gradient(135deg,var(--navy) 0%,#2d5a8e 100%); color:#fff; display:flex; justify-content:space-between; align-items:center; flex-shrink:0;">
+      <div>
+        <div style="font-weight:800; font-size:17px; display:flex; align-items:center; gap:8px;">✏️ Edit Data Sesi Final</div>
+        <div id="esf_title" style="font-size:12.5px; opacity:.8; margin-top:3px;"></div>
+      </div>
+      <button onclick="closeEditSesiFinal()" style="background:rgba(255,255,255,0.15); border:none; color:#fff; width:34px; height:34px; border-radius:50%; font-size:18px; cursor:pointer; display:flex; align-items:center; justify-content:center;">×</button>
+    </div>
+
+    <!-- Toolbar: Pencarian + Filter -->
+    <div style="padding:12px 20px; border-bottom:1px solid var(--border); background:#FAFBFC; display:flex; gap:10px; flex-wrap:wrap; flex-shrink:0;">
+      <input id="esf_search" type="text" placeholder="🔍 Cari SKU atau nama produk..." oninput="esfRenderTable()"
+        style="flex:1; min-width:200px; padding:8px 12px; border:1.5px solid var(--border); border-radius:8px; font-size:13px; font-family:'Inter',sans-serif; outline:none;">
+      <select id="esf_filter" onchange="esfRenderTable()"
+        style="padding:8px 10px; border:1.5px solid var(--border); border-radius:8px; font-size:13px; font-family:'Inter',sans-serif; outline:none; background:#fff; color:var(--text);">
+        <option value="all">Semua Produk</option>
+        <option value="filled">Sudah Diisi</option>
+        <option value="empty">Belum Diisi</option>
+        <option value="plus">Plus (fisik > sistem)</option>
+        <option value="minus">Minus (fisik < sistem)</option>
+        <option value="balance">Balance</option>
+      </select>
+      <div id="esf_count" style="font-size:12px; color:var(--muted); display:flex; align-items:center;"></div>
+    </div>
+
+    <!-- Tabel Produk -->
+    <div style="flex:1; overflow-y:auto; overflow-x:auto;">
+      <table style="width:100%; border-collapse:collapse; font-size:13px;">
+        <thead>
+          <tr style="background:#F0F4F8; position:sticky; top:0; z-index:2;">
+            <th style="padding:10px 14px; text-align:left; font-size:11px; font-weight:700; color:var(--muted); border-bottom:2px solid var(--border); white-space:nowrap;">#</th>
+            <th style="padding:10px 14px; text-align:left; font-size:11px; font-weight:700; color:var(--muted); border-bottom:2px solid var(--border);">SKU / Produk</th>
+            <th style="padding:10px 10px; text-align:center; font-size:11px; font-weight:700; color:var(--muted); border-bottom:2px solid var(--border); white-space:nowrap;">SW<br><span style="font-weight:400;">(Sistem)</span></th>
+            <th style="padding:10px 10px; text-align:center; font-size:11px; font-weight:700; color:var(--navy); border-bottom:2px solid var(--border); white-space:nowrap;">Store</th>
+            <th style="padding:10px 10px; text-align:center; font-size:11px; font-weight:700; color:var(--navy); border-bottom:2px solid var(--border); white-space:nowrap;">Storage</th>
+            <th style="padding:10px 10px; text-align:center; font-size:11px; font-weight:700; color:var(--navy); border-bottom:2px solid var(--border); white-space:nowrap;">Gudang</th>
+            <th style="padding:10px 10px; text-align:center; font-size:11px; font-weight:700; color:var(--muted); border-bottom:2px solid var(--border); white-space:nowrap;">Selisih</th>
+            <th style="padding:10px 14px; text-align:center; font-size:11px; font-weight:700; color:var(--muted); border-bottom:2px solid var(--border); white-space:nowrap;">Status</th>
+          </tr>
+        </thead>
+        <tbody id="esf_tbody"></tbody>
+      </table>
+    </div>
+
+    <!-- Footer: Save Button -->
+    <div style="padding:14px 20px; border-top:2px solid var(--border); background:#fff; display:flex; align-items:center; justify-content:space-between; flex-shrink:0; gap:12px;">
+      <div id="esf_status" style="font-size:12.5px; color:var(--muted);"></div>
+      <div style="display:flex; gap:10px;">
+        <button onclick="closeEditSesiFinal()" style="padding:9px 20px; border:1.5px solid var(--border); border-radius:8px; background:#fff; color:var(--text); font-size:13px; font-weight:600; cursor:pointer;">Tutup</button>
+        <button id="esf_saveBtn" onclick="esfSaveToCloud()" style="padding:9px 24px; border:none; border-radius:8px; background:var(--navy); color:#fff; font-size:13px; font-weight:700; cursor:pointer; display:flex; align-items:center; gap:8px; transition:opacity 0.2s;">
+          💾 Simpan ke Cloud
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════
+// Edit Sesi Final — SuperCreator Panel
+// ═══════════════════════════════════════════════════════════════
+let _esfKode   = null;   // kode sesi yang sedang diedit
+let _esfProds  = [];     // array produk (editable copy)
+let _esfDirty  = false;  // ada perubahan belum disimpan
+
+function dashEditSesiFinal(kode) {
+  if (!isSuperCreator()) { showToast('⛔ Hanya SuperCreator yang bisa edit sesi final.'); return; }
+
+  // Cari data dari _sgabAllData (sudah di-fetch sebelumnya)
+  const sesi = (_sgabAllData || []).find(s => s.kode === kode);
+  if (!sesi) { showToast('❌ Data sesi tidak ditemukan di cache. Coba muat ulang dashboard.'); return; }
+
+  // Cek apakah sesi ini final2 (terkunci permanen — tidak bisa diedit siapapun)
+  const sgabList = document.querySelectorAll('[data-status="final2"]');
+  // Ambil status dari list sesi yang sudah ada
+  const sesiMeta = (window._sgabSesiListMeta || []).find(s => s.kode === kode);
+  if (sesiMeta && sesiMeta.status === 'final2') {
+    showToast('🔒 Sesi ini sudah Finalisasi 2 (terkunci permanen). Tidak bisa diedit oleh siapapun.', 4000);
+    return;
+  }
+
+  _esfKode  = kode;
+  // Deep copy agar edit tidak langsung mengubah cache display
+  _esfProds = JSON.parse(JSON.stringify(sesi.products || []));
+  _esfDirty = false;
+
+  // Set judul modal
+  const titleEl = document.getElementById('esf_title');
+  if (titleEl) titleEl.textContent = `${sesi.unit || kode} · ${sesi.tanggal || '—'}`;
+
+  // Reset toolbar
+  const srch = document.getElementById('esf_search');
+  const filt = document.getElementById('esf_filter');
+  if (srch) srch.value = '';
+  if (filt) filt.value = 'all';
+
+  esfRenderTable();
+  document.getElementById('editSesiFinalModal').style.display = 'flex';
+}
+
+function closeEditSesiFinal() {
+  if (_esfDirty) {
+    if (!confirm('Ada perubahan yang belum disimpan. Tutup tanpa simpan?')) return;
+  }
+  document.getElementById('editSesiFinalModal').style.display = 'none';
+  _esfKode  = null;
+  _esfProds = [];
+  _esfDirty = false;
+}
+
+function esfCalcStatus(p) {
+  const store   = Number(p.store   ?? '') || 0;
+  const storage = Number(p.storage ?? '') || 0;
+  const gudang  = Number(p.gudang  ?? '') || 0;
+  const sw      = Number(p.sw      ?? 0);
+  const fisik   = store + storage + gudang;
+  const filled  = (p.store !== '' && p.store !== undefined && p.store !== null) ||
+                  (p.storage !== '' && p.storage !== undefined && p.storage !== null);
+  if (!filled) return { label: '—', cls: '', selisih: null };
+  const s = fisik - sw;
+  if (s > 0)  return { label: 'Plus',    cls: 'green', selisih: s };
+  if (s < 0)  return { label: 'Minus',   cls: 'red',   selisih: s };
+  return { label: 'Balance', cls: '', selisih: 0 };
+}
+
+function esfRenderTable() {
+  const tbody = document.getElementById('esf_tbody');
+  if (!tbody || !_esfProds.length) { if(tbody) tbody.innerHTML = '<tr><td colspan="8" style="padding:30px; text-align:center; color:var(--muted);">Tidak ada data produk.</td></tr>'; return; }
+
+  const q    = ((document.getElementById('esf_search') || {}).value || '').trim().toLowerCase();
+  const filt = ((document.getElementById('esf_filter') || {}).value || 'all');
+
+  let rows = _esfProds.map((p, idx) => ({ p, idx }));
+  if (q) rows = rows.filter(({ p }) => (p.sku||'').toLowerCase().includes(q) || (p.name||'').toLowerCase().includes(q));
+  if (filt !== 'all') {
+    rows = rows.filter(({ p }) => {
+      const st = esfCalcStatus(p);
+      if (filt === 'filled') return st.selisih !== null;
+      if (filt === 'empty')  return st.selisih === null;
+      if (filt === 'plus')   return st.label === 'Plus';
+      if (filt === 'minus')  return st.label === 'Minus';
+      if (filt === 'balance') return st.label === 'Balance';
+      return true;
+    });
+  }
+
+  const countEl = document.getElementById('esf_count');
+  if (countEl) countEl.textContent = `${rows.length} produk ditampilkan`;
+
+  const fmtInput = (val) => (val !== '' && val !== null && val !== undefined) ? val : '';
+
+  tbody.innerHTML = rows.map(({ p, idx }, rowNum) => {
+    const st = esfCalcStatus(p);
+    const statStyle = st.cls === 'green' ? 'color:var(--green);font-weight:700;' : st.cls === 'red' ? 'color:var(--red);font-weight:700;' : 'color:var(--muted);';
+    const trBg = rowNum % 2 === 0 ? '#fff' : '#FAFBFC';
+    return `<tr style="background:${trBg}; border-bottom:1px solid var(--border);">
+      <td style="padding:8px 14px; color:var(--muted); font-size:11.5px; text-align:center;">${rowNum+1}</td>
+      <td style="padding:8px 14px; max-width:220px;">
+        <div style="font-weight:700; font-size:12.5px; color:var(--navy);">${escHtml(p.sku||'')}</div>
+        <div style="font-size:11.5px; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:210px;" title="${escHtml(p.name||'')}">${escHtml(p.name||'')}</div>
+      </td>
+      <td style="padding:8px 10px; text-align:center; font-size:13px; font-weight:700;">${p.sw ?? 0}</td>
+      <td style="padding:6px 8px; text-align:center;">
+        <input type="number" min="0" value="${fmtInput(p.store)}" oninput="esfSetVal(${idx},'store',this.value)"
+          style="width:60px; padding:5px 6px; border:1.5px solid var(--border); border-radius:6px; font-size:13px; text-align:center; font-family:'Inter',sans-serif; outline:none; transition:border-color 0.15s;"
+          onfocus="this.style.borderColor='var(--navy)'" onblur="this.style.borderColor='var(--border)'">
+      </td>
+      <td style="padding:6px 8px; text-align:center;">
+        <input type="number" min="0" value="${fmtInput(p.storage)}" oninput="esfSetVal(${idx},'storage',this.value)"
+          style="width:60px; padding:5px 6px; border:1.5px solid var(--border); border-radius:6px; font-size:13px; text-align:center; font-family:'Inter',sans-serif; outline:none; transition:border-color 0.15s;"
+          onfocus="this.style.borderColor='var(--navy)'" onblur="this.style.borderColor='var(--border)'">
+      </td>
+      <td style="padding:6px 8px; text-align:center;">
+        <input type="number" min="0" value="${fmtInput(p.gudang)}" oninput="esfSetVal(${idx},'gudang',this.value)"
+          style="width:60px; padding:5px 6px; border:1.5px solid var(--border); border-radius:6px; font-size:13px; text-align:center; font-family:'Inter',sans-serif; outline:none; transition:border-color 0.15s;"
+          onfocus="this.style.borderColor='var(--navy)'" onblur="this.style.borderColor='var(--border)'">
+      </td>
+      <td style="padding:8px 10px; text-align:center; font-size:13px; ${statStyle}">${st.selisih !== null ? (st.selisih > 0 ? '+' : '') + st.selisih : '—'}</td>
+      <td style="padding:8px 14px; text-align:center;">
+        <span style="font-size:11px; font-weight:700; padding:2px 8px; border-radius:12px;
+          background:${st.cls === 'green' ? 'var(--green-bg)' : st.cls === 'red' ? 'var(--red-bg)' : 'var(--bg)'};
+          color:${st.cls === 'green' ? 'var(--green)' : st.cls === 'red' ? 'var(--red)' : 'var(--muted)'};">
+          ${st.label}
+        </span>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function esfSetVal(idx, field, rawVal) {
+  if (!_esfProds[idx]) return;
+  _esfProds[idx][field] = rawVal !== '' ? Number(rawVal) : '';
+  _esfDirty = true;
+  // Re-render hanya kolom selisih & status untuk row yang berubah (lebih efisien)
+  // Tapi karena tabel sudah ter-render, update status via inline style
+  const st = esfCalcStatus(_esfProds[idx]);
+  const statusEl = document.getElementById(`esf_status`);
+  if (statusEl) statusEl.textContent = '● Ada perubahan belum disimpan';
+}
+
+async function esfSaveToCloud() {
+  if (!_esfKode) return;
+  if (!isSuperCreator()) { showToast('⛔ Hanya SuperCreator.'); return; }
+
+  const btn = document.getElementById('esf_saveBtn');
+  if (btn) { btn.disabled = true; btn.innerHTML = '⏳ Menyimpan...'; }
+
+  try {
+    showToast('⏳ Menyimpan data ke cloud...');
+
+    // Kirim seluruh array produk ke updateStock (supercreator bypass lock-final)
+    // PENTING: sertakan actorNama & actorRole agar guard backend bisa verifikasi
+    const res = await apiSesi('updateStock', {
+      kode: _esfKode,
+      actorNama: currentNama,
+      actorRole: currentRole,
+      products: _esfProds.map(p => ({
+        ...p,
+        store:   p.store   !== '' && p.store   !== null && p.store   !== undefined ? Number(p.store)   : '',
+        storage: p.storage !== '' && p.storage !== null && p.storage !== undefined ? Number(p.storage) : '',
+        gudang:  p.gudang  !== '' && p.gudang  !== null && p.gudang  !== undefined ? Number(p.gudang)  : '',
+        _updatedAt: Date.now()
+      })),
+      updatedBy: currentNama
+    });
+
+    if (!res.ok) {
+      showToast('❌ Gagal menyimpan: ' + (res.error || 'Error tidak diketahui'));
+      return;
+    }
+
+    // Update cache _sgabAllData agar Dashboard Final langsung terupdate tanpa reload
+    const sesiIdx = (_sgabAllData || []).findIndex(s => s.kode === _esfKode);
+    if (sesiIdx !== -1) {
+      _sgabAllData[sesiIdx].products = JSON.parse(JSON.stringify(_esfProds));
+    }
+
+    _esfDirty = false;
+    showToast('✅ Data berhasil disimpan ke cloud!');
+
+    const statusEl = document.getElementById('esf_status');
+    if (statusEl) statusEl.textContent = `✅ Tersimpan · ${new Date().toLocaleTimeString('id-ID')}`;
+
+    // Refresh tampilan dashboard setelah simpan
+    if (typeof dashboardRenderAll === 'function') dashboardRenderAll();
+    if (typeof dashSesiApplyFilter === 'function') dashSesiApplyFilter();
+
+  } catch(err) {
+    showToast('❌ ' + err.message);
+  } finally {
+    if (btn) { btn.disabled = false; btn.innerHTML = '💾 Simpan ke Cloud'; }
+  }
+}
+
+// Tutup modal jika klik di luar
+document.getElementById('editSesiFinalModal').addEventListener('click', function(e) {
+  if (e.target === this) closeEditSesiFinal();
+});
