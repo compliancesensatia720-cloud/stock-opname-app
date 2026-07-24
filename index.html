@@ -18048,7 +18048,12 @@ function saveQuickEdit() {
         <option value="minus">Minus (fisik < sistem)</option>
         <option value="balance">Balance</option>
       </select>
-      <div id="esf_count" style="font-size:12px; color:var(--muted); display:flex; align-items:center;"></div>
+      <input type="file" id="esf_csvInput" accept=".csv" style="display:none;" onchange="esfHandleCsvUpload(event)">
+      <button onclick="document.getElementById('esf_csvInput').click()" style="padding:8px 12px; border:1.5px solid var(--border); border-radius:8px; font-size:12px; background:#fff; cursor:pointer; font-weight:700; color:#1A7A4A; display:flex; align-items:center; gap:6px;">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="14" height="14"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+        Upload CSV SW
+      </button>
+      <div id="esf_count" style="font-size:12px; color:var(--muted); display:flex; align-items:center; margin-left:auto;"></div>
     </div>
 
     <!-- Tabel Produk -->
@@ -18248,6 +18253,70 @@ function esfSetVal(idx, field, rawVal) {
   const st = esfCalcStatus(_esfProds[idx]);
   const statusEl = document.getElementById(`esf_status`);
   if (statusEl) statusEl.textContent = '● Ada perubahan belum disimpan';
+}
+
+function esfHandleCsvUpload(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => esfParseCSV(ev.target.result);
+  reader.readAsText(file);
+  e.target.value = '';
+}
+
+function esfParseCSV(text) {
+  const lines = text.trim().replace(/\r\n/g, '\n').replace(/\r/g, '\n').split('\n');
+  if (lines.length < 2) { showToast('❌ File CSV kosong'); return; }
+  const headers = lines[0].replace(/\r$/, '').replace(/^\uFEFF/, '').split(',').map(h => h.trim().replace(/^"|"$/g, ''));
+  const findCol = (...names) => {
+    const hLow = headers.map(h => h.toLowerCase().trim());
+    for (const n of names) {
+      const exact = hLow.indexOf(n.toLowerCase());
+      if (exact !== -1) return exact;
+    }
+    for (const n of names) {
+      const partial = hLow.findIndex(h => h.includes(n.toLowerCase()));
+      if (partial !== -1) return partial;
+    }
+    return -1;
+  };
+
+  const skuCol   = findCol('inci', 'kode sku', 'sku', 'kode', 'code', 'item code');
+  const priceCol = findCol('selling price', 'harga jual', 'price (rp)', 'harga (rp)', 'price', 'harga', 'hrg');
+  const qtyCol   = findCol('available', 'on hand', 'quantity', 'qty', 'stok', 'stock', 'jumlah');
+
+  if (skuCol === -1) {
+    showToast('❌ Kolom SKU tidak ditemukan di CSV.');
+    return;
+  }
+
+  let matched = 0;
+  for (let i = 1; i < lines.length; i++) {
+    const cols = typeof splitCSVLine === 'function' ? splitCSVLine(lines[i]) : lines[i].split(',');
+    if (!cols || cols.length < 2) continue;
+    const sku = (cols[skuCol] || '').trim().replace(/^"|"$/g, '');
+    if (!sku) continue;
+
+    const price = priceCol !== -1 ? (parseInt((cols[priceCol]||'0').replace(/[^0-9]/g,''), 10) || 0) : 0;
+    const sw    = qtyCol   !== -1 ? parseFloat((cols[qtyCol]  ||'0').replace(/[^0-9.\-]/g,'')) || 0 : 0;
+
+    const p = _esfProds.find(x => x.sku === sku);
+    if (p) {
+      if (priceCol !== -1 && price !== undefined) p.price = price;
+      if (qtyCol !== -1 && sw !== undefined) p.sw = sw;
+      matched++;
+    }
+  }
+
+  if (matched > 0) {
+    _esfDirty = true;
+    showToast(`✅ Berhasil me-load data QTY & Price untuk ${matched} SKU dari CSV.`);
+    esfRenderTable();
+    const statusEl = document.getElementById('esf_status');
+    if (statusEl) statusEl.textContent = '● Ada perubahan (dari CSV) belum disimpan';
+  } else {
+    showToast('⚠️ Tidak ada SKU yang cocok dengan data sesi ini.');
+  }
 }
 
 async function esfSaveToCloud() {
