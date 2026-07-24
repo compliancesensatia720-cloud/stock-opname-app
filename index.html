@@ -6207,6 +6207,11 @@ categoryMap.forEach(cat => { cat.skus.forEach(sku => { skuCategoryLookup[sku] = 
 
 // Init saat DOM siap
 window.addEventListener('DOMContentLoaded', function() {
+  if (localStorage.getItem('showResetToast')) {
+    setTimeout(() => { showToast('Semua data berhasil di-reset. Aplikasi siap digunakan kembali.'); }, 500);
+    localStorage.removeItem('showResetToast');
+  }
+
   jam24Setup('infoPukulStart'); // pasang picker jam 24-jam (harus sebelum loadProgress agar nilai tersimpan langsung tampil)
   jam24Setup('infoPukulEnd');
   buildSelectOptions(); // isi dropdown toko dari localStorage
@@ -11393,26 +11398,12 @@ function resetSemuaDataConfirm() {
     }
     // 2. Clear localStorage
     localStorage.clear();
-    // 3. Reset state di memori
-    products = [];
-    _csvRawData = null;
-    csvDataMap = {};
-    document.getElementById('infoUnit').value = '';
-    document.getElementById('infoTanggal').value = '';
-    document.getElementById('infoPukulStart').value = '';
-    document.getElementById('infoPukulEnd').value = '';
-    daftarPetugas = [''];
-    petugasManualIdx.clear();
-    renderPetugasList();
     
-    // 4. Update UI
-    renderTable();
-    updateTally();
+    // Set a flag to show a toast after reload (optional, but nice)
+    localStorage.setItem('showResetToast', 'true');
     
-    // 5. Kembali ke Dashboard
-    switchPage('dashboard');
-    showToast('Semua data berhasil di-reset. Aplikasi siap digunakan kembali.');
-    if (typeof updateSidebarActiveSession === 'function') updateSidebarActiveSession();
+    // 3. Reload halaman untuk reset semua state aplikasi
+    window.location.reload();
   }
 }
 
