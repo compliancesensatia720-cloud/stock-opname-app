@@ -17993,6 +17993,94 @@ function openQuickEdit(idx) {
 }
 function saveQuickEdit() {
   if (currentQeIdx === -1) return;
+
+  function esfHandleCsvUpload(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    e.target.value = ''; // Reset input
+    const reader = new FileReader();
+    reader.onload = ev => esfParseCSV(ev.target.result);
+    reader.readAsText(file);
+  }
+
+  function esfHandleRiilUpload(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    e.target.value = ''; // Reset input
+
+    ensureXLSX(function() {
+      const reader = new FileReader();
+      reader.onload = function(evt) {
+        try {
+          const data = evt.target.result;
+          const wb = XLSX.read(data, { type: 'binary' });
+          const ws = wb.Sheets[wb.SheetNames[0]];
+          const rows = XLSX.utils.sheet_to_json(ws, { header: 1, defval: '' });
+          if (rows.length < 2) {
+            showToast('❌ File kosong atau format salah.');
+            return;
+          }
+
+          let headerRowIdx = -1;
+          for (let i = 0; i < Math.min(rows.length, 10); i++) {
+            const r = rows[i].map(c => String(c||'').toLowerCase().trim());
+            const hasKode  = r.some(h => h === 'kode' || h === 'kode ' || h === 'inci' || h === 'kode sku');
+            const hasStore = r.some(h => h === 'store' || h === 'storage' || h === 'display' || h === 'stock' || h === 'gudang');
+            if (hasKode && hasStore) { headerRowIdx = i; break; }
+          }
+
+          if (headerRowIdx === -1) {
+            showToast('❌ Tidak ditemukan kolom Kode SKU dan Store/Display.');
+            return;
+          }
+
+          const headers = rows[headerRowIdx].map(c => String(c||'').toLowerCase().trim());
+          let skuCol = headers.indexOf('kode');
+          if (skuCol === -1) skuCol = headers.indexOf('inci');
+          if (skuCol === -1) skuCol = headers.indexOf('kode sku');
+
+          let storeCol   = headers.indexOf('store');
+          if (storeCol === -1) storeCol = headers.indexOf('display');
+          let storageCol = headers.indexOf('storage');
+          if (storageCol === -1) storageCol = headers.indexOf('stock');
+          let gudangCol  = headers.indexOf('gudang');
+
+          let matched = 0;
+          for (let i = headerRowIdx + 1; i < rows.length; i++) {
+            const row = rows[i];
+            if (!row || row.length <= skuCol) continue;
+            let sku = String(row[skuCol] || '').trim();
+            if (!sku) continue;
+            if (sku.endsWith(' ')) sku = sku.trim();
+
+            const p = _esfProds.find(x => x.sku === sku);
+            if (!p) continue;
+
+            let updated = false;
+            if (storeCol !== -1 && row[storeCol] !== '' && row[storeCol] !== null) {
+              const sv = Number(row[storeCol]); if (!isNaN(sv)) { p.store = sv; updated = true; }
+            }
+            if (storageCol !== -1 && row[storageCol] !== '' && row[storageCol] !== null) {
+              const sv = Number(row[storageCol]); if (!isNaN(sv)) { p.storage = sv; updated = true; }
+            }
+            if (gudangCol !== -1 && row[gudangCol] !== '' && row[gudangCol] !== null) {
+              const sv = Number(row[gudangCol]); if (!isNaN(sv)) { p.gudang = sv; updated = true; }
+            }
+            if (updated) matched++;
+          }
+
+          _esfDirty = true;
+          esfRenderTable();
+          showToast(`✅ Berhasil import QTY Riil untuk ${matched} produk!`);
+        } catch (err) {
+          showToast('❌ Gagal memproses file Excel.');
+          console.error(err);
+        }
+      };
+      reader.readAsBinaryString(file);
+    });
+  }
+
   const p = products[currentQeIdx];
   if (!p) return;
   
@@ -18052,6 +18140,11 @@ function saveQuickEdit() {
       <button onclick="document.getElementById('esf_csvInput').click()" style="padding:8px 12px; border:1.5px solid var(--border); border-radius:8px; font-size:12px; background:#fff; cursor:pointer; font-weight:700; color:#1A7A4A; display:flex; align-items:center; gap:6px;">
         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="14" height="14"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
         Upload CSV SW
+      </button>
+      <input type="file" id="esf_riilInput" accept=".xlsx,.xls,.csv" style="display:none;" onchange="esfHandleRiilUpload(event)">
+      <button onclick="document.getElementById('esf_riilInput').click()" style="padding:8px 12px; border:1.5px solid var(--border); border-radius:8px; font-size:12px; background:#fff; cursor:pointer; font-weight:700; color:#B7770D; display:flex; align-items:center; gap:6px;">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="14" height="14"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+        Upload Excel Riil
       </button>
       <div id="esf_count" style="font-size:12px; color:var(--muted); display:flex; align-items:center; margin-left:auto;"></div>
     </div>
