@@ -6221,6 +6221,7 @@ window.addEventListener('DOMContentLoaded', function() {
 
   const restored = loadProgress();
   loadCsvProgress(); // restore CSV Stockwiz dari localStorage terpisah
+  renderSesiPanel(); // render panel kolaborasi (Buat Sesi Baru / Sesi Aktif)
 
   // Default tampilan kategori: desktop terbuka semua, mobile tertutup semua
   // (expandedCategories tidak dipersist — selalu dihitung ulang tiap load).
