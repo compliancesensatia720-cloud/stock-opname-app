@@ -13098,12 +13098,25 @@ function renderDashboardToko(skipFetch = false) {
 
 function pilihTokoDariDashboard(nama) {
   // Cegah pembuatan/pemilihan sesi baru jika ada sesi lokal yang belum difinalisasi
-  const localUnit = document.getElementById('infoUnit') ? document.getElementById('infoUnit').value : '';
+  let localUnit = document.getElementById('infoUnit') ? document.getElementById('infoUnit').value : '';
+  if (!localUnit) {
+    try {
+      const raw = localStorage.getItem('so_data');
+      if (raw) {
+        const data = JSON.parse(raw);
+        localUnit = data.unit || '';
+      }
+    } catch(e) {}
+  }
+  
   const hasLocalSession = (typeof activeSesiKode !== 'undefined' && activeSesiKode) || (typeof products !== 'undefined' && products.length > 0);
   
   if (hasLocalSession) {
-    if (localUnit === nama) {
+    if (localUnit === nama || localUnit === '') {
       showToast('Melanjutkan sesi aktif Anda untuk toko ini...');
+      if (localUnit === '' && document.getElementById('infoUnit')) {
+         document.getElementById('infoUnit').value = nama;
+      }
       switchPage('info');
       return;
     } else {
